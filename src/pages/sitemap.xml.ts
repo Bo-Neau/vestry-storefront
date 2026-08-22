@@ -15,7 +15,7 @@ const escape = (s: string): string =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 export const GET: APIRoute = async ({ site }) => {
-  const base = (site ?? new URL("https://vestry.example")).origin;
+  const base = (site ?? new URL("https://example.com")).origin;
   const { products } = await loadProducts();
   const today = new Date().toISOString().slice(0, 10);
 

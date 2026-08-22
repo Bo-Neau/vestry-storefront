@@ -5,20 +5,22 @@ import { readCart } from "../../lib/cart/index.ts";
 import { formatMoney } from "../../lib/money.ts";
 import { MAX_QUANTITY_PER_LINE } from "../../lib/cart/types.ts";
 import type { GarmentShape } from "../../data/schema.ts";
+import { COMMERCE, COPY, shippingFor, pageTitle } from "../../config/brand.ts";
 
 const cart = await readCart(Astro.cookies);
 const removed = Astro.url.searchParams.has("removed");
 
-const FREE_SHIPPING_THRESHOLD = 7500; // cents
-const remaining = Math.max(0, FREE_SHIPPING_THRESHOLD - cart.subtotal.amount);
-const shipping = remaining > 0 ? 600 : 0;
-const total = cart.subtotal.amount + shipping;
+// Shipping and the free-shipping threshold come from config, so the cart can
+// never quote different terms from the header or the product page.
+const shipping = shippingFor(cart.subtotal);
+const toFreeShipping = COPY.amountToFreeShipping(cart.subtotal);
+const total = cart.subtotal.amount + shipping.amount;
 
 // Lines whose quantity now exceeds what is actually in stock.
 const overstocked = cart.lines.filter((l) => l.quantity > l.available);
 ---
 
-<Base title="Your bag — Vestry" description="Review your bag before checkout." noindex>
+<Base title={pageTitle("Your bag")} description="Review your bag before checkout." noindex>
   <div class="shell cart-wrap">
     <h1>Your bag</h1>
 
@@ -92,7 +94,7 @@ const overstocked = cart.lines.filter((l) => l.quantity > l.available);
             <div><dt>Subtotal</dt><dd class="money">{formatMoney(cart.subtotal)}</dd></div>
             <div>
               <dt>Shipping</dt>
-              <dd class="money">{shipping === 0 ? "Free" : formatMoney({ amount: shipping, currency: "USD" })}</dd>
+              <dd class="money">{shipping.amount === 0 ? "Free" : formatMoney(shipping)}</dd>
             </div>
             <div class="grand">
               <dt>Total</dt>
@@ -102,10 +104,8 @@ const overstocked = cart.lines.filter((l) => l.quantity > l.available);
 
           <p class="tax-note">Taxes calculated at checkout.</p>
 
-          {remaining > 0 && (
-            <p class="free-ship">
-              Spend {formatMoney({ amount: remaining, currency: "USD" })} more for free shipping.
-            </p>
+          {toFreeShipping && (
+            <p class="free-ship">Spend {toFreeShipping} more for free shipping.</p>
           )}
 
           {overstocked.length > 0 ? (
@@ -126,8 +126,8 @@ const overstocked = cart.lines.filter((l) => l.quantity > l.available);
           )}
 
           <ul class="reassure">
-            <li>Free returns for 30 days</li>
-            <li>Exchanges are one step</li>
+            <li>{COPY.returnsShort}</li>
+            {COMMERCE.exchangesSupported && <li>{COPY.exchangeShort}</li>}
           </ul>
 
           <a href="/collections/all" class="keep">Continue shopping</a>

@@ -12,8 +12,8 @@ import { MAX_LINES, MAX_QUANTITY_PER_LINE } from "./types.ts";
  *
  * Format: `v1|<handle>~<colorwayId>~<size>~<qty>|...`
  */
-export const CART_COOKIE = "vestry_cart";
-export const CART_ID_COOKIE = "vestry_cart_id";
+export const CART_COOKIE = "shop_cart";
+export const CART_ID_COOKIE = "shop_cart_id";
 
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 14; // 14 days
 

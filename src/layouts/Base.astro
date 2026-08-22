@@ -1,6 +1,7 @@
 ---
 import "../styles/base.css";
 import { readCart } from "../lib/cart/index.ts";
+import { BRAND, COPY } from "../config/brand.ts";
 
 // Read on every page so the bag count is never stale after an add.
 const cart = await readCart(Astro.cookies);
@@ -24,7 +25,7 @@ const {
   ogImage, ogType = "website",
 } = Astro.props;
 
-const site = Astro.site ?? new URL("https://vestry.example");
+const site = Astro.site ?? new URL("https://example.com");
 const canonicalUrl = canonical ?? new URL(Astro.url.pathname, site).href;
 const socialImage = new URL(ogImage ?? "/og-default.svg", site).href;
 ---
@@ -52,7 +53,7 @@ const socialImage = new URL(ogImage ?? "/og-default.svg", site).href;
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:image" content={socialImage} />
-    <meta property="og:site_name" content="Vestry" />
+    <meta property="og:site_name" content={BRAND.name} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
@@ -65,7 +66,7 @@ const socialImage = new URL(ogImage ?? "/og-default.svg", site).href;
 
     <header class="site-head">
       <div class="shell head-inner">
-        <a href="/" class="brand" aria-label="Vestry — home">Vestry</a>
+        <a href="/" class="brand" aria-label={`${BRAND.name} — home`}>{BRAND.name}</a>
 
         <nav aria-label="Shop">
           <ul class="nav">
@@ -82,7 +83,7 @@ const socialImage = new URL(ogImage ?? "/og-default.svg", site).href;
           {cart.itemCount > 0 && <span class="bag-count">{cart.itemCount}</span>}
         </a>
 
-        <p class="ship-note">Free shipping and returns over $75</p>
+        <p class="ship-note">{COPY.shippingBanner}</p>
       </div>
     </header>
 
@@ -108,8 +109,8 @@ const socialImage = new URL(ogImage ?? "/og-default.svg", site).href;
           </ul>
         </div>
         <p class="foot-note">
-          Reference storefront. Product imagery is generated placeholder
-          artwork, and all reviews and inventory are sample data.
+          Demonstration storefront. Product imagery is generated placeholder
+          artwork; reviews and inventory are sample data.
         </p>
       </div>
     </footer>

@@ -4,30 +4,27 @@ import ProductCard from "../components/ProductCard.astro";
 import { loadProducts } from "../data/source.ts";
 import JsonLd from "../components/JsonLd.astro";
 import { organisationSchema, websiteSchema } from "../lib/seo/structured-data.ts";
+import { BRAND, COMMERCE, COPY } from "../config/brand.ts";
 
 const { products } = await loadProducts();
 const featured = products.slice(0, 8);
 
-const siteOrigin = (Astro.site ?? new URL("https://vestry.example")).origin;
+const siteOrigin = (Astro.site ?? new URL("https://example.com")).origin;
 ---
 
 <Base
-  title="Vestry — Considered basics, honestly sized"
-  description="Organic cotton, merino and linen basics. Every product page tells you the model's height, the size they wore, and how the garment actually fits."
+  title={`${BRAND.name} — ${BRAND.tagline}`}
+  description={BRAND.description}
 >
   <Fragment slot="head">
-    <JsonLd data={organisationSchema(siteOrigin, "Vestry")} />
-    <JsonLd data={websiteSchema(siteOrigin, "Vestry")} />
+    <JsonLd data={organisationSchema(siteOrigin, BRAND.name)} />
+    <JsonLd data={websiteSchema(siteOrigin, BRAND.name)} />
   </Fragment>
   <section class="hero shell">
     <div class="hero-copy">
-      <p class="label">Autumn 2026</p>
-      <h1>Clothes that tell you how they fit.</h1>
-      <p class="hero-lede">
-        Every product page carries the model's height, the size they wore, and
-        garment measurements laid flat — so you can judge fit before it arrives,
-        not after.
-      </p>
+      {BRAND.eyebrow && <p class="label">{BRAND.eyebrow}</p>}
+      <h1>{BRAND.tagline}</h1>
+      <p class="hero-lede">{BRAND.intro}</p>
       <div class="hero-actions">
         <a href="/collections/all" class="btn">Shop everything</a>
         <a href="/collections/knitwear" class="btn ghost">New knitwear</a>
@@ -45,8 +42,8 @@ const siteOrigin = (Astro.site ?? new URL("https://vestry.example")).origin;
       <p>Reviewers tell you their height and the size they bought. We publish the critical ones too.</p>
     </div>
     <div class="trust-item">
-      <h2>Free returns for 30 days</h2>
-      <p>Exchanges are one step. If the size is wrong, swapping it should be easy.</p>
+      <h2>{COPY.returnsShort}</h2>
+      <p>{COMMERCE.exchangesSupported ? "Exchanges are one step. If the size is wrong, swapping it should be easy." : "Straightforward returns if the size is wrong."}</p>
     </div>
   </section>
 

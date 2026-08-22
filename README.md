@@ -1,10 +1,19 @@
-# Vestry — clothing brand reference storefront
+# Clothing brand storefront
 
 A working storefront that implements the conversion patterns from the
 research briefs, on a data layer shaped to match Shopify's apparel model.
 
 Two jobs: a starting template for client builds, and a demo you can show in
 a pitch.
+
+## Rebranding
+
+Two files: [`src/config/brand.ts`](src/config/brand.ts) for name, copy and
+commercial terms, and [`src/styles/tokens.css`](src/styles/tokens.css) for
+colour and type. Shipping and returns copy is derived from config, so the
+header, product page and cart can never quote different numbers.
+
+Full guide: **[docs/rebranding.md](docs/rebranding.md)**
 
 ## Run it
 

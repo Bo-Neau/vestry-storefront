@@ -25,7 +25,7 @@ export default defineConfig({
     process.env.SITE_URL ??
     (process.env.VERCEL_PROJECT_PRODUCTION_URL
       ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-      : "https://vestry.example"),
+      : "https://example.com"),
 
   /**
    * On-demand rendering.

@@ -13,7 +13,7 @@ import type { APIRoute } from "astro";
  * emit noindex.
  */
 export const GET: APIRoute = ({ site }) => {
-  const base = (site ?? new URL("https://vestry.example")).origin;
+  const base = (site ?? new URL("https://example.com")).origin;
 
   const body = `# ${base}
 User-agent: *

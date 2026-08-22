@@ -10,6 +10,7 @@ import { loadProduct, loadProducts, loadSizeChart } from "../../data/source.ts";
 import { SIZE_ORDER, averageRating, fitVerdict } from "../../data/schema.ts";
 import { formatMoney, discountPercent } from "../../lib/money.ts";
 import { stockStateFor, stockLabel, LOW_STOCK_THRESHOLD } from "../../lib/stock.ts";
+import { BRAND, COMMERCE, COPY, pageTitle } from "../../config/brand.ts";
 
 const { handle } = Astro.params;
 const { product } = handle ? await loadProduct(handle) : { product: undefined };
@@ -56,8 +57,8 @@ const RUNS_NOTE: Record<typeof product.fit.runsTrueToSize, string> = {
 
 const canonical = new URL(`/products/${product.handle}`, Astro.url).href;
 
-const siteOrigin = (Astro.site ?? new URL("https://vestry.example")).origin;
-const jsonLdProduct = productSchema(product, canonical, "Vestry");
+const siteOrigin = (Astro.site ?? new URL("https://example.com")).origin;
+const jsonLdProduct = productSchema(product, canonical, BRAND.name);
 const jsonLdCrumbs = breadcrumbSchema([
   { name: "Home", url: `${siteOrigin}/` },
   { name: product.category, url: `${siteOrigin}/collections/${product.category.toLowerCase()}` },
@@ -78,7 +79,7 @@ const anyInStock = sizeRows.some((r) => r.state !== "out");
 ---
 
 <Base
-  title={`${product.title} — ${colorway.name} — Vestry`}
+  title={pageTitle(product.title, colorway.name)}
   description={product.summary}
   canonical={canonical}
   ogType="product"
@@ -226,9 +227,9 @@ const anyInStock = sizeRows.some((r) => r.state !== "out");
 
           <!-- ZONE 7 — returns and shipping, inline with real numbers -->
           <ul class="policy">
-            <li>Free shipping over $75, otherwise $6 flat</li>
-            <li>Free returns for 30 days, unworn with tags</li>
-            <li>Exchanges are one step — swap size without repurchasing</li>
+            <li>{COPY.shippingTerms}</li>
+            <li>{COPY.returnsTerms}</li>
+            {COMMERCE.exchangesSupported && <li>{COPY.exchangeTerms}</li>}
           </ul>
         </form>
 

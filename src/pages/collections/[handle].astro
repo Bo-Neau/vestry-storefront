@@ -4,6 +4,7 @@ import FilterPanel from "../../components/FilterPanel.astro";
 import ProductCard from "../../components/ProductCard.astro";
 import JsonLd from "../../components/JsonLd.astro";
 import { collectionSchema, breadcrumbSchema } from "../../lib/seo/structured-data.ts";
+import { pageTitle } from "../../config/brand.ts";
 import { loadProducts } from "../../data/source.ts";
 import { filtersFromParams, countActive } from "../../lib/facets.ts";
 import { queryCatalogue } from "../../lib/search/index.ts";
@@ -42,7 +43,7 @@ const { products: results, facets, backend, warning: searchWarning } =
 
 const active = countActive(filters);
 
-const siteOrigin = (Astro.site ?? new URL("https://vestry.example")).origin;
+const siteOrigin = (Astro.site ?? new URL("https://example.com")).origin;
 const collectionUrl = `${siteOrigin}${basePath}`;
 // A filtered view is one of infinitely many near-duplicates of this
 // collection. Canonicalise to the unfiltered page and keep it out of the index.
@@ -57,7 +58,7 @@ const jsonLdCrumbs = breadcrumbSchema([
 ---
 
 <Base
-  title={`${collection.title} — Vestry`}
+  title={pageTitle(collection.title)}
   description={collection.blurb}
   canonical={collectionUrl}
   noindex={isFiltered}

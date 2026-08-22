@@ -297,7 +297,7 @@ const server = createServer((req, res) => {
     };
 
     if (query.includes("shop {")) {
-      return send({ shop: { name: "Mock Vestry", primaryDomain: { url: "https://mock-store.myshopify.com" } } });
+      return send({ shop: { name: "Mock Store", primaryDomain: { url: "https://mock-store.myshopify.com" } } });
     }
 
     if (query.includes("query Products")) {

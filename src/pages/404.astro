@@ -1,11 +1,12 @@
 ---
 import Base from "../layouts/Base.astro";
+import { pageTitle } from "../config/brand.ts";
 import NotFound from "../components/NotFound.astro";
 
 Astro.response.status = 404;
 ---
 <Base
-  title="Page not found — Vestry"
+  title={pageTitle("Page not found")}
   description="That page could not be found."
   noindex
 >
