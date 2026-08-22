@@ -44,7 +44,15 @@ export async function storefront<T>(
     );
   }
 
-  const url = `https://${config.domain}/api/${config.apiVersion}/graphql.json`;
+  /**
+   * HTTPS everywhere except an explicit localhost target, which exists so the
+   * integration can be exercised against scripts/mock-shopify.mjs. The check
+   * is on the hostname, so a real store can never be downgraded to http by a
+   * misconfigured env var.
+   */
+  const isLocal = /^(localhost|127\.0\.0\.1)(:\d+)?$/.test(config.domain);
+  const scheme = isLocal ? "http" : "https";
+  const url = `${scheme}://${config.domain}/api/${config.apiVersion}/graphql.json`;
 
   let response: Response;
   try {
