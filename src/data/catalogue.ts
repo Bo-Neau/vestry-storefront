@@ -1,8 +1,15 @@
 import type { Product, Review, Size, SizeStock } from "./schema.ts";
 
-/* --- tiny builders to keep the catalogue readable ---------------- */
+/* ---------------------------------------------------------------------------
+ * GENERATED FILE — do not edit by hand.
+ *
+ * Source: docs/styles.csv and docs/variants.csv
+ * Regenerate with: npm run catalogue:import
+ *
+ * Hand edits are lost on the next import. Change the spreadsheets instead.
+ * ------------------------------------------------------------------------- */
 
-const usd = (dollars: number) => ({ amount: dollars * 100, currency: "USD" as const });
+const usd = (dollars: number) => ({ amount: Math.round(dollars * 100), currency: "USD" as const });
 
 /** Stock per size, in SIZE_ORDER. A 0 means genuinely sold out. */
 const stock = (xs: number, s: number, m: number, l: number, xl: number, xxl: number): SizeStock[] => [
@@ -21,37 +28,33 @@ const rev = (
   verified: true, date, heightBand, sizePurchased, fitFeedback,
 });
 
-/* ---------------------------------------------------------------- */
-
 export const PRODUCTS: readonly Product[] = [
   {
-    id: "STYLE-TEE-001",
+    id: "STYLE-TSHI-001",
     handle: "everyday-crew",
     title: "The Everyday Crew",
     category: "T-shirts",
     shape: "tee",
     price: usd(38),
     summary: "Mid-weight organic cotton, cut to sit close without clinging.",
-    description:
-      "Our baseline tee, revised over four seasons. Combed organic cotton at 180gsm — heavy enough to hold its shape through the wash, light enough to layer under a shirt. The neck rib is knitted on the same machine as the body so it recovers instead of stretching out.",
+    description: "Our baseline tee, revised over four seasons. Combed organic cotton at 180gsm — heavy enough to hold its shape through the wash, light enough to layer under a shirt. The neck rib is knitted on the same machine as the body so it recovers instead of stretching out.",
     attributes: {
-      fit: "Regular", neckline: "Crew", sleeveLength: "Short",
-      fabric: "100% organic cotton", fabricWeightGsm: 180,
+      fit: "Regular",
+      neckline: "Crew",
+      sleeveLength: "Short",
+      fabric: "100% organic cotton",
+      fabricWeightGsm: 180,
       targetGender: "Unisex",
       features: ["Pre-shrunk", "Self-fabric neck rib", "Single-needle hem"],
     },
     fit: { modelHeightCm: 185, modelSizeWorn: "L", runsTrueToSize: "true" },
     sizeChartId: "chart-tops",
     colorways: [
-      { id: "tee1-white", name: "Chalk",           hex: "#F2F0EA", sizes: stock(6, 14, 4, 11, 5, 2),
-        // One colourway carries a real file so the photography path is
-        // exercised alongside the placeholder renderer. Replace all of these
-        // with the client's shoot; nothing else changes.
-        images: [{ src: "/sample/everyday-crew-chalk-front.png", alt: "The Everyday Crew in Chalk, front view", width: 1200, height: 1560, view: "front" }] },
-      { id: "tee1-black", name: "Ink",             hex: "#1E1E1C", sizes: stock(4, 9, 12, 8, 6, 3) },
-      { id: "tee1-oat",   name: "Heathered Oat",   hex: "#C9BFAB", hexAlt: "#DCD4C4", sizes: stock(0, 5, 7, 4, 0, 0) },
-      { id: "tee1-slate", name: "Slate",           hex: "#5A6068", sizes: stock(3, 8, 9, 7, 4, 1) },
-      { id: "tee1-olive", name: "Faded Olive",     hex: "#6E7355", sizes: stock(2, 4, 0, 6, 3, 0) },
+      { id: "everyday-crew-chalk", name: "Chalk", hex: "#F2F0EA", sizes: stock(6, 14, 4, 11, 5, 2) },
+      { id: "everyday-crew-ink", name: "Ink", hex: "#1E1E1C", sizes: stock(4, 9, 12, 8, 6, 3) },
+      { id: "everyday-crew-heathered-oat", name: "Heathered Oat", hex: "#C9BFAB", sizes: stock(0, 5, 7, 4, 0, 0) },
+      { id: "everyday-crew-slate", name: "Slate", hex: "#5A6068", sizes: stock(3, 8, 9, 7, 4, 1) },
+      { id: "everyday-crew-faded-olive", name: "Faded Olive", hex: "#6E7355", sizes: stock(2, 4, 0, 6, 3, 0) },
     ],
     care: ["Machine wash cold, like colours", "Tumble dry low", "Warm iron if needed", "Do not bleach"],
     details: ["Made in Portugal", "OCS certified organic cotton", "Model wears size L"],
@@ -66,27 +69,29 @@ export const PRODUCTS: readonly Product[] = [
   },
 
   {
-    id: "STYLE-TEE-002",
+    id: "STYLE-TSHI-002",
     handle: "boxy-pocket-tee",
     title: "Boxy Pocket Tee",
     category: "T-shirts",
     shape: "tee",
     price: usd(48),
     summary: "Heavy 220gsm jersey with a deliberately square cut.",
-    description:
-      "A wider body and a dropped shoulder, cut from 220gsm loopback jersey that stands away from the body. The patch pocket is set on the bias so it lies flat instead of curling. Sized generously — if you want a closer fit, take a size down.",
+    description: "A wider body and a dropped shoulder, cut from 220gsm loopback jersey that stands away from the body. The patch pocket is set on the bias so it lies flat instead of curling. Sized generously — if you want a closer fit, take a size down.",
     attributes: {
-      fit: "Relaxed", neckline: "Crew", sleeveLength: "Short",
-      fabric: "100% heavyweight cotton", fabricWeightGsm: 220,
+      fit: "Relaxed",
+      neckline: "Crew",
+      sleeveLength: "Short",
+      fabric: "100% heavyweight cotton",
+      fabricWeightGsm: 220,
       targetGender: "Unisex",
       features: ["Dropped shoulder", "Bias-set patch pocket", "Twin-needle hem"],
     },
     fit: { modelHeightCm: 178, modelSizeWorn: "M", runsTrueToSize: "large" },
     sizeChartId: "chart-tops",
     colorways: [
-      { id: "tee2-sand",  name: "Sand",        hex: "#D6C9B0", sizes: stock(0, 7, 0, 6, 3, 0) },
-      { id: "tee2-black", name: "Ink",         hex: "#1E1E1C", sizes: stock(0, 6, 0, 9, 4, 0) },
-      { id: "tee2-rust",  name: "Burnt Rust",  hex: "#9A5A3C", sizes: stock(0, 3, 0, 4, 2, 0) },
+      { id: "boxy-pocket-tee-sand", name: "Sand", hex: "#D6C9B0", sizes: stock(0, 7, 0, 6, 3, 0) },
+      { id: "boxy-pocket-tee-ink", name: "Ink", hex: "#1E1E1C", sizes: stock(0, 6, 0, 9, 4, 0) },
+      { id: "boxy-pocket-tee-burnt-rust", name: "Burnt Rust", hex: "#9A5A3C", sizes: stock(0, 3, 0, 4, 2, 0) },
     ],
     care: ["Machine wash cold", "Dry flat to preserve the shape", "Do not tumble dry"],
     details: ["Made in Portugal", "Garment washed", "Model wears size M"],
@@ -99,7 +104,7 @@ export const PRODUCTS: readonly Product[] = [
   },
 
   {
-    id: "STYLE-TEE-003",
+    id: "STYLE-TSHI-003",
     handle: "long-sleeve-henley",
     title: "Long-Sleeve Henley",
     category: "T-shirts",
@@ -107,20 +112,22 @@ export const PRODUCTS: readonly Product[] = [
     price: usd(62),
     compareAtPrice: usd(78),
     summary: "Waffle-knit henley with a four-button placket.",
-    description:
-      "Waffle-knit cotton with a little more give than a flat jersey, so it works as a mid-layer without pulling. Four corozo buttons on a reinforced placket. Cuffs are ribbed deep enough to push up and stay put.",
+    description: "Waffle-knit cotton with a little more give than a flat jersey, so it works as a mid-layer without pulling. Four corozo buttons on a reinforced placket. Cuffs are ribbed deep enough to push up and stay put.",
     attributes: {
-      fit: "Regular", neckline: "Henley", sleeveLength: "Long",
-      fabric: "94% cotton, 6% elastane", fabricWeightGsm: 200,
+      fit: "Regular",
+      neckline: "Henley",
+      sleeveLength: "Long",
+      fabric: "94% cotton, 6% elastane",
+      fabricWeightGsm: 200,
       targetGender: "Men",
       features: ["Corozo buttons", "Reinforced placket", "Deep ribbed cuffs"],
     },
     fit: { modelHeightCm: 183, modelSizeWorn: "M", runsTrueToSize: "true" },
     sizeChartId: "chart-tops",
     colorways: [
-      { id: "tee3-oat",   name: "Heathered Oat", hex: "#C9BFAB", hexAlt: "#DCD4C4", sizes: stock(3, 8, 10, 7, 4, 0) },
-      { id: "tee3-navy",  name: "Deep Navy",     hex: "#252F45", sizes: stock(2, 6, 9, 8, 5, 0) },
-      { id: "tee3-clay",  name: "Clay",          hex: "#A8735C", sizes: stock(0, 2, 4, 3, 0, 0) },
+      { id: "long-sleeve-henley-heathered-oat", name: "Heathered Oat", hex: "#C9BFAB", sizes: stock(3, 8, 10, 7, 4, 0) },
+      { id: "long-sleeve-henley-deep-navy", name: "Deep Navy", hex: "#252F45", sizes: stock(2, 6, 9, 8, 5, 0) },
+      { id: "long-sleeve-henley-clay", name: "Clay", hex: "#A8735C", sizes: stock(0, 2, 4, 3, 0, 0) },
     ],
     care: ["Machine wash cold", "Tumble dry low", "Do not iron the placket directly"],
     details: ["Made in Portugal", "Corozo nut buttons", "Model wears size M"],
@@ -133,26 +140,28 @@ export const PRODUCTS: readonly Product[] = [
   },
 
   {
-    id: "STYLE-TEE-004",
+    id: "STYLE-TSHI-004",
     handle: "ribbed-tank",
     title: "Ribbed Tank",
     category: "T-shirts",
     shape: "tee",
     price: usd(32),
     summary: "Fine-gauge rib with a close, high-armhole cut.",
-    description:
-      "A 2x1 rib knitted fine enough to layer invisibly. The armhole sits high and the strap is cut narrow, so it disappears under a shirt rather than showing at the shoulder.",
+    description: "A 2x1 rib knitted fine enough to layer invisibly. The armhole sits high and the strap is cut narrow, so it disappears under a shirt rather than showing at the shoulder.",
     attributes: {
-      fit: "Slim", neckline: "Crew", sleeveLength: "Sleeveless",
-      fabric: "95% cotton, 5% elastane", fabricWeightGsm: 160,
+      fit: "Slim",
+      neckline: "Crew",
+      sleeveLength: "Sleeveless",
+      fabric: "95% cotton, 5% elastane",
+      fabricWeightGsm: 160,
       targetGender: "Unisex",
       features: ["2x1 rib", "High armhole", "Narrow strap"],
     },
     fit: { modelHeightCm: 172, modelSizeWorn: "S", runsTrueToSize: "small" },
     sizeChartId: "chart-tops",
     colorways: [
-      { id: "tee4-white", name: "Chalk", hex: "#F2F0EA", sizes: stock(8, 12, 10, 6, 0, 0) },
-      { id: "tee4-black", name: "Ink",   hex: "#1E1E1C", sizes: stock(7, 11, 9, 5, 0, 0) },
+      { id: "ribbed-tank-chalk", name: "Chalk", hex: "#F2F0EA", sizes: stock(8, 12, 10, 6, 0, 0) },
+      { id: "ribbed-tank-ink", name: "Ink", hex: "#1E1E1C", sizes: stock(7, 11, 9, 5, 0, 0) },
     ],
     care: ["Machine wash cold", "Dry flat", "Do not tumble dry"],
     details: ["Made in Portugal", "Designed to layer", "Model wears size S"],
@@ -164,28 +173,30 @@ export const PRODUCTS: readonly Product[] = [
   },
 
   {
-    id: "STYLE-SHIRT-001",
+    id: "STYLE-SHIR-005",
     handle: "oxford-button-down",
     title: "Oxford Button-Down",
     category: "Shirts",
     shape: "shirt",
     price: usd(98),
     summary: "Washed oxford cotton with an unfused, roll-friendly collar.",
-    description:
-      "Woven oxford cotton, garment-washed so it arrives soft instead of stiff. The collar is unfused — no interlining — so it rolls naturally rather than standing up like a board. Box pleat at the back for movement across the shoulders.",
+    description: "Woven oxford cotton, garment-washed so it arrives soft instead of stiff. The collar is unfused — no interlining — so it rolls naturally rather than standing up like a board. Box pleat at the back for movement across the shoulders.",
     attributes: {
-      fit: "Regular", neckline: "Collared", sleeveLength: "Long",
-      fabric: "100% cotton oxford", fabricWeightGsm: 140,
+      fit: "Regular",
+      neckline: "Collared",
+      sleeveLength: "Long",
+      fabric: "100% cotton oxford",
+      fabricWeightGsm: 140,
       targetGender: "Men",
       features: ["Unfused collar", "Box pleat back", "Mother-of-pearl buttons", "Garment washed"],
     },
     fit: { modelHeightCm: 185, modelSizeWorn: "L", runsTrueToSize: "true" },
     sizeChartId: "chart-tops",
     colorways: [
-      { id: "sh1-white",  name: "Chalk",        hex: "#F2F0EA", sizes: stock(4, 10, 12, 9, 5, 2) },
-      { id: "sh1-blue",   name: "Oxford Blue",  hex: "#8FA6C4", sizes: stock(3, 9, 0, 8, 4, 1) },
-      { id: "sh1-stripe", name: "Blue Stripe",  hex: "#B9C9DC", hexAlt: "#F2F0EA", sizes: stock(2, 6, 7, 5, 3, 0) },
-      { id: "sh1-sage",   name: "Pale Sage",    hex: "#B4BFA8", sizes: stock(0, 4, 5, 3, 0, 0) },
+      { id: "oxford-button-down-chalk", name: "Chalk", hex: "#F2F0EA", sizes: stock(4, 10, 12, 9, 5, 2) },
+      { id: "oxford-button-down-oxford-blue", name: "Oxford Blue", hex: "#8FA6C4", sizes: stock(3, 9, 0, 8, 4, 1) },
+      { id: "oxford-button-down-blue-stripe", name: "Blue Stripe", hex: "#B9C9DC", sizes: stock(2, 6, 7, 5, 3, 0) },
+      { id: "oxford-button-down-pale-sage", name: "Pale Sage", hex: "#B4BFA8", sizes: stock(0, 4, 5, 3, 0, 0) },
     ],
     care: ["Machine wash cold", "Hang to dry", "Warm iron while slightly damp"],
     details: ["Made in Portugal", "Mother-of-pearl buttons", "Model wears size L"],
@@ -199,27 +210,29 @@ export const PRODUCTS: readonly Product[] = [
   },
 
   {
-    id: "STYLE-SHIRT-002",
+    id: "STYLE-SHIR-006",
     handle: "camp-collar-shirt",
     title: "Camp Collar Shirt",
     category: "Shirts",
     shape: "shirt",
     price: usd(88),
     summary: "Open-collar short sleeve in a loose cotton-linen weave.",
-    description:
-      "A cotton-linen blend woven loosely enough to move air. The camp collar is cut to sit open and flat without gaping. Straight hem, so it works untucked without looking like a tucked shirt that escaped.",
+    description: "A cotton-linen blend woven loosely enough to move air. The camp collar is cut to sit open and flat without gaping. Straight hem, so it works untucked without looking like a tucked shirt that escaped.",
     attributes: {
-      fit: "Relaxed", neckline: "Collared", sleeveLength: "Short",
-      fabric: "55% linen, 45% cotton", fabricWeightGsm: 150,
+      fit: "Relaxed",
+      neckline: "Collared",
+      sleeveLength: "Short",
+      fabric: "55% linen, 45% cotton",
+      fabricWeightGsm: 150,
       targetGender: "Unisex",
       features: ["Camp collar", "Straight hem", "Chest patch pocket"],
     },
     fit: { modelHeightCm: 180, modelSizeWorn: "M", runsTrueToSize: "true" },
     sizeChartId: "chart-tops",
     colorways: [
-      { id: "sh2-ecru",  name: "Ecru",       hex: "#E4DCC8", sizes: stock(0, 7, 0, 6, 3, 0) },
-      { id: "sh2-teal",  name: "Faded Teal", hex: "#547A78", sizes: stock(0, 5, 0, 5, 2, 0) },
-      { id: "sh2-black", name: "Ink",        hex: "#1E1E1C", sizes: stock(0, 3, 0, 4, 2, 0) },
+      { id: "camp-collar-shirt-ecru", name: "Ecru", hex: "#E4DCC8", sizes: stock(0, 7, 0, 6, 3, 0) },
+      { id: "camp-collar-shirt-faded-teal", name: "Faded Teal", hex: "#547A78", sizes: stock(0, 5, 0, 5, 2, 0) },
+      { id: "camp-collar-shirt-ink", name: "Ink", hex: "#1E1E1C", sizes: stock(0, 3, 0, 4, 2, 0) },
     ],
     care: ["Machine wash cold", "Hang to dry", "Cool iron"],
     details: ["Made in Portugal", "European linen", "Model wears size M"],
@@ -231,26 +244,28 @@ export const PRODUCTS: readonly Product[] = [
   },
 
   {
-    id: "STYLE-SHIRT-003",
+    id: "STYLE-SHIR-007",
     handle: "cotton-overshirt",
     title: "Cotton Overshirt",
     category: "Shirts",
     shape: "shirt",
     price: usd(148),
     summary: "Shirt-jacket in a dense cotton twill, cut to layer over knitwear.",
-    description:
-      "Somewhere between a shirt and a light jacket. Dense cotton twill with a slight peach finish, cut wide enough through the chest and armhole to go over a crew-neck sweater without pulling. Two flap pockets, horn buttons.",
+    description: "Somewhere between a shirt and a light jacket. Dense cotton twill with a slight peach finish, cut wide enough through the chest and armhole to go over a crew-neck sweater without pulling. Two flap pockets, horn buttons.",
     attributes: {
-      fit: "Oversized", neckline: "Collared", sleeveLength: "Long",
-      fabric: "100% cotton twill", fabricWeightGsm: 280,
+      fit: "Oversized",
+      neckline: "Collared",
+      sleeveLength: "Long",
+      fabric: "100% cotton twill",
+      fabricWeightGsm: 280,
       targetGender: "Unisex",
       features: ["Horn buttons", "Twin flap pockets", "Wide armhole", "Peached finish"],
     },
     fit: { modelHeightCm: 183, modelSizeWorn: "M", runsTrueToSize: "large" },
     sizeChartId: "chart-tops",
     colorways: [
-      { id: "sh3-stone", name: "Stone",      hex: "#B0A899", sizes: stock(0, 6, 8, 6, 3, 1) },
-      { id: "sh3-brown", name: "Dark Cocoa", hex: "#4A3A31", sizes: stock(0, 4, 6, 5, 2, 0) },
+      { id: "cotton-overshirt-stone", name: "Stone", hex: "#B0A899", sizes: stock(0, 6, 8, 6, 3, 1) },
+      { id: "cotton-overshirt-dark-cocoa", name: "Dark Cocoa", hex: "#4A3A31", sizes: stock(0, 4, 6, 5, 2, 0) },
     ],
     care: ["Machine wash cold", "Hang to dry", "Warm iron"],
     details: ["Made in Portugal", "Genuine horn buttons", "Model wears size M"],
@@ -262,28 +277,30 @@ export const PRODUCTS: readonly Product[] = [
   },
 
   {
-    id: "STYLE-KNIT-001",
+    id: "STYLE-KNIT-008",
     handle: "merino-crew",
     title: "Merino Crew Neck",
     category: "Knitwear",
     shape: "knit",
     price: usd(158),
     summary: "Fine-gauge extra-fine merino, fully fashioned.",
-    description:
-      "Extra-fine merino at a 14-gauge knit — thin enough for a shirt underneath, warm enough on its own. Fully fashioned, meaning the panels are knitted to shape rather than cut from a sheet, so the shoulder seams sit where your shoulders are.",
+    description: "Extra-fine merino at a 14-gauge knit — thin enough for a shirt underneath, warm enough on its own. Fully fashioned, meaning the panels are knitted to shape rather than cut from a sheet, so the shoulder seams sit where your shoulders are.",
     attributes: {
-      fit: "Regular", neckline: "Crew", sleeveLength: "Long",
-      fabric: "100% extra-fine merino wool", fabricWeightGsm: 240,
+      fit: "Regular",
+      neckline: "Crew",
+      sleeveLength: "Long",
+      fabric: "100% extra-fine merino wool",
+      fabricWeightGsm: 240,
       targetGender: "Unisex",
       features: ["14-gauge knit", "Fully fashioned", "Ribbed cuffs and welt"],
     },
     fit: { modelHeightCm: 185, modelSizeWorn: "L", runsTrueToSize: "true" },
     sizeChartId: "chart-knitwear",
     colorways: [
-      { id: "kn1-navy",    name: "Deep Navy",     hex: "#252F45", sizes: stock(3, 8, 11, 8, 4, 2) },
-      { id: "kn1-grey",    name: "Mid Grey Melange", hex: "#8A8A85", hexAlt: "#A5A5A0", sizes: stock(2, 7, 0, 7, 3, 1) },
-      { id: "kn1-camel",   name: "Camel",         hex: "#B08A5C", sizes: stock(1, 5, 7, 5, 2, 0) },
-      { id: "kn1-forest",  name: "Forest",        hex: "#33463A", sizes: stock(0, 3, 5, 4, 0, 0) },
+      { id: "merino-crew-deep-navy", name: "Deep Navy", hex: "#252F45", sizes: stock(3, 8, 11, 8, 4, 2) },
+      { id: "merino-crew-mid-grey-melange", name: "Mid Grey Melange", hex: "#8A8A85", sizes: stock(2, 7, 0, 7, 3, 1) },
+      { id: "merino-crew-camel", name: "Camel", hex: "#B08A5C", sizes: stock(1, 5, 7, 5, 2, 0) },
+      { id: "merino-crew-forest", name: "Forest", hex: "#33463A", sizes: stock(0, 3, 5, 4, 0, 0) },
     ],
     care: ["Hand wash cool or wool cycle", "Dry flat, away from heat", "Do not tumble dry", "Store folded, not hung"],
     details: ["Knitted in Scotland", "Mulesing-free merino", "Model wears size L"],
@@ -297,26 +314,28 @@ export const PRODUCTS: readonly Product[] = [
   },
 
   {
-    id: "STYLE-KNIT-002",
+    id: "STYLE-KNIT-009",
     handle: "fisherman-cable-knit",
     title: "Fisherman Cable Knit",
     category: "Knitwear",
     shape: "knit",
     price: usd(198),
     summary: "Heavy undyed wool in a traditional cable and honeycomb pattern.",
-    description:
-      "Knitted in undyed wool that keeps its natural lanolin, so it sheds light rain. Traditional cable panels flanked by honeycomb stitch. Substantial — this is an outer layer in all but the coldest weather.",
+    description: "Knitted in undyed wool that keeps its natural lanolin, so it sheds light rain. Traditional cable panels flanked by honeycomb stitch. Substantial — this is an outer layer in all but the coldest weather.",
     attributes: {
-      fit: "Relaxed", neckline: "Crew", sleeveLength: "Long",
-      fabric: "100% undyed British wool", fabricWeightGsm: 480,
+      fit: "Relaxed",
+      neckline: "Crew",
+      sleeveLength: "Long",
+      fabric: "100% undyed British wool",
+      fabricWeightGsm: 480,
       targetGender: "Unisex",
       features: ["Hand-framed cables", "Undyed yarn", "Saddle shoulder"],
     },
     fit: { modelHeightCm: 180, modelSizeWorn: "M", runsTrueToSize: "large" },
     sizeChartId: "chart-knitwear",
     colorways: [
-      { id: "kn2-natural", name: "Undyed Natural", hex: "#DBD2BE", sizes: stock(0, 4, 6, 5, 2, 1) },
-      { id: "kn2-moss",    name: "Moss",           hex: "#6A6B4E", sizes: stock(0, 2, 4, 3, 1, 0) },
+      { id: "fisherman-cable-knit-undyed-natural", name: "Undyed Natural", hex: "#DBD2BE", sizes: stock(0, 4, 6, 5, 2, 1) },
+      { id: "fisherman-cable-knit-moss", name: "Moss", hex: "#6A6B4E", sizes: stock(0, 2, 4, 3, 1, 0) },
     ],
     care: ["Hand wash cool only", "Dry flat", "Do not wring", "Store folded"],
     details: ["Hand-framed in Ireland", "Undyed, minimally processed wool", "Model wears size M"],
@@ -328,7 +347,7 @@ export const PRODUCTS: readonly Product[] = [
   },
 
   {
-    id: "STYLE-KNIT-003",
+    id: "STYLE-KNIT-010",
     handle: "lambswool-v-neck",
     title: "Lambswool V-Neck",
     category: "Knitwear",
@@ -336,20 +355,22 @@ export const PRODUCTS: readonly Product[] = [
     price: usd(128),
     compareAtPrice: usd(160),
     summary: "Close-fitting lambswool with a shallow V and a fine rib.",
-    description:
-      "Cut close, with a shallow V that shows a shirt collar without exposing much chest. Lambswool spun in the Scottish Borders and knitted at a 12-gauge, so it holds a defined rib at the cuff and welt.",
+    description: "Cut close, with a shallow V that shows a shirt collar without exposing much chest. Lambswool spun in the Scottish Borders and knitted at a 12-gauge, so it holds a defined rib at the cuff and welt.",
     attributes: {
-      fit: "Slim", neckline: "V-neck", sleeveLength: "Long",
-      fabric: "100% lambswool", fabricWeightGsm: 260,
+      fit: "Slim",
+      neckline: "V-neck",
+      sleeveLength: "Long",
+      fabric: "100% lambswool",
+      fabricWeightGsm: 260,
       targetGender: "Men",
       features: ["12-gauge knit", "Shallow V", "Defined rib"],
     },
     fit: { modelHeightCm: 183, modelSizeWorn: "M", runsTrueToSize: "small" },
     sizeChartId: "chart-knitwear",
     colorways: [
-      { id: "kn3-charcoal", name: "Charcoal",  hex: "#3D3D3C", sizes: stock(4, 9, 0, 6, 3, 0) },
-      { id: "kn3-oatmeal",  name: "Oatmeal",   hex: "#CDC2A8", sizes: stock(3, 7, 0, 5, 2, 0) },
-      { id: "kn3-burgundy", name: "Burgundy",  hex: "#6B2A32", sizes: stock(0, 4, 0, 3, 1, 0) },
+      { id: "lambswool-v-neck-charcoal", name: "Charcoal", hex: "#3D3D3C", sizes: stock(4, 9, 0, 6, 3, 0) },
+      { id: "lambswool-v-neck-oatmeal", name: "Oatmeal", hex: "#CDC2A8", sizes: stock(3, 7, 0, 5, 2, 0) },
+      { id: "lambswool-v-neck-burgundy", name: "Burgundy", hex: "#6B2A32", sizes: stock(0, 4, 0, 3, 1, 0) },
     ],
     care: ["Wool cycle or hand wash cool", "Dry flat", "Do not tumble dry"],
     details: ["Knitted in Scotland", "Scottish Borders lambswool", "Model wears size M"],
@@ -361,27 +382,27 @@ export const PRODUCTS: readonly Product[] = [
   },
 
   {
-    id: "STYLE-TROU-001",
+    id: "STYLE-TROU-011",
     handle: "pleated-wide-trouser",
     title: "Pleated Wide Trouser",
     category: "Trousers",
     shape: "trouser",
     price: usd(138),
     summary: "Single-pleat wide leg in a dry-handle cotton twill.",
-    description:
-      "A single forward pleat and a wide, straight leg that breaks once over the shoe. Cut from a dry-handle twill with almost no stretch, so the line stays clean rather than clinging. Side adjusters instead of belt loops.",
+    description: "A single forward pleat and a wide, straight leg that breaks once over the shoe. Cut from a dry-handle twill with almost no stretch, so the line stays clean rather than clinging. Side adjusters instead of belt loops.",
     attributes: {
       fit: "Relaxed",
-      fabric: "100% cotton twill", fabricWeightGsm: 300,
+      fabric: "100% cotton twill",
+      fabricWeightGsm: 300,
       targetGender: "Unisex",
       features: ["Single forward pleat", "Side adjusters", "Unfinished hem", "No stretch"],
     },
     fit: { modelHeightCm: 185, modelSizeWorn: "M", runsTrueToSize: "true" },
     sizeChartId: "chart-trousers",
     colorways: [
-      { id: "tr1-stone", name: "Stone",     hex: "#B0A899", sizes: stock(0, 6, 8, 7, 4, 1) },
-      { id: "tr1-navy",  name: "Deep Navy", hex: "#252F45", sizes: stock(0, 5, 0, 6, 3, 1) },
-      { id: "tr1-black", name: "Ink",       hex: "#1E1E1C", sizes: stock(0, 4, 6, 5, 2, 0) },
+      { id: "pleated-wide-trouser-stone", name: "Stone", hex: "#B0A899", sizes: stock(0, 6, 8, 7, 4, 1) },
+      { id: "pleated-wide-trouser-deep-navy", name: "Deep Navy", hex: "#252F45", sizes: stock(0, 5, 0, 6, 3, 1) },
+      { id: "pleated-wide-trouser-ink", name: "Ink", hex: "#1E1E1C", sizes: stock(0, 4, 6, 5, 2, 0) },
     ],
     care: ["Machine wash cold", "Hang to dry", "Warm iron to set the pleat"],
     details: ["Made in Portugal", "Hem unfinished — tailor to length", "Model wears size M"],
@@ -394,28 +415,28 @@ export const PRODUCTS: readonly Product[] = [
   },
 
   {
-    id: "STYLE-TROU-002",
+    id: "STYLE-TROU-012",
     handle: "tapered-chino",
     title: "Tapered Chino",
     category: "Trousers",
     shape: "trouser",
     price: usd(108),
     summary: "Mid-rise chino with a clean taper below the knee.",
-    description:
-      "A mid-rise chino cut straight through the thigh then tapered from the knee down, so it sits on a shoe without pooling. Garment-dyed cotton with two percent elastane for movement. Finished hem.",
+    description: "A mid-rise chino cut straight through the thigh then tapered from the knee down, so it sits on a shoe without pooling. Garment-dyed cotton with two percent elastane for movement. Finished hem.",
     attributes: {
       fit: "Slim",
-      fabric: "98% cotton, 2% elastane", fabricWeightGsm: 260,
+      fabric: "98% cotton, 2% elastane",
+      fabricWeightGsm: 260,
       targetGender: "Men",
       features: ["Mid rise", "Tapered below knee", "Garment dyed", "Finished hem"],
     },
     fit: { modelHeightCm: 180, modelSizeWorn: "M", runsTrueToSize: "true" },
     sizeChartId: "chart-trousers",
     colorways: [
-      { id: "tr2-khaki",  name: "Khaki",      hex: "#A89873", sizes: stock(4, 10, 12, 9, 5, 2) },
-      { id: "tr2-navy",   name: "Deep Navy",  hex: "#252F45", sizes: stock(3, 8, 10, 8, 4, 1) },
-      { id: "tr2-olive",  name: "Faded Olive",hex: "#6E7355", sizes: stock(2, 6, 0, 6, 3, 0) },
-      { id: "tr2-black",  name: "Ink",        hex: "#1E1E1C", sizes: stock(0, 5, 7, 6, 3, 1) },
+      { id: "tapered-chino-khaki", name: "Khaki", hex: "#A89873", sizes: stock(4, 10, 12, 9, 5, 2) },
+      { id: "tapered-chino-deep-navy", name: "Deep Navy", hex: "#252F45", sizes: stock(3, 8, 10, 8, 4, 1) },
+      { id: "tapered-chino-faded-olive", name: "Faded Olive", hex: "#6E7355", sizes: stock(2, 6, 0, 6, 3, 0) },
+      { id: "tapered-chino-ink", name: "Ink", hex: "#1E1E1C", sizes: stock(0, 5, 7, 6, 3, 1) },
     ],
     care: ["Machine wash cold", "Tumble dry low", "Warm iron"],
     details: ["Made in Portugal", "Garment dyed for depth of colour", "Model wears size M"],

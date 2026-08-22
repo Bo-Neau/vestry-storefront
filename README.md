@@ -6,6 +6,15 @@ research briefs, on a data layer shaped to match Shopify's apparel model.
 Two jobs: a starting template for client builds, and a demo you can show in
 a pitch.
 
+## Editing products
+
+Products come from `src/data/catalogue.ts`, which is **generated** from
+`docs/styles.csv` and `docs/variants.csv`. A client edits the spreadsheets;
+`npm run catalogue:import` validates and rebuilds. Connect Shopify and they
+edit in Shopify admin instead, with no deploy.
+
+Full guide: **[docs/editing-products.md](docs/editing-products.md)**
+
 ## Rebranding
 
 Two files: [`src/config/brand.ts`](src/config/brand.ts) for name, copy and

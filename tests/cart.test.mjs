@@ -16,7 +16,14 @@ import { MAX_QUANTITY_PER_LINE } from "../src/lib/cart/types.ts";
 import { PRODUCTS } from "../src/data/catalogue.ts";
 
 const CREW = "everyday-crew";
-const WHITE = "tee1-white";
+
+/**
+ * Resolved from the catalogue rather than hardcoded. Colourway ids are
+ * derived from the product handle and colour name when the catalogue is
+ * generated from CSV, so a literal id here would break every time the sheets
+ * are re-imported — testing the fixture instead of the behaviour.
+ */
+const WHITE = PRODUCTS.find((p) => p.handle === CREW).colorways[0].id;
 
 /* --- cookie parsing is hostile-input territory -------------------------- */
 
