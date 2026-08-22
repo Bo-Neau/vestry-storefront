@@ -13,19 +13,61 @@ import vercel from "@astrojs/vercel";
  */
 const onVercel = Boolean(process.env.VERCEL);
 
+/** Trimmed value, or undefined when unset/blank. */
+function envValue(key) {
+  const raw = process.env[key];
+  if (typeof raw !== "string") return undefined;
+  const trimmed = raw.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+}
+
+/** Parses a candidate into an absolute origin, or undefined if unusable. */
+function toUrl(candidate, source) {
+  if (!candidate) return undefined;
+  // Host-only values (Vercel supplies these without a scheme) get https.
+  const withScheme = /^https?:\/\//i.test(candidate)
+    ? candidate
+    : `https://${candidate}`;
+  try {
+    return new URL(withScheme).href.replace(/\/$/, "");
+  } catch {
+    console.warn(
+      `[config] ${source} is not a usable URL: ${JSON.stringify(candidate)} — ignoring it.`,
+    );
+    return undefined;
+  }
+}
+
+function resolveSite() {
+  const resolved =
+    toUrl(envValue("SITE_URL"), "SITE_URL") ??
+    toUrl(envValue("VERCEL_PROJECT_PRODUCTION_URL"), "VERCEL_PROJECT_PRODUCTION_URL") ??
+    toUrl(envValue("VERCEL_URL"), "VERCEL_URL");
+
+  if (!resolved) {
+    // Placeholder. Canonical tags and the sitemap will point at it, so set
+    // SITE_URL before a real launch — but the build succeeds either way.
+    return "https://example.com";
+  }
+  return resolved;
+}
+
 export default defineConfig({
   /**
-   * Absolute base URL. Required for canonical tags, Open Graph URLs and the
-   * sitemap — all of which must be absolute, not relative.
+   * Absolute base URL, used for canonical tags, Open Graph and the sitemap.
    *
-   * On Vercel, VERCEL_PROJECT_PRODUCTION_URL is injected automatically, so
-   * preview and production deploys get correct URLs without configuration.
+   * Resolved defensively on purpose. A blank or malformed value here fails the
+   * BUILD with "Invalid URL" and no indication of which variable is at fault —
+   * which is exactly what happened when an empty SITE_URL was added in the
+   * host dashboard. `??` does not catch an empty string, so `site: ""` reached
+   * Astro and the deploy died.
+   *
+   * Now: empty and whitespace values are ignored, a missing protocol is added,
+   * anything unparseable is discarded with a warning, and there is always a
+   * valid fallback. A misconfigured variable degrades to wrong-but-working
+   * URLs rather than a failed deploy.
    */
-  site:
-    process.env.SITE_URL ??
-    (process.env.VERCEL_PROJECT_PRODUCTION_URL
-      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-      : "https://example.com"),
+  site: resolveSite(),
 
   /**
    * On-demand rendering.
