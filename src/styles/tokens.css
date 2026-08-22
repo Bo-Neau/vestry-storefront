@@ -1,27 +1,39 @@
 /* ---------------------------------------------------------------
-   VESTRY — design tokens
-   Reference storefront. Rebrand by editing this file only.
+   Design tokens — the only file that defines colour and type.
+
+   Palette drawn from the collection itself: unbleached canvas and raw
+   silk grounds, a deep warm-black, and the smoke-grey marbling that
+   bleeds down from the shoulders of the painted pieces. The neutrals
+   carry a faint olive cast taken from the concrete the work is shown
+   against, so they read as chosen rather than as default grey.
+
+   There is deliberately no colour "pop". The collection is monochrome
+   and painterly; an accent hue would fight it. What functions as the
+   accent is a cool smoke tone lifted from the artwork.
    --------------------------------------------------------------- */
 :root {
-  /* ground + ink: near-white studio paper, warm-neutral but not cream */
-  --paper:        #FBFBFA;
-  --paper-2:      #FFFFFF;
-  --paper-3:      #F2F2F0;
-  --ink:          #1A1A19;
-  --ink-2:        #55554F;
-  --ink-3:        #85857E;
-  --rule:         #E4E4E0;
-  --rule-2:       #CFCFC9;
+  /* grounds — unbleached canvas, raw silk, concrete */
+  --paper:        #EFEEE8;
+  --paper-2:      #F7F6F2;
+  --paper-3:      #E2E0D7;
 
-  /* single functional accent — links, focus, active state */
-  --accent:       #2C3A4F;
-  --accent-ink:   #FFFFFF;
+  /* ink — the black column gown, warm rather than blue-black */
+  --ink:          #14130F;
+  --ink-2:        #45433B;
+  --ink-3:        #66645A;
 
-  /* semantic stock + fit states (separate from accent by design) */
-  --in-stock:     #2F6B45;
-  --low-stock:    #8A5A08;
-  --out-stock:    #9A9A93;
-  --sale:         #98261F;
+  --rule:         #D9D6CB;
+  --rule-2:       #BFBCAF;
+
+  /* accent — cool smoke from the painted marbling */
+  --accent:       #3B4448;
+  --accent-ink:   #F7F6F2;
+
+  /* semantic states, kept clearly distinct from the accent */
+  --in-stock:     #40613F;
+  --low-stock:    #7A5410;
+  --out-stock:    #8F8C80;
+  --sale:         #7A2A22;
 
   /* type */
   --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -43,37 +55,43 @@
   --radius: 2px;
 }
 
+/* ---------------------------------------------------------------
+   Dark: the gallery the collection was photographed in — warm
+   near-black concrete, raw silk catching a single light source.
+   Not an inversion; the warmth is kept and the smoke accent lifts
+   to a pale pewter so it still reads as part of the artwork.
+   --------------------------------------------------------------- */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --paper:      #131312;
-    --paper-2:    #1A1A19;
-    --paper-3:    #232322;
-    --ink:        #F0F0EC;
-    --ink-2:      #ADADA6;
-    --ink-3:      #7E7E77;
-    --rule:       #2B2B29;
-    --rule-2:     #3B3B38;
-    --accent:     #A8BBD6;
-    --accent-ink: #131312;
-    --in-stock:   #6FBF8B;
-    --low-stock:  #D6A552;
-    --out-stock:  #6B6B65;
-    --sale:       #E88C85;
+    --paper:      #131210;
+    --paper-2:    #1B1A17;
+    --paper-3:    #26241F;
+    --ink:        #EDEAE0;
+    --ink-2:      #ACA89B;
+    --ink-3:      #8D8A7C;
+    --rule:       #2C2A25;
+    --rule-2:     #3D3A33;
+    --accent:     #A3B0B4;
+    --accent-ink: #131210;
+    --in-stock:   #7FA37A;
+    --low-stock:  #C99C4A;
+    --out-stock:  #6C6960;
+    --sale:       #D98A7E;
   }
 }
 :root[data-theme="dark"] {
-  --paper:      #131312;
-  --paper-2:    #1A1A19;
-  --paper-3:    #232322;
-  --ink:        #F0F0EC;
-  --ink-2:      #ADADA6;
-  --ink-3:      #7E7E77;
-  --rule:       #2B2B29;
-  --rule-2:     #3B3B38;
-  --accent:     #A8BBD6;
-  --accent-ink: #131312;
-  --in-stock:   #6FBF8B;
-  --low-stock:  #D6A552;
-  --out-stock:  #6B6B65;
-  --sale:       #E88C85;
+  --paper:      #131210;
+  --paper-2:    #1B1A17;
+  --paper-3:    #26241F;
+  --ink:        #EDEAE0;
+  --ink-2:      #ACA89B;
+  --ink-3:      #8D8A7C;
+  --rule:       #2C2A25;
+  --rule-2:     #3D3A33;
+  --accent:     #A3B0B4;
+  --accent-ink: #131210;
+  --in-stock:   #7FA37A;
+  --low-stock:  #C99C4A;
+  --out-stock:  #6C6960;
+  --sale:       #D98A7E;
 }
