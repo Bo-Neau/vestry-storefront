@@ -1,0 +1,33 @@
+{
+  "name": "storefront",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "check": "astro check",
+    "export:sheets": "node --experimental-strip-types scripts/export-catalogue.mjs",
+    "shopify:doctor": "node --env-file-if-exists=.env --experimental-strip-types scripts/shopify-doctor.mjs",
+    "shopify:setup": "node --env-file-if-exists=.env --experimental-strip-types scripts/shopify-setup.mjs",
+    "shopify:seed": "node --env-file-if-exists=.env --experimental-strip-types scripts/shopify-seed.mjs",
+    "test": "node --experimental-strip-types --test 'tests/*.test.mjs'",
+    "okendo:doctor": "node --env-file-if-exists=.env --experimental-strip-types scripts/okendo-doctor.mjs",
+    "search:index": "node --env-file-if-exists=.env --experimental-strip-types scripts/search-index.mjs",
+    "search:doctor": "node --env-file-if-exists=.env --experimental-strip-types scripts/search-doctor.mjs",
+    "search:keys": "node --env-file-if-exists=.env scripts/search-keys.mjs"
+  },
+  "dependencies": {
+    "@astrojs/node": "^11.1.4",
+    "astro": "^7.2.4"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@types/node": "^26.2.0",
+    "typescript": "^6.0.3"
+  }
+}

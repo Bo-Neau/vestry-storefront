@@ -1,0 +1,119 @@
+---
+import Base from "../layouts/Base.astro";
+import ProductCard from "../components/ProductCard.astro";
+import { loadProducts } from "../data/source.ts";
+import JsonLd from "../components/JsonLd.astro";
+import { organisationSchema, websiteSchema } from "../lib/seo/structured-data.ts";
+
+const { products } = await loadProducts();
+const featured = products.slice(0, 8);
+
+const siteOrigin = (Astro.site ?? new URL("https://vestry.example")).origin;
+---
+
+<Base
+  title="Vestry — Considered basics, honestly sized"
+  description="Organic cotton, merino and linen basics. Every product page tells you the model's height, the size they wore, and how the garment actually fits."
+>
+  <Fragment slot="head">
+    <JsonLd data={organisationSchema(siteOrigin, "Vestry")} />
+    <JsonLd data={websiteSchema(siteOrigin, "Vestry")} />
+  </Fragment>
+  <section class="hero shell">
+    <div class="hero-copy">
+      <p class="label">Autumn 2026</p>
+      <h1>Clothes that tell you how they fit.</h1>
+      <p class="hero-lede">
+        Every product page carries the model's height, the size they wore, and
+        garment measurements laid flat — so you can judge fit before it arrives,
+        not after.
+      </p>
+      <div class="hero-actions">
+        <a href="/collections/all" class="btn">Shop everything</a>
+        <a href="/collections/knitwear" class="btn ghost">New knitwear</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="shell trust">
+    <div class="trust-item">
+      <h2>Measured, not guessed</h2>
+      <p>Garment measurements laid flat for every size, with instructions for taking your own.</p>
+    </div>
+    <div class="trust-item">
+      <h2>Fit data in every review</h2>
+      <p>Reviewers tell you their height and the size they bought. We publish the critical ones too.</p>
+    </div>
+    <div class="trust-item">
+      <h2>Free returns for 30 days</h2>
+      <p>Exchanges are one step. If the size is wrong, swapping it should be easy.</p>
+    </div>
+  </section>
+
+  <section class="shell featured">
+    <div class="featured-head">
+      <h2>Selected styles</h2>
+      <a href="/collections/all" class="more">All twelve styles</a>
+    </div>
+    <ul class="grid">
+      {featured.map((product, i) => (
+        <li><ProductCard product={product} loading={i < 4 ? "eager" : "lazy"} /></li>
+      ))}
+    </ul>
+  </section>
+</Base>
+
+<style>
+  .hero { padding-block: var(--sp-8) var(--sp-7); }
+  .hero-copy { max-width: 48ch; display: flex; flex-direction: column; gap: var(--sp-4); }
+  .hero h1 { font-size: var(--step-4); line-height: 1.04; }
+  .hero-lede { font-size: var(--step-1); color: var(--ink-2); line-height: 1.5; }
+  .hero-actions { display: flex; gap: var(--sp-3); flex-wrap: wrap; margin-top: var(--sp-2); }
+
+  .btn {
+    display: inline-block;
+    background: var(--ink);
+    color: var(--paper);
+    padding: var(--sp-3) var(--sp-5);
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .btn:hover { text-decoration: none; opacity: 0.88; }
+  .btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--rule-2); }
+  .btn.ghost:hover { border-color: var(--ink); }
+
+  .trust {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--sp-5);
+    padding-block: var(--sp-6);
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+  .trust-item { display: flex; flex-direction: column; gap: var(--sp-2); }
+  .trust-item h2 { font-size: var(--step-0); }
+  .trust-item p { font-size: var(--step--1); color: var(--ink-2); }
+
+  .featured { padding-block: var(--sp-7) 0; }
+  .featured-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--sp-4);
+    margin-bottom: var(--sp-5);
+  }
+  .featured-head h2 { font-size: var(--step-2); }
+  .more { font-size: var(--step--1); color: var(--ink-2); }
+
+  .grid {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(216px, 1fr));
+    gap: var(--sp-6) var(--sp-5);
+  }
+  @media (max-width: 860px) {
+    .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--sp-5) var(--sp-4); }
+  }
+</style>

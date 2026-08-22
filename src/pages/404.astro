@@ -1,0 +1,13 @@
+---
+import Base from "../layouts/Base.astro";
+import NotFound from "../components/NotFound.astro";
+
+Astro.response.status = 404;
+---
+<Base
+  title="Page not found — Vestry"
+  description="That page could not be found."
+  noindex
+>
+  <NotFound />
+</Base>

@@ -1,0 +1,168 @@
+---
+/**
+ * Faceted filters as plain anchors.
+ *
+ * No JavaScript: each option is a link that toggles itself in the query
+ * string. That means filters are bookmarkable, shareable, crawlable, work
+ * with the back button, and function before (or without) hydration.
+ *
+ * Counts come from facetOptions(), which is stock-aware — a size only
+ * counts a product if some colourway actually has it to sell.
+ */
+import { toggleHref, countActive } from "../lib/facets.ts";
+import type { FacetKey, FacetOption, FilterState } from "../lib/facets.ts";
+
+interface Props {
+  /** Precomputed by the search seam, so the panel is backend-agnostic. */
+  facets: Record<FacetKey, FacetOption[]>;
+  filters: FilterState;
+  basePath: string;
+  resultCount: number;
+}
+const { facets, filters, basePath, resultCount } = Astro.props;
+
+const GROUPS: { key: FacetKey; label: string }[] = [
+  { key: "size",     label: "Size" },
+  { key: "fit",      label: "Fit" },
+  { key: "neckline", label: "Neckline" },
+  { key: "sleeve",   label: "Sleeve length" },
+  { key: "color",    label: "Colour" },
+  { key: "gender",   label: "Cut for" },
+];
+
+const active = countActive(filters);
+---
+
+<aside class="filters" aria-label="Filter products">
+  <div class="filters-head">
+    <h2 class="label">Filter</h2>
+    <p class="count" aria-live="polite">
+      {resultCount} {resultCount === 1 ? "style" : "styles"}
+    </p>
+  </div>
+
+  {active > 0 && (
+    <a href={basePath} class="clear">Clear all {active}</a>
+  )}
+
+  {GROUPS.map((group) => {
+    const options = facets[group.key] ?? [];
+    if (options.length === 0) return null;
+    return (
+      <section class="group">
+        <h3 class="group-title">{group.label}</h3>
+        <ul class="options">
+          {options.map((opt) => (
+            <li>
+              <a
+                href={toggleHref(basePath, filters, group.key, opt.value)}
+                class:list={["opt", { on: opt.selected, empty: opt.count === 0 }]}
+                aria-pressed={opt.selected ? "true" : "false"}
+                rel="nofollow"
+              >
+                <span class="box" aria-hidden="true"></span>
+                <span class="val">{opt.value}</span>
+                <span class="n">{opt.count}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    );
+  })}
+
+  <p class="honest">
+    Size counts reflect what is in stock right now, not what the style was
+    made in.
+  </p>
+</aside>
+
+<style>
+  .filters {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-5);
+    font-size: var(--step--1);
+  }
+  .filters-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--sp-3);
+    padding-bottom: var(--sp-3);
+    border-bottom: 1px solid var(--rule);
+  }
+  .count { font-family: var(--mono); font-size: 0.6875rem; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+
+  .clear {
+    align-self: flex-start;
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+  }
+
+  .group { display: flex; flex-direction: column; gap: var(--sp-3); }
+  .group-title {
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-3);
+    font-weight: 500;
+  }
+  .options { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+
+  .opt {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: 5px 0;
+    color: var(--ink-2);
+    min-height: 44px;
+  }
+  .opt:hover { color: var(--ink); text-decoration: none; }
+  .opt:hover .box { border-color: var(--ink-2); }
+
+  .box {
+    width: 13px; height: 13px;
+    flex: 0 0 auto;
+    border: 1px solid var(--rule-2);
+    border-radius: 1px;
+    background: var(--paper-2);
+    position: relative;
+  }
+  .opt.on .box { background: var(--ink); border-color: var(--ink); }
+  .opt.on .box::after {
+    content: "";
+    position: absolute;
+    left: 3px; top: 0px;
+    width: 5px; height: 9px;
+    border: solid var(--paper);
+    border-width: 0 1.5px 1.5px 0;
+    transform: rotate(40deg);
+  }
+  .opt.on { color: var(--ink); font-weight: 600; }
+
+  .val { flex: 1 1 auto; }
+  .n {
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Zero-result options stay visible but clearly inert-looking, so the
+     shopper can see the dead end before clicking it. */
+  .opt.empty { color: var(--out-stock); }
+  .opt.empty .n { color: var(--out-stock); }
+
+  .honest {
+    font-size: 0.6875rem;
+    line-height: 1.45;
+    color: var(--ink-3);
+    border-top: 1px solid var(--rule);
+    padding-top: var(--sp-3);
+  }
+</style>

@@ -1,0 +1,79 @@
+/* ---------------------------------------------------------------
+   VESTRY — design tokens
+   Reference storefront. Rebrand by editing this file only.
+   --------------------------------------------------------------- */
+:root {
+  /* ground + ink: near-white studio paper, warm-neutral but not cream */
+  --paper:        #FBFBFA;
+  --paper-2:      #FFFFFF;
+  --paper-3:      #F2F2F0;
+  --ink:          #1A1A19;
+  --ink-2:        #55554F;
+  --ink-3:        #85857E;
+  --rule:         #E4E4E0;
+  --rule-2:       #CFCFC9;
+
+  /* single functional accent — links, focus, active state */
+  --accent:       #2C3A4F;
+  --accent-ink:   #FFFFFF;
+
+  /* semantic stock + fit states (separate from accent by design) */
+  --in-stock:     #2F6B45;
+  --low-stock:    #8A5A08;
+  --out-stock:    #9A9A93;
+  --sale:         #98261F;
+
+  /* type */
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* scale */
+  --step--1: 0.8125rem;
+  --step-0:  0.9375rem;
+  --step-1:  1.0625rem;
+  --step-2:  1.375rem;
+  --step-3:  1.875rem;
+  --step-4:  clamp(2.25rem, 5vw, 3.25rem);
+
+  /* space */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 24px; --sp-6: 32px; --sp-7: 48px; --sp-8: 72px;
+
+  --maxw: 1320px;
+  --radius: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper:      #131312;
+    --paper-2:    #1A1A19;
+    --paper-3:    #232322;
+    --ink:        #F0F0EC;
+    --ink-2:      #ADADA6;
+    --ink-3:      #7E7E77;
+    --rule:       #2B2B29;
+    --rule-2:     #3B3B38;
+    --accent:     #A8BBD6;
+    --accent-ink: #131312;
+    --in-stock:   #6FBF8B;
+    --low-stock:  #D6A552;
+    --out-stock:  #6B6B65;
+    --sale:       #E88C85;
+  }
+}
+:root[data-theme="dark"] {
+  --paper:      #131312;
+  --paper-2:    #1A1A19;
+  --paper-3:    #232322;
+  --ink:        #F0F0EC;
+  --ink-2:      #ADADA6;
+  --ink-3:      #7E7E77;
+  --rule:       #2B2B29;
+  --rule-2:     #3B3B38;
+  --accent:     #A8BBD6;
+  --accent-ink: #131312;
+  --in-stock:   #6FBF8B;
+  --low-stock:  #D6A552;
+  --out-stock:  #6B6B65;
+  --sale:       #E88C85;
+}

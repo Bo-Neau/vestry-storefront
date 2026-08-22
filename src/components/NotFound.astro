@@ -1,0 +1,72 @@
+---
+/**
+ * Shared 404 body.
+ *
+ * Used by /404 and by dynamic routes that resolve to nothing, so a missing
+ * product and a missing URL give the same helpful page instead of a bare
+ * status code.
+ *
+ * In fashion a 404 is often a discontinued style rather than a typo, so the
+ * copy points at the range instead of implying the shopper made a mistake.
+ */
+interface Props {
+  heading?: string;
+  message?: string;
+}
+const {
+  heading = "We can't find that page",
+  message = "It may have moved, or the piece may no longer be in the range.",
+} = Astro.props;
+
+const LINKS = [
+  { href: "/collections/all", label: "Shop everything" },
+  { href: "/collections/t-shirts", label: "T-shirts" },
+  { href: "/collections/shirts", label: "Shirts" },
+  { href: "/collections/knitwear", label: "Knitwear" },
+  { href: "/collections/trousers", label: "Trousers" },
+];
+---
+
+<div class="shell nf">
+  <p class="label">Error 404</p>
+  <h1>{heading}</h1>
+  <p class="nf-msg">{message}</p>
+
+  <nav aria-label="Suggested pages">
+    <ul class="nf-links">
+      {LINKS.map((l) => (
+        <li><a href={l.href}>{l.label}</a></li>
+      ))}
+    </ul>
+  </nav>
+</div>
+
+<style>
+  .nf {
+    padding-block: var(--sp-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-4);
+    align-items: flex-start;
+    max-width: 54ch;
+  }
+  h1 { font-size: var(--step-3); }
+  .nf-msg { color: var(--ink-2); }
+  .nf-links {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-3) var(--sp-5);
+    margin-top: var(--sp-3);
+  }
+  .nf-links a {
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    padding: var(--sp-2) 0;
+    display: inline-block;
+    border-bottom: 1px solid var(--rule-2);
+  }
+  .nf-links a:hover { border-color: var(--ink); text-decoration: none; }
+</style>

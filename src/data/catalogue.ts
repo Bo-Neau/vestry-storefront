@@ -1,0 +1,433 @@
+import type { Product, Review, Size, SizeStock } from "./schema.ts";
+
+/* --- tiny builders to keep the catalogue readable ---------------- */
+
+const usd = (dollars: number) => ({ amount: dollars * 100, currency: "USD" as const });
+
+/** Stock per size, in SIZE_ORDER. A 0 means genuinely sold out. */
+const stock = (xs: number, s: number, m: number, l: number, xl: number, xxl: number): SizeStock[] => [
+  { size: "XS", inventory: xs }, { size: "S", inventory: s },
+  { size: "M", inventory: m },   { size: "L", inventory: l },
+  { size: "XL", inventory: xl }, { size: "XXL", inventory: xxl },
+];
+
+let reviewSeq = 0;
+const rev = (
+  rating: 1 | 2 | 3 | 4 | 5, title: string, body: string, author: string,
+  date: string, heightBand: string, sizePurchased: Size,
+  fitFeedback: "small" | "true" | "large",
+): Review => ({
+  id: `r${++reviewSeq}`, rating, title, body, author,
+  verified: true, date, heightBand, sizePurchased, fitFeedback,
+});
+
+/* ---------------------------------------------------------------- */
+
+export const PRODUCTS: readonly Product[] = [
+  {
+    id: "STYLE-TEE-001",
+    handle: "everyday-crew",
+    title: "The Everyday Crew",
+    category: "T-shirts",
+    shape: "tee",
+    price: usd(38),
+    summary: "Mid-weight organic cotton, cut to sit close without clinging.",
+    description:
+      "Our baseline tee, revised over four seasons. Combed organic cotton at 180gsm — heavy enough to hold its shape through the wash, light enough to layer under a shirt. The neck rib is knitted on the same machine as the body so it recovers instead of stretching out.",
+    attributes: {
+      fit: "Regular", neckline: "Crew", sleeveLength: "Short",
+      fabric: "100% organic cotton", fabricWeightGsm: 180,
+      targetGender: "Unisex",
+      features: ["Pre-shrunk", "Self-fabric neck rib", "Single-needle hem"],
+    },
+    fit: { modelHeightCm: 185, modelSizeWorn: "L", runsTrueToSize: "true" },
+    sizeChartId: "chart-tops",
+    colorways: [
+      { id: "tee1-white", name: "Chalk",           hex: "#F2F0EA", sizes: stock(6, 14, 4, 11, 5, 2),
+        // One colourway carries a real file so the photography path is
+        // exercised alongside the placeholder renderer. Replace all of these
+        // with the client's shoot; nothing else changes.
+        images: [{ src: "/sample/everyday-crew-chalk-front.png", alt: "The Everyday Crew in Chalk, front view", width: 1200, height: 1560, view: "front" }] },
+      { id: "tee1-black", name: "Ink",             hex: "#1E1E1C", sizes: stock(4, 9, 12, 8, 6, 3) },
+      { id: "tee1-oat",   name: "Heathered Oat",   hex: "#C9BFAB", hexAlt: "#DCD4C4", sizes: stock(0, 5, 7, 4, 0, 0) },
+      { id: "tee1-slate", name: "Slate",           hex: "#5A6068", sizes: stock(3, 8, 9, 7, 4, 1) },
+      { id: "tee1-olive", name: "Faded Olive",     hex: "#6E7355", sizes: stock(2, 4, 0, 6, 3, 0) },
+    ],
+    care: ["Machine wash cold, like colours", "Tumble dry low", "Warm iron if needed", "Do not bleach"],
+    details: ["Made in Portugal", "OCS certified organic cotton", "Model wears size L"],
+    reviews: [
+      rev(5, "Replaced my whole drawer", "Bought two, came back for four more. Holds shape after a dozen washes, which is more than I can say for the ones I was buying before.", "Daniel R.", "2026-07-14", "5'10\"–6'0\"", "L", "true"),
+      rev(5, "The neck actually recovers", "This is the detail nobody else gets right. Six weeks in and the collar still sits flat.", "Priya M.", "2026-06-28", "5'4\"–5'6\"", "S", "true"),
+      rev(4, "Good, slightly short in the body", "Fit through the chest is spot on but I'd like another inch of length. Fine tucked in.", "Marcus T.", "2026-06-02", "6'1\" or above", "L", "true"),
+      rev(4, "Chalk is more cream than white", "Not a complaint exactly, but worth knowing if you're matching it to something. Quality is excellent.", "Sena K.", "2026-05-19", "5'7\"–5'9\"", "M", "true"),
+      rev(3, "Fine but not remarkable", "It's a well-made tee. At this price I expected to be more impressed than I am.", "Tom B.", "2026-05-03", "5'10\"–6'0\"", "M", "true"),
+      rev(2, "Shrank more than 'pre-shrunk' suggests", "Lost close to an inch of length in the first wash despite following the care label. Sizing up would have helped.", "Alina V.", "2026-04-21", "5'4\"–5'6\"", "S", "small"),
+    ],
+  },
+
+  {
+    id: "STYLE-TEE-002",
+    handle: "boxy-pocket-tee",
+    title: "Boxy Pocket Tee",
+    category: "T-shirts",
+    shape: "tee",
+    price: usd(48),
+    summary: "Heavy 220gsm jersey with a deliberately square cut.",
+    description:
+      "A wider body and a dropped shoulder, cut from 220gsm loopback jersey that stands away from the body. The patch pocket is set on the bias so it lies flat instead of curling. Sized generously — if you want a closer fit, take a size down.",
+    attributes: {
+      fit: "Relaxed", neckline: "Crew", sleeveLength: "Short",
+      fabric: "100% heavyweight cotton", fabricWeightGsm: 220,
+      targetGender: "Unisex",
+      features: ["Dropped shoulder", "Bias-set patch pocket", "Twin-needle hem"],
+    },
+    fit: { modelHeightCm: 178, modelSizeWorn: "M", runsTrueToSize: "large" },
+    sizeChartId: "chart-tops",
+    colorways: [
+      { id: "tee2-sand",  name: "Sand",        hex: "#D6C9B0", sizes: stock(0, 7, 0, 6, 3, 0) },
+      { id: "tee2-black", name: "Ink",         hex: "#1E1E1C", sizes: stock(0, 6, 0, 9, 4, 0) },
+      { id: "tee2-rust",  name: "Burnt Rust",  hex: "#9A5A3C", sizes: stock(0, 3, 0, 4, 2, 0) },
+    ],
+    care: ["Machine wash cold", "Dry flat to preserve the shape", "Do not tumble dry"],
+    details: ["Made in Portugal", "Garment washed", "Model wears size M"],
+    reviews: [
+      rev(5, "Exactly the boxy cut I wanted", "Most 'relaxed' tees are just bigger all over. This one is actually cut square. Sized down to M and it's perfect.", "Jonah L.", "2026-07-02", "5'10\"–6'0\"", "M", "large"),
+      rev(4, "Runs big — size down", "Ordered L as usual and it was enormous. The M is right. Fabric is genuinely lovely.", "Rae C.", "2026-06-11", "5'7\"–5'9\"", "L", "large"),
+      rev(4, "Heavy in a good way", "Feels like it'll last years. Takes a while to dry, which the care label warns about.", "Idris N.", "2026-05-27", "6'1\" or above", "XL", "large"),
+      rev(2, "Too cropped for me", "The boxy cut means it's short. On a taller frame it reads more cropped than the photos suggest.", "Peter H.", "2026-05-08", "6'1\" or above", "L", "large"),
+    ],
+  },
+
+  {
+    id: "STYLE-TEE-003",
+    handle: "long-sleeve-henley",
+    title: "Long-Sleeve Henley",
+    category: "T-shirts",
+    shape: "tee",
+    price: usd(62),
+    compareAtPrice: usd(78),
+    summary: "Waffle-knit henley with a four-button placket.",
+    description:
+      "Waffle-knit cotton with a little more give than a flat jersey, so it works as a mid-layer without pulling. Four corozo buttons on a reinforced placket. Cuffs are ribbed deep enough to push up and stay put.",
+    attributes: {
+      fit: "Regular", neckline: "Henley", sleeveLength: "Long",
+      fabric: "94% cotton, 6% elastane", fabricWeightGsm: 200,
+      targetGender: "Men",
+      features: ["Corozo buttons", "Reinforced placket", "Deep ribbed cuffs"],
+    },
+    fit: { modelHeightCm: 183, modelSizeWorn: "M", runsTrueToSize: "true" },
+    sizeChartId: "chart-tops",
+    colorways: [
+      { id: "tee3-oat",   name: "Heathered Oat", hex: "#C9BFAB", hexAlt: "#DCD4C4", sizes: stock(3, 8, 10, 7, 4, 0) },
+      { id: "tee3-navy",  name: "Deep Navy",     hex: "#252F45", sizes: stock(2, 6, 9, 8, 5, 0) },
+      { id: "tee3-clay",  name: "Clay",          hex: "#A8735C", sizes: stock(0, 2, 4, 3, 0, 0) },
+    ],
+    care: ["Machine wash cold", "Tumble dry low", "Do not iron the placket directly"],
+    details: ["Made in Portugal", "Corozo nut buttons", "Model wears size M"],
+    reviews: [
+      rev(5, "Best henley I've owned", "The placket doesn't gape, which is the whole problem with henleys. Worth the money even before the discount.", "Callum S.", "2026-07-20", "5'10\"–6'0\"", "M", "true"),
+      rev(5, "Great under a jacket", "Waffle texture gives it more presence than a plain long sleeve. Sleeve length is generous.", "Wei Z.", "2026-06-30", "5'7\"–5'9\"", "S", "true"),
+      rev(4, "Slight pilling at the cuffs", "After two months there's a bit of pilling where the cuffs rub. Otherwise excellent.", "Owen F.", "2026-06-09", "6'1\" or above", "L", "true"),
+      rev(3, "Elastane makes it warmer than expected", "Comfortable but I run hot in it. More of a winter piece than the listing suggests.", "Tobias G.", "2026-05-15", "5'10\"–6'0\"", "M", "true"),
+    ],
+  },
+
+  {
+    id: "STYLE-TEE-004",
+    handle: "ribbed-tank",
+    title: "Ribbed Tank",
+    category: "T-shirts",
+    shape: "tee",
+    price: usd(32),
+    summary: "Fine-gauge rib with a close, high-armhole cut.",
+    description:
+      "A 2x1 rib knitted fine enough to layer invisibly. The armhole sits high and the strap is cut narrow, so it disappears under a shirt rather than showing at the shoulder.",
+    attributes: {
+      fit: "Slim", neckline: "Crew", sleeveLength: "Sleeveless",
+      fabric: "95% cotton, 5% elastane", fabricWeightGsm: 160,
+      targetGender: "Unisex",
+      features: ["2x1 rib", "High armhole", "Narrow strap"],
+    },
+    fit: { modelHeightCm: 172, modelSizeWorn: "S", runsTrueToSize: "small" },
+    sizeChartId: "chart-tops",
+    colorways: [
+      { id: "tee4-white", name: "Chalk", hex: "#F2F0EA", sizes: stock(8, 12, 10, 6, 0, 0) },
+      { id: "tee4-black", name: "Ink",   hex: "#1E1E1C", sizes: stock(7, 11, 9, 5, 0, 0) },
+    ],
+    care: ["Machine wash cold", "Dry flat", "Do not tumble dry"],
+    details: ["Made in Portugal", "Designed to layer", "Model wears size S"],
+    reviews: [
+      rev(4, "Genuinely invisible under a shirt", "That's what I bought it for and it delivers. Rib is fine and doesn't show through.", "Nadia P.", "2026-07-08", "5'4\"–5'6\"", "S", "small"),
+      rev(4, "Take a size up", "The slim cut is very slim. My usual S was tight across the chest; M is right.", "Leo A.", "2026-06-14", "5'7\"–5'9\"", "S", "small"),
+      rev(3, "Rides up a little", "Fit is good but it creeps up over the day if I'm moving around.", "Fern D.", "2026-05-22", "5'4\"–5'6\"", "XS", "small"),
+    ],
+  },
+
+  {
+    id: "STYLE-SHIRT-001",
+    handle: "oxford-button-down",
+    title: "Oxford Button-Down",
+    category: "Shirts",
+    shape: "shirt",
+    price: usd(98),
+    summary: "Washed oxford cotton with an unfused, roll-friendly collar.",
+    description:
+      "Woven oxford cotton, garment-washed so it arrives soft instead of stiff. The collar is unfused — no interlining — so it rolls naturally rather than standing up like a board. Box pleat at the back for movement across the shoulders.",
+    attributes: {
+      fit: "Regular", neckline: "Collared", sleeveLength: "Long",
+      fabric: "100% cotton oxford", fabricWeightGsm: 140,
+      targetGender: "Men",
+      features: ["Unfused collar", "Box pleat back", "Mother-of-pearl buttons", "Garment washed"],
+    },
+    fit: { modelHeightCm: 185, modelSizeWorn: "L", runsTrueToSize: "true" },
+    sizeChartId: "chart-tops",
+    colorways: [
+      { id: "sh1-white",  name: "Chalk",        hex: "#F2F0EA", sizes: stock(4, 10, 12, 9, 5, 2) },
+      { id: "sh1-blue",   name: "Oxford Blue",  hex: "#8FA6C4", sizes: stock(3, 9, 0, 8, 4, 1) },
+      { id: "sh1-stripe", name: "Blue Stripe",  hex: "#B9C9DC", hexAlt: "#F2F0EA", sizes: stock(2, 6, 7, 5, 3, 0) },
+      { id: "sh1-sage",   name: "Pale Sage",    hex: "#B4BFA8", sizes: stock(0, 4, 5, 3, 0, 0) },
+    ],
+    care: ["Machine wash cold", "Hang to dry", "Warm iron while slightly damp"],
+    details: ["Made in Portugal", "Mother-of-pearl buttons", "Model wears size L"],
+    reviews: [
+      rev(5, "The collar roll is right", "This is the whole reason to buy an unfused oxford and they've nailed it. Sits properly with or without a tie.", "Henry O.", "2026-07-25", "6'1\" or above", "L", "true"),
+      rev(5, "Soft from the first wear", "No break-in period at all. The garment wash makes a real difference.", "Sam W.", "2026-07-01", "5'10\"–6'0\"", "M", "true"),
+      rev(4, "Sleeves slightly long", "Body fits well, sleeves need a small alteration on my arms. Standard problem for me.", "Raj K.", "2026-06-18", "5'7\"–5'9\"", "M", "true"),
+      rev(4, "Great shirt, buttons are delicate", "Lost a button to a washing machine within a month. Mother-of-pearl is lovely but fragile.", "Elise B.", "2026-05-30", "5'4\"–5'6\"", "S", "true"),
+      rev(2, "Wrinkles badly", "Unfused and unironed means it looks rumpled by lunchtime. Beautiful fabric, high maintenance.", "Gordon M.", "2026-05-11", "5'10\"–6'0\"", "L", "true"),
+    ],
+  },
+
+  {
+    id: "STYLE-SHIRT-002",
+    handle: "camp-collar-shirt",
+    title: "Camp Collar Shirt",
+    category: "Shirts",
+    shape: "shirt",
+    price: usd(88),
+    summary: "Open-collar short sleeve in a loose cotton-linen weave.",
+    description:
+      "A cotton-linen blend woven loosely enough to move air. The camp collar is cut to sit open and flat without gaping. Straight hem, so it works untucked without looking like a tucked shirt that escaped.",
+    attributes: {
+      fit: "Relaxed", neckline: "Collared", sleeveLength: "Short",
+      fabric: "55% linen, 45% cotton", fabricWeightGsm: 150,
+      targetGender: "Unisex",
+      features: ["Camp collar", "Straight hem", "Chest patch pocket"],
+    },
+    fit: { modelHeightCm: 180, modelSizeWorn: "M", runsTrueToSize: "true" },
+    sizeChartId: "chart-tops",
+    colorways: [
+      { id: "sh2-ecru",  name: "Ecru",       hex: "#E4DCC8", sizes: stock(0, 7, 0, 6, 3, 0) },
+      { id: "sh2-teal",  name: "Faded Teal", hex: "#547A78", sizes: stock(0, 5, 0, 5, 2, 0) },
+      { id: "sh2-black", name: "Ink",        hex: "#1E1E1C", sizes: stock(0, 3, 0, 4, 2, 0) },
+    ],
+    care: ["Machine wash cold", "Hang to dry", "Cool iron"],
+    details: ["Made in Portugal", "European linen", "Model wears size M"],
+    reviews: [
+      rev(5, "Perfect summer shirt", "Cool, drapes well, collar stays put. Wore it every week in August.", "Mateo R.", "2026-07-18", "5'10\"–6'0\"", "M", "true"),
+      rev(4, "Linen creases, as linen does", "No surprises if you've worn linen before. If you haven't, know what you're buying.", "Jo T.", "2026-06-25", "5'4\"–5'6\"", "S", "true"),
+      rev(4, "Collar sits beautifully", "A lot of camp collars gape at the neck. This one doesn't.", "Ana L.", "2026-06-04", "5'7\"–5'9\"", "M", "true"),
+    ],
+  },
+
+  {
+    id: "STYLE-SHIRT-003",
+    handle: "cotton-overshirt",
+    title: "Cotton Overshirt",
+    category: "Shirts",
+    shape: "shirt",
+    price: usd(148),
+    summary: "Shirt-jacket in a dense cotton twill, cut to layer over knitwear.",
+    description:
+      "Somewhere between a shirt and a light jacket. Dense cotton twill with a slight peach finish, cut wide enough through the chest and armhole to go over a crew-neck sweater without pulling. Two flap pockets, horn buttons.",
+    attributes: {
+      fit: "Oversized", neckline: "Collared", sleeveLength: "Long",
+      fabric: "100% cotton twill", fabricWeightGsm: 280,
+      targetGender: "Unisex",
+      features: ["Horn buttons", "Twin flap pockets", "Wide armhole", "Peached finish"],
+    },
+    fit: { modelHeightCm: 183, modelSizeWorn: "M", runsTrueToSize: "large" },
+    sizeChartId: "chart-tops",
+    colorways: [
+      { id: "sh3-stone", name: "Stone",      hex: "#B0A899", sizes: stock(0, 6, 8, 6, 3, 1) },
+      { id: "sh3-brown", name: "Dark Cocoa", hex: "#4A3A31", sizes: stock(0, 4, 6, 5, 2, 0) },
+    ],
+    care: ["Machine wash cold", "Hang to dry", "Warm iron"],
+    details: ["Made in Portugal", "Genuine horn buttons", "Model wears size M"],
+    reviews: [
+      rev(5, "Wears three seasons", "Over a tee in spring, over a sweater in autumn. Cut is generous enough that layering actually works.", "Bruno C.", "2026-07-22", "5'10\"–6'0\"", "M", "large"),
+      rev(4, "Sizes very generously", "I'm normally L and the M is roomy. Read the fit note — they're not exaggerating.", "Kit S.", "2026-06-16", "5'7\"–5'9\"", "M", "large"),
+      rev(4, "Heavy but not stiff", "The peached finish stops it feeling like workwear canvas. Softens further with washing.", "Yusuf A.", "2026-05-28", "6'1\" or above", "L", "large"),
+    ],
+  },
+
+  {
+    id: "STYLE-KNIT-001",
+    handle: "merino-crew",
+    title: "Merino Crew Neck",
+    category: "Knitwear",
+    shape: "knit",
+    price: usd(158),
+    summary: "Fine-gauge extra-fine merino, fully fashioned.",
+    description:
+      "Extra-fine merino at a 14-gauge knit — thin enough for a shirt underneath, warm enough on its own. Fully fashioned, meaning the panels are knitted to shape rather than cut from a sheet, so the shoulder seams sit where your shoulders are.",
+    attributes: {
+      fit: "Regular", neckline: "Crew", sleeveLength: "Long",
+      fabric: "100% extra-fine merino wool", fabricWeightGsm: 240,
+      targetGender: "Unisex",
+      features: ["14-gauge knit", "Fully fashioned", "Ribbed cuffs and welt"],
+    },
+    fit: { modelHeightCm: 185, modelSizeWorn: "L", runsTrueToSize: "true" },
+    sizeChartId: "chart-knitwear",
+    colorways: [
+      { id: "kn1-navy",    name: "Deep Navy",     hex: "#252F45", sizes: stock(3, 8, 11, 8, 4, 2) },
+      { id: "kn1-grey",    name: "Mid Grey Melange", hex: "#8A8A85", hexAlt: "#A5A5A0", sizes: stock(2, 7, 0, 7, 3, 1) },
+      { id: "kn1-camel",   name: "Camel",         hex: "#B08A5C", sizes: stock(1, 5, 7, 5, 2, 0) },
+      { id: "kn1-forest",  name: "Forest",        hex: "#33463A", sizes: stock(0, 3, 5, 4, 0, 0) },
+    ],
+    care: ["Hand wash cool or wool cycle", "Dry flat, away from heat", "Do not tumble dry", "Store folded, not hung"],
+    details: ["Knitted in Scotland", "Mulesing-free merino", "Model wears size L"],
+    reviews: [
+      rev(5, "Worth every penny", "Fully fashioned makes a visible difference in how it hangs. Third season and no pilling.", "Alistair D.", "2026-07-26", "6'1\" or above", "L", "true"),
+      rev(5, "Thin but warm", "Wears under a jacket without bulk. Exactly what I wanted from a merino crew.", "Hana I.", "2026-07-05", "5'4\"–5'6\"", "S", "true"),
+      rev(5, "Colour is accurate", "Navy is a proper deep navy, not a washed-out blue. Photos are honest.", "Ravi S.", "2026-06-21", "5'10\"–6'0\"", "M", "true"),
+      rev(4, "Needs careful washing", "No shortcuts — it's wool. Followed the label and it's held up perfectly.", "Greta N.", "2026-06-02", "5'7\"–5'9\"", "M", "true"),
+      rev(3, "Snagged easily", "Fine gauge means it catches. Mine picked up a pull on a bag zip within weeks.", "Felix H.", "2026-05-14", "5'10\"–6'0\"", "L", "true"),
+    ],
+  },
+
+  {
+    id: "STYLE-KNIT-002",
+    handle: "fisherman-cable-knit",
+    title: "Fisherman Cable Knit",
+    category: "Knitwear",
+    shape: "knit",
+    price: usd(198),
+    summary: "Heavy undyed wool in a traditional cable and honeycomb pattern.",
+    description:
+      "Knitted in undyed wool that keeps its natural lanolin, so it sheds light rain. Traditional cable panels flanked by honeycomb stitch. Substantial — this is an outer layer in all but the coldest weather.",
+    attributes: {
+      fit: "Relaxed", neckline: "Crew", sleeveLength: "Long",
+      fabric: "100% undyed British wool", fabricWeightGsm: 480,
+      targetGender: "Unisex",
+      features: ["Hand-framed cables", "Undyed yarn", "Saddle shoulder"],
+    },
+    fit: { modelHeightCm: 180, modelSizeWorn: "M", runsTrueToSize: "large" },
+    sizeChartId: "chart-knitwear",
+    colorways: [
+      { id: "kn2-natural", name: "Undyed Natural", hex: "#DBD2BE", sizes: stock(0, 4, 6, 5, 2, 1) },
+      { id: "kn2-moss",    name: "Moss",           hex: "#6A6B4E", sizes: stock(0, 2, 4, 3, 1, 0) },
+    ],
+    care: ["Hand wash cool only", "Dry flat", "Do not wring", "Store folded"],
+    details: ["Hand-framed in Ireland", "Undyed, minimally processed wool", "Model wears size M"],
+    reviews: [
+      rev(5, "A lifetime piece", "Heavy, warm, beautifully made. The kind of thing you hand on rather than replace.", "Niamh B.", "2026-07-12", "5'4\"–5'6\"", "S", "large"),
+      rev(4, "Very warm — and very big", "Sized down and still roomy. Too warm for indoors, perfect outside.", "Duncan F.", "2026-06-27", "5'10\"–6'0\"", "M", "large"),
+      rev(3, "Scratchy at first", "Undyed wool is less processed, which means it's coarser. Softens after a few wears but be ready for it.", "Mira J.", "2026-05-31", "5'7\"–5'9\"", "M", "large"),
+    ],
+  },
+
+  {
+    id: "STYLE-KNIT-003",
+    handle: "lambswool-v-neck",
+    title: "Lambswool V-Neck",
+    category: "Knitwear",
+    shape: "knit",
+    price: usd(128),
+    compareAtPrice: usd(160),
+    summary: "Close-fitting lambswool with a shallow V and a fine rib.",
+    description:
+      "Cut close, with a shallow V that shows a shirt collar without exposing much chest. Lambswool spun in the Scottish Borders and knitted at a 12-gauge, so it holds a defined rib at the cuff and welt.",
+    attributes: {
+      fit: "Slim", neckline: "V-neck", sleeveLength: "Long",
+      fabric: "100% lambswool", fabricWeightGsm: 260,
+      targetGender: "Men",
+      features: ["12-gauge knit", "Shallow V", "Defined rib"],
+    },
+    fit: { modelHeightCm: 183, modelSizeWorn: "M", runsTrueToSize: "small" },
+    sizeChartId: "chart-knitwear",
+    colorways: [
+      { id: "kn3-charcoal", name: "Charcoal",  hex: "#3D3D3C", sizes: stock(4, 9, 0, 6, 3, 0) },
+      { id: "kn3-oatmeal",  name: "Oatmeal",   hex: "#CDC2A8", sizes: stock(3, 7, 0, 5, 2, 0) },
+      { id: "kn3-burgundy", name: "Burgundy",  hex: "#6B2A32", sizes: stock(0, 4, 0, 3, 1, 0) },
+    ],
+    care: ["Wool cycle or hand wash cool", "Dry flat", "Do not tumble dry"],
+    details: ["Knitted in Scotland", "Scottish Borders lambswool", "Model wears size M"],
+    reviews: [
+      rev(4, "Take a size up", "Slim means slim. I'm usually M and needed L for any comfort over a shirt.", "Edward P.", "2026-07-16", "5'10\"–6'0\"", "M", "small"),
+      rev(4, "V is the right depth", "Shows a collar and nothing else. Hard to find.", "Thomas Q.", "2026-06-19", "5'7\"–5'9\"", "S", "small"),
+      rev(3, "Snug across the shoulders", "Fine standing still, tight reaching forward. Would size up again.", "Louis M.", "2026-05-25", "6'1\" or above", "L", "small"),
+    ],
+  },
+
+  {
+    id: "STYLE-TROU-001",
+    handle: "pleated-wide-trouser",
+    title: "Pleated Wide Trouser",
+    category: "Trousers",
+    shape: "trouser",
+    price: usd(138),
+    summary: "Single-pleat wide leg in a dry-handle cotton twill.",
+    description:
+      "A single forward pleat and a wide, straight leg that breaks once over the shoe. Cut from a dry-handle twill with almost no stretch, so the line stays clean rather than clinging. Side adjusters instead of belt loops.",
+    attributes: {
+      fit: "Relaxed",
+      fabric: "100% cotton twill", fabricWeightGsm: 300,
+      targetGender: "Unisex",
+      features: ["Single forward pleat", "Side adjusters", "Unfinished hem", "No stretch"],
+    },
+    fit: { modelHeightCm: 185, modelSizeWorn: "M", runsTrueToSize: "true" },
+    sizeChartId: "chart-trousers",
+    colorways: [
+      { id: "tr1-stone", name: "Stone",     hex: "#B0A899", sizes: stock(0, 6, 8, 7, 4, 1) },
+      { id: "tr1-navy",  name: "Deep Navy", hex: "#252F45", sizes: stock(0, 5, 0, 6, 3, 1) },
+      { id: "tr1-black", name: "Ink",       hex: "#1E1E1C", sizes: stock(0, 4, 6, 5, 2, 0) },
+    ],
+    care: ["Machine wash cold", "Hang to dry", "Warm iron to set the pleat"],
+    details: ["Made in Portugal", "Hem unfinished — tailor to length", "Model wears size M"],
+    reviews: [
+      rev(5, "Cut is excellent", "The pleat sits flat instead of pulling open, which is the whole test. Had them hemmed and they're perfect.", "Simone V.", "2026-07-24", "5'7\"–5'9\"", "M", "true"),
+      rev(4, "Hem is genuinely unfinished", "Worth knowing you'll pay a tailor before you can wear them. Fit through the seat is very good.", "Andre W.", "2026-06-23", "5'10\"–6'0\"", "M", "true"),
+      rev(4, "Stiff at first", "300gsm with no stretch feels rigid for a week, then relaxes into shape.", "Bea L.", "2026-06-01", "5'4\"–5'6\"", "S", "true"),
+      rev(2, "Waist ran small for me", "Sizing chart said M and the M didn't fasten comfortably. Exchanged for L.", "Karl T.", "2026-05-09", "5'10\"–6'0\"", "M", "small"),
+    ],
+  },
+
+  {
+    id: "STYLE-TROU-002",
+    handle: "tapered-chino",
+    title: "Tapered Chino",
+    category: "Trousers",
+    shape: "trouser",
+    price: usd(108),
+    summary: "Mid-rise chino with a clean taper below the knee.",
+    description:
+      "A mid-rise chino cut straight through the thigh then tapered from the knee down, so it sits on a shoe without pooling. Garment-dyed cotton with two percent elastane for movement. Finished hem.",
+    attributes: {
+      fit: "Slim",
+      fabric: "98% cotton, 2% elastane", fabricWeightGsm: 260,
+      targetGender: "Men",
+      features: ["Mid rise", "Tapered below knee", "Garment dyed", "Finished hem"],
+    },
+    fit: { modelHeightCm: 180, modelSizeWorn: "M", runsTrueToSize: "true" },
+    sizeChartId: "chart-trousers",
+    colorways: [
+      { id: "tr2-khaki",  name: "Khaki",      hex: "#A89873", sizes: stock(4, 10, 12, 9, 5, 2) },
+      { id: "tr2-navy",   name: "Deep Navy",  hex: "#252F45", sizes: stock(3, 8, 10, 8, 4, 1) },
+      { id: "tr2-olive",  name: "Faded Olive",hex: "#6E7355", sizes: stock(2, 6, 0, 6, 3, 0) },
+      { id: "tr2-black",  name: "Ink",        hex: "#1E1E1C", sizes: stock(0, 5, 7, 6, 3, 1) },
+    ],
+    care: ["Machine wash cold", "Tumble dry low", "Warm iron"],
+    details: ["Made in Portugal", "Garment dyed for depth of colour", "Model wears size M"],
+    reviews: [
+      rev(5, "My default trouser now", "Bought khaki, came back for navy. The taper is judged well — slim without being skinny.", "Oscar B.", "2026-07-19", "5'10\"–6'0\"", "M", "true"),
+      rev(4, "Colour deepened after washing", "Garment dye means slight variation. Mine darkened a touch and I prefer it.", "Ines F.", "2026-06-29", "5'4\"–5'6\"", "S", "true"),
+      rev(4, "Good for long days", "The two percent stretch does real work. Comfortable sitting down for hours.", "Malik R.", "2026-06-07", "6'1\" or above", "L", "true"),
+      rev(3, "Taper is aggressive at the ankle", "Fine on me but if you have any calf, size up or look elsewhere.", "Victor N.", "2026-05-17", "5'7\"–5'9\"", "M", "true"),
+    ],
+  },
+];
+
+export function productByHandle(handle: string): Product | undefined {
+  return PRODUCTS.find((p) => p.handle === handle);
+}

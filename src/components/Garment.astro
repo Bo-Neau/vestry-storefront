@@ -1,0 +1,164 @@
+---
+/**
+ * Placeholder product imagery, generated as SVG.
+ *
+ * A real storefront swaps this component for <img> against the client's
+ * photography (2048px masters, AVIF/WebP, responsive srcset). It exists so
+ * the gallery mechanics — four distinct views including a fabric macro —
+ * can be built and reviewed before a shoot is booked.
+ *
+ * Silhouettes are tinted by colorway so swatch changes are visible, and
+ * heathered yarns render as a two-tone blend.
+ */
+import type { GarmentShape } from "../data/schema.ts";
+
+interface Props {
+  shape: GarmentShape;
+  hex: string;
+  hexAlt?: string | undefined;
+  view?: "front" | "back" | "flat" | "detail";
+  alt: string;
+  loading?: "eager" | "lazy";
+}
+
+const { shape, hex, hexAlt, view = "front", alt, loading = "lazy" } = Astro.props;
+
+// Stable id per instance so gradients/patterns don't collide across a grid.
+const uid = Math.random().toString(36).slice(2, 9);
+
+const BODY: Record<GarmentShape, string> = {
+  tee: "M150 100 L96 132 L60 250 L108 268 L104 470 L296 470 L292 268 L340 250 L304 132 L250 100 C240 124 220 133 200 133 C180 133 160 124 150 100 Z",
+  shirt: "M150 96 L92 130 L58 258 L106 276 L102 474 L298 474 L294 276 L342 258 L308 130 L250 96 L200 128 Z",
+  knit: "M152 104 L92 136 L54 330 L104 344 L102 462 L298 462 L296 344 L346 330 L308 136 L248 104 C238 126 220 134 200 134 C180 134 162 126 152 104 Z",
+  trouser: "M112 96 L288 96 L296 150 L272 470 L212 470 L200 250 L188 470 L128 470 L104 150 Z",
+};
+
+const TEXTURE: Record<GarmentShape, string> = {
+  tee: "woven", shirt: "woven", knit: "rib", trouser: "twill",
+};
+const texture = TEXTURE[shape];
+const isDetail = view === "detail";
+---
+
+<svg
+  viewBox="0 0 400 520"
+  role="img"
+  aria-label={alt}
+  class="garment"
+  data-view={view}
+  data-loading={loading}
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <defs>
+    <linearGradient id={`g-${uid}`} x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0%" stop-color={hexAlt ?? hex} stop-opacity="1" />
+      <stop offset="55%" stop-color={hex} stop-opacity="1" />
+      <stop offset="100%" stop-color={hex} stop-opacity="0.86" />
+    </linearGradient>
+
+    {texture === "woven" && (
+      <pattern id={`t-${uid}`} width="7" height="7" patternUnits="userSpaceOnUse">
+        <path d="M0 0 H7 M0 3.5 H7" stroke="#000" stroke-opacity="0.055" stroke-width="1" />
+        <path d="M0 0 V7 M3.5 0 V7" stroke="#fff" stroke-opacity="0.05" stroke-width="1" />
+      </pattern>
+    )}
+    {texture === "rib" && (
+      <pattern id={`t-${uid}`} width="10" height="10" patternUnits="userSpaceOnUse">
+        <path d="M2 0 V10" stroke="#000" stroke-opacity="0.08" stroke-width="2.5" />
+        <path d="M6.5 0 V10" stroke="#fff" stroke-opacity="0.07" stroke-width="2" />
+      </pattern>
+    )}
+    {texture === "twill" && (
+      <pattern id={`t-${uid}`} width="8" height="8" patternUnits="userSpaceOnUse">
+        <path d="M-2 6 L6 -2 M2 10 L10 2" stroke="#000" stroke-opacity="0.07" stroke-width="1.6" />
+      </pattern>
+    )}
+
+    <radialGradient id={`bg-${uid}`} cx="0.5" cy="0.38" r="0.78">
+      <stop offset="0%" stop-color="var(--paper-2)" />
+      <stop offset="100%" stop-color="var(--paper-3)" />
+    </radialGradient>
+  </defs>
+
+  <rect width="400" height="520" fill={`url(#bg-${uid})`} />
+
+  {isDetail ? (
+    <g>
+      <rect x="40" y="60" width="320" height="400" rx="2" fill={`url(#g-${uid})`} />
+      <rect x="40" y="60" width="320" height="400" rx="2" fill={`url(#t-${uid})`}
+            style={`transform: scale(3.2); transform-origin: 200px 260px;`} />
+      <rect x="40" y="60" width="320" height="400" rx="2" fill="none"
+            stroke="#000" stroke-opacity="0.1" stroke-width="1" />
+      <text x="200" y="492" text-anchor="middle" class="g-cap">Fabric detail</text>
+    </g>
+  ) : (
+    <g>
+      <ellipse cx="200" cy="486" rx="128" ry="13" fill="#000" opacity="0.06" />
+
+      <g transform={view === "flat" ? "translate(200 268) scale(0.9) translate(-200 -268)" : ""}>
+        <path d={BODY[shape]} fill={`url(#g-${uid})`} />
+        <path d={BODY[shape]} fill={`url(#t-${uid})`} />
+        <path d={BODY[shape]} fill="none" stroke="#000" stroke-opacity="0.16" stroke-width="1.4" />
+
+        {shape !== "trouser" && view === "back" && (
+          <path d="M152 104 C168 118 182 122 200 122 C218 122 232 118 248 104"
+                fill="none" stroke="#000" stroke-opacity="0.22" stroke-width="2.5" />
+        )}
+
+        {shape === "shirt" && view !== "back" && (
+          <g>
+            <path d="M200 128 L166 96 L150 96 L186 142 Z" fill="#000" fill-opacity="0.07" />
+            <path d="M200 128 L234 96 L250 96 L214 142 Z" fill="#000" fill-opacity="0.07" />
+            <path d="M200 132 V474" stroke="#000" stroke-opacity="0.14" stroke-width="2" />
+            {[186, 244, 302, 360, 418].map((cy) => (
+              <circle cx="200" cy={cy} r="4" fill="#fff" fill-opacity="0.55"
+                      stroke="#000" stroke-opacity="0.2" stroke-width="1" />
+            ))}
+          </g>
+        )}
+
+        {shape === "knit" && (
+          <g stroke="#000" stroke-opacity="0.15" stroke-width="1.4" fill="none">
+            <path d="M104 438 H296" />
+            <path d="M60 316 L104 330" />
+            <path d="M340 316 L296 330" />
+          </g>
+        )}
+
+        {shape === "trouser" && (
+          <g stroke="#000" stroke-opacity="0.15" stroke-width="1.5" fill="none">
+            <path d="M108 140 H292" />
+            <path d="M156 150 L146 460" />
+            <path d="M244 150 L254 460" />
+          </g>
+        )}
+
+        {view === "flat" && (
+          <g stroke="#000" stroke-opacity="0.09" stroke-width="1.2" fill="none">
+            <path d="M104 300 H296" />
+          </g>
+        )}
+      </g>
+
+      <text x="200" y="504" text-anchor="middle" class="g-cap">
+        {view === "front" ? "Front" : view === "back" ? "Back" : "Laid flat"}
+      </text>
+    </g>
+  )}
+</svg>
+
+<style>
+  .garment {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 400 / 520;
+    background: var(--paper-3);
+  }
+  .g-cap {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    fill: var(--ink-3);
+  }
+</style>

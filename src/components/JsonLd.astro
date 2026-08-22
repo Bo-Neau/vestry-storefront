@@ -1,0 +1,13 @@
+---
+/**
+ * Emits JSON-LD.
+ *
+ * `</script>` inside a JSON string would close the tag early and turn data
+ * into markup — an injection vector when any of it comes from merchant or
+ * reviewer text. Escaping the forward slash is the standard defence.
+ */
+interface Props { data: unknown }
+const { data } = Astro.props;
+const json = JSON.stringify(data).replace(/</g, "\\u003c");
+---
+<script type="application/ld+json" is:inline set:html={json} />

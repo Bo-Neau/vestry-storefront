@@ -1,0 +1,252 @@
+---
+import Base from "../../layouts/Base.astro";
+import FilterPanel from "../../components/FilterPanel.astro";
+import ProductCard from "../../components/ProductCard.astro";
+import JsonLd from "../../components/JsonLd.astro";
+import { collectionSchema, breadcrumbSchema } from "../../lib/seo/structured-data.ts";
+import { loadProducts } from "../../data/source.ts";
+import { filtersFromParams, countActive } from "../../lib/facets.ts";
+import { queryCatalogue } from "../../lib/search/index.ts";
+import type { Category } from "../../data/schema.ts";
+
+const COLLECTIONS: Record<string, { title: string; category?: Category; blurb: string }> = {
+  "all":       { title: "Everything",  blurb: "The full range, twelve styles." },
+  "t-shirts":  { title: "T-shirts",    category: "T-shirts",  blurb: "Jersey weights from 160 to 220gsm." },
+  "shirts":    { title: "Shirts",      category: "Shirts",    blurb: "Woven cotton and linen, collared and camp." },
+  "knitwear":  { title: "Knitwear",    category: "Knitwear",  blurb: "Merino, lambswool and undyed British wool." },
+  "trousers":  { title: "Trousers",    category: "Trousers",  blurb: "Twill and chino, pleated and tapered." },
+};
+
+const { handle } = Astro.params;
+const collection = handle ? COLLECTIONS[handle] : undefined;
+
+if (!collection) {
+  Astro.response.status = 404;
+  return Astro.rewrite("/404");
+}
+
+const basePath = `/collections/${handle}`;
+
+const { products, source, reviewProvider, warning } = await loadProducts();
+const filters = filtersFromParams(Astro.url.searchParams);
+
+// Filtering and facet counts come from the search seam: Typesense when
+// configured, the in-memory reference otherwise. Identical semantics either
+// way — verified by `npm run search:doctor`.
+const { products: results, facets, backend, warning: searchWarning } =
+  await queryCatalogue({
+    all: products,
+    filters,
+    category: collection.category,
+  });
+
+const active = countActive(filters);
+
+const siteOrigin = (Astro.site ?? new URL("https://vestry.example")).origin;
+const collectionUrl = `${siteOrigin}${basePath}`;
+// A filtered view is one of infinitely many near-duplicates of this
+// collection. Canonicalise to the unfiltered page and keep it out of the index.
+const isFiltered = active > 0;
+const jsonLdCollection = collectionSchema(
+  collection.title, collection.blurb, collectionUrl, results, siteOrigin,
+);
+const jsonLdCrumbs = breadcrumbSchema([
+  { name: "Home", url: `${siteOrigin}/` },
+  { name: collection.title, url: collectionUrl },
+]);
+---
+
+<Base
+  title={`${collection.title} — Vestry`}
+  description={collection.blurb}
+  canonical={collectionUrl}
+  noindex={isFiltered}
+>
+  <Fragment slot="head">
+    <JsonLd data={jsonLdCollection} />
+    <JsonLd data={jsonLdCrumbs} />
+  </Fragment>
+  <div class="shell">
+    <header class="col-head">
+      <nav aria-label="Breadcrumb" class="crumbs">
+        <a href="/">Home</a> <span aria-hidden="true">/</span> <span>{collection.title}</span>
+      </nav>
+      <h1>{collection.title}</h1>
+      <p class="blurb">{collection.blurb}</p>
+      {import.meta.env.DEV && (
+        <p class="src-note">
+          Data source: <strong>{source}</strong>
+          {" · reviews: "}<strong>{reviewProvider}</strong>
+          {" · search: "}<strong>{backend}</strong>
+          {warning && <span class="src-warn"> — {warning}</span>}
+          {searchWarning && <span class="src-warn"> — {searchWarning}</span>}
+        </p>
+      )}
+    </header>
+
+    <div class="col-layout">
+      <!-- On mobile the panel collapses into a native <details>, which needs
+          no JS and stays keyboard operable. -->
+      <details class="filter-shell">
+        <summary class="filter-toggle">
+          Filter &amp; sort
+          {active > 0 && <span class="badge">{active}</span>}
+        </summary>
+        <FilterPanel
+          facets={facets}
+          filters={filters}
+          basePath={basePath}
+          resultCount={results.length}
+        />
+      </details>
+
+      <div class="results">
+        {results.length === 0 ? (
+          <div class="empty">
+            <h2>Nothing matches those filters</h2>
+            <p>
+              That combination has no styles in stock. Try removing a size or
+              colour — those narrow the results fastest.
+            </p>
+            <a href={basePath} class="empty-clear">Clear all filters</a>
+          </div>
+        ) : (
+          <ul class="grid">
+            {results.map((product, i) => (
+              <li>
+                <ProductCard product={product} loading={i < 4 ? "eager" : "lazy"} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .col-head {
+    padding-block: var(--sp-7) var(--sp-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+  }
+  .crumbs { font-size: var(--step--1); color: var(--ink-3); display: flex; gap: var(--sp-2); }
+  .crumbs a { color: var(--ink-2); display: inline-block; padding-block: var(--sp-2); }
+  h1 { font-size: var(--step-4); }
+  .blurb { color: var(--ink-2); max-width: 52ch; }
+  /* Dev only: makes a Shopify fallback obvious instead of invisible. */
+  .src-note {
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-3);
+    border: 1px dashed var(--rule-2);
+    padding: var(--sp-2) var(--sp-3);
+    align-self: flex-start;
+    max-width: 70ch;
+    text-transform: none;
+  }
+  .src-warn { color: var(--sale); }
+
+  .col-layout {
+    display: grid;
+    grid-template-columns: 208px minmax(0, 1fr);
+    gap: var(--sp-7);
+    align-items: start;
+  }
+
+  /*
+    The panel is a <details> that starts CLOSED, so on a phone the shopper
+    sees product straight after the heading instead of a screenful of facets.
+
+    On desktop there is a sidebar to put it in, so the summary is hidden and
+    the content force-shown regardless of open state. The element stays a
+    real <details> throughout, so it needs no JavaScript and stays keyboard
+    operable on mobile.
+  */
+  .filter-shell { position: sticky; top: 88px; }
+  .filter-shell > summary { display: none; }
+  /*
+    Two mechanisms hide a closed <details>, depending on the engine:
+      - older: display:none on non-summary children
+      - newer: content-visibility:hidden on the ::details-content pseudo
+    Desktop overrides both, so the panel renders as a plain sidebar while the
+    element stays a real <details> for mobile.
+  */
+  .filter-shell > :global(.filters) { display: flex !important; }
+  .filter-shell::details-content {
+    content-visibility: visible;
+    block-size: auto;
+  }
+
+  .filter-toggle {
+    display: none;
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    cursor: pointer;
+    padding: var(--sp-3) 0;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: var(--sp-4);
+  }
+  .badge {
+    display: inline-block;
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 8px;
+    padding: 1px 6px;
+    margin-left: var(--sp-2);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .grid {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(216px, 1fr));
+    gap: var(--sp-6) var(--sp-5);
+  }
+
+  .empty {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    align-items: flex-start;
+    padding: var(--sp-7) 0;
+    max-width: 46ch;
+  }
+  .empty h2 { font-size: var(--step-2); }
+  .empty p { color: var(--ink-2); }
+  .empty-clear {
+    margin-top: var(--sp-2);
+    border: 1px solid var(--ink);
+    padding: var(--sp-3) var(--sp-5);
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+  }
+  .empty-clear:hover { background: var(--ink); color: var(--paper); text-decoration: none; }
+
+  @media (max-width: 860px) {
+    .col-layout { grid-template-columns: minmax(0, 1fr); gap: var(--sp-4); }
+    .filter-shell { position: static; }
+    /* Restore normal <details> behaviour: summary visible, content hidden
+       until the shopper opens it. */
+    .filter-shell > summary { display: block; }
+    .filter-shell:not([open]) > :global(.filters) { display: none !important; }
+    .filter-shell:not([open])::details-content {
+      content-visibility: hidden;
+      block-size: 0;
+    }
+    .filter-toggle {
+      display: block;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+    }
+    .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--sp-5) var(--sp-4); }
+  }
+</style>

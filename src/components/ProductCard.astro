@@ -1,0 +1,166 @@
+---
+/**
+ * One card per STYLE — never one per colourway.
+ *
+ * The teardown found a live store where "59 products" was really ~10
+ * styles, because each colourway got its own card and URL. Grouping on
+ * the style-level id keeps the grid honest and stops near-duplicate URLs
+ * splitting SEO.
+ */
+import type { Product } from "../data/schema.ts";
+import { SIZE_ORDER, hasStock, averageRating } from "../data/schema.ts";
+import { formatMoney, discountPercent } from "../lib/money.ts";
+import ProductImage from "./ProductImage.astro";
+
+interface Props {
+  product: Product;
+  loading?: "eager" | "lazy";
+}
+const { product, loading = "lazy" } = Astro.props;
+
+const lead = product.colorways[0]!;
+const inStock = SIZE_ORDER.filter((s) => hasStock(product, s));
+const soldOut = SIZE_ORDER.filter((s) => !hasStock(product, s));
+const rating = averageRating(product);
+const off = product.compareAtPrice
+  ? discountPercent(product.price, product.compareAtPrice)
+  : 0;
+---
+
+<article class="card">
+  <div class="card-media">
+    <ProductImage
+      colorway={lead}
+      shape={product.shape}
+      view="front"
+      alt=""
+      priority={loading === "eager"}
+      sizes="(max-width: 860px) 45vw, (max-width: 1320px) 24vw, 300px"
+    />
+    {off > 0 && <span class="flag">{off}% off</span>}
+  </div>
+
+  <div class="card-body">
+    <h3 class="card-title">
+      <a href={`/products/${product.handle}`}>{product.title}</a>
+    </h3>
+
+    <p class="card-price money">
+      {formatMoney(product.price)}
+      {product.compareAtPrice && (
+        <s class="was">{formatMoney(product.compareAtPrice)}</s>
+      )}
+    </p>
+
+    <p class="card-meta">
+      {product.attributes.fit} fit · {product.attributes.fabricWeightGsm}gsm
+      {product.reviews.length > 0 && (
+        <span class="rating">
+          {" · "}{rating.toFixed(1)}
+          <span class="sr-only"> out of 5 from {product.reviews.length} reviews</span>
+          <span aria-hidden="true"> ({product.reviews.length})</span>
+        </span>
+      )}
+    </p>
+
+    <!-- Swatches carry a visible name in the tooltip AND a text list below,
+        because a colour chip alone is ambiguous on textured fabric. -->
+    <ul class="swatches" aria-label={`${product.colorways.length} colours available`}>
+      {product.colorways.map((c) => (
+        <li>
+          <span
+            class="swatch"
+            style={`--a: ${c.hex}; --b: ${c.hexAlt ?? c.hex};`}
+            title={c.name}
+          ></span>
+          <span class="sr-only">{c.name}</span>
+        </li>
+      ))}
+    </ul>
+
+    <!-- Sizes in stock, stated plainly. Sold-out sizes are struck through
+        rather than hidden, so absence is legible instead of confusing. -->
+    <p class="sizes">
+      {SIZE_ORDER.map((s) => (
+        <span class={hasStock(product, s) ? "sz" : "sz out"}>{s}</span>
+      ))}
+      {inStock.length === 0 && <span class="all-out">Sold out</span>}
+    </p>
+    {soldOut.length > 0 && inStock.length > 0 && (
+      <p class="sr-only">Sold out in {soldOut.join(", ")}.</p>
+    )}
+  </div>
+</article>
+
+<style>
+  .card { display: flex; flex-direction: column; gap: var(--sp-3); position: relative; }
+
+  .card-media {
+    position: relative;
+    display: block;
+    pointer-events: none;
+    background: var(--paper-3);
+    overflow: hidden;
+  }
+  .card-media :global(.garment) { transition: transform .4s ease; }
+  .card:hover .card-media :global(.garment) { transform: scale(1.02); }
+
+  .flag {
+    position: absolute;
+    top: var(--sp-3);
+    left: var(--sp-3);
+    background: var(--sale);
+    color: #fff;
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    padding: 3px 7px;
+  }
+
+  .card-body { display: flex; flex-direction: column; gap: var(--sp-2); }
+
+  .card-title { font-size: var(--step-0); font-weight: 600; letter-spacing: -0.01em; }
+  /*
+    Stretched link: the title anchor covers the whole card, so the tap target
+    is the card rather than one line of 18px text. Swatches and any future
+    in-card controls sit above it via z-index.
+  */
+  .card-title a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+  .swatches, .sizes { position: relative; z-index: 2; }
+
+  .card-price { font-size: var(--step-0); display: flex; gap: var(--sp-2); align-items: baseline; }
+  .was { color: var(--ink-3); font-size: var(--step--1); }
+
+  .card-meta { font-size: var(--step--1); color: var(--ink-3); }
+
+  .swatches { list-style: none; display: flex; gap: 5px; }
+  .swatch {
+    display: block;
+    width: 13px; height: 13px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--a) 0 52%, var(--b) 52% 100%);
+    box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.18);
+  }
+
+  .sizes { display: flex; gap: var(--sp-2); align-items: baseline; flex-wrap: wrap; }
+  .sz {
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.04em;
+    color: var(--ink-2);
+  }
+  .sz.out { color: var(--out-stock); text-decoration: line-through; }
+  .all-out {
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--out-stock);
+  }
+</style>

@@ -1,0 +1,272 @@
+---
+import "../styles/base.css";
+import { readCart } from "../lib/cart/index.ts";
+
+// Read on every page so the bag count is never stale after an add.
+const cart = await readCart(Astro.cookies);
+
+interface Props {
+  title: string;
+  description: string;
+  /** Set on variant URLs so colourway pages don't split ranking signals. */
+  canonical?: string | undefined;
+  /**
+   * Keep this page out of the index. Set on filtered collection views and
+   * error pages — see the noindex note below.
+   */
+  noindex?: boolean | undefined;
+  /** Absolute URL of the social preview image. */
+  ogImage?: string | undefined;
+  ogType?: "website" | "product" | undefined;
+}
+const {
+  title, description, canonical, noindex = false,
+  ogImage, ogType = "website",
+} = Astro.props;
+
+const site = Astro.site ?? new URL("https://vestry.example");
+const canonicalUrl = canonical ?? new URL(Astro.url.pathname, site).href;
+const socialImage = new URL(ogImage ?? "/og-default.svg", site).href;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href={canonicalUrl} />
+
+    {/*
+      Filtered collection views are combinatorially infinite — every
+      size x fit x colour combination is its own URL. Letting them into the
+      index burns crawl budget on near-duplicate pages and splits ranking
+      signals across variants of the same collection. The facet links also
+      carry rel="nofollow".
+    */}
+    {noindex && <meta name="robots" content="noindex,follow" />}
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={socialImage} />
+    <meta property="og:site_name" content="Vestry" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImage} />
+
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+
+    <header class="site-head">
+      <div class="shell head-inner">
+        <a href="/" class="brand" aria-label="Vestry — home">Vestry</a>
+
+        <nav aria-label="Shop">
+          <ul class="nav">
+            <li><a href="/collections/t-shirts">T-shirts</a></li>
+            <li><a href="/collections/shirts">Shirts</a></li>
+            <li><a href="/collections/knitwear">Knitwear</a></li>
+            <li><a href="/collections/trousers">Trousers</a></li>
+            <li><a href="/collections/all">All</a></li>
+          </ul>
+        </nav>
+
+        <a href="/cart" class="bag" aria-label={`Your bag, ${cart.itemCount} item${cart.itemCount === 1 ? "" : "s"}`}>
+          Bag
+          {cart.itemCount > 0 && <span class="bag-count">{cart.itemCount}</span>}
+        </a>
+
+        <p class="ship-note">Free shipping and returns over $75</p>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="site-foot">
+      <div class="shell foot-inner">
+        <div class="foot-col">
+          <p class="label">Help</p>
+          <ul>
+            <li><a href="/collections/all">Shipping &amp; returns</a></li>
+            <li><a href="/collections/all">Size &amp; fit</a></li>
+            <li><a href="/collections/all">Contact</a></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <p class="label">About</p>
+          <ul>
+            <li><a href="/collections/all">Our materials</a></li>
+            <li><a href="/collections/all">Where we make</a></li>
+          </ul>
+        </div>
+        <p class="foot-note">
+          Reference storefront. Product imagery is generated placeholder
+          artwork, and all reviews and inventory are sample data.
+        </p>
+      </div>
+    </footer>
+
+    <style>
+      .site-head {
+        border-bottom: 1px solid var(--rule);
+        background: var(--paper);
+        position: sticky;
+        top: 0;
+        z-index: 20;
+      }
+      .head-inner {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-6);
+        min-height: 64px;
+        flex-wrap: wrap;
+      }
+      .brand {
+        font-size: var(--step-1);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.22em;
+      }
+      .brand:hover { text-decoration: none; }
+      .nav {
+        display: flex;
+        gap: var(--sp-5);
+        list-style: none;
+        flex-wrap: wrap;
+      }
+      .nav a {
+        font-size: var(--step--1);
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        color: var(--ink-2);
+        /* 44px tap height without changing the visual rhythm. */
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+      }
+      .nav a:hover { color: var(--ink); }
+      .bag {
+        margin-left: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-2);
+        font-family: var(--mono);
+        font-size: 0.6875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        color: var(--ink);
+        min-height: 44px;
+        /* Widen the tap area past the short word "Bag". */
+        padding-inline: var(--sp-2);
+        margin-inline: calc(-1 * var(--sp-2));
+      }
+      .bag-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 18px;
+        height: 18px;
+        padding: 0 5px;
+        border-radius: 9px;
+        background: var(--ink);
+        color: var(--paper);
+        font-size: 0.6875rem;
+        font-variant-numeric: tabular-nums;
+      }
+      .ship-note {
+        font-family: var(--mono);
+        font-size: 0.6875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--ink-3);
+      }
+      @media (max-width: 860px) {
+        /*
+          Mobile header: two rows, not four.
+
+          Row 1  brand ................................ bag
+          Row 2  nav, one scrollable line
+          Row 3  shipping terms, thin
+
+          The previous version wrapped into three or four stacked rows and ate
+          ~300px before any product was visible — on a phone that is most of
+          the first screen spent on chrome.
+        */
+        .head-inner {
+          display: grid;
+          grid-template-columns: auto auto;
+          grid-template-areas:
+            "brand bag"
+            "nav   nav"
+            "ship  ship";
+          gap: var(--sp-2) var(--sp-3);
+          align-items: center;
+          min-height: 0;
+          padding-block: var(--sp-3);
+        }
+        .brand {
+          grid-area: brand;
+          font-size: var(--step-0);
+          letter-spacing: 0.16em;
+        }
+        .bag { grid-area: bag; justify-self: end; margin-left: 0; }
+        nav { grid-area: nav; min-width: 0; }
+        .nav {
+          gap: var(--sp-4);
+          overflow-x: auto;
+          flex-wrap: nowrap;
+          scrollbar-width: none;
+          /* Bleed to the edges so the scroll affordance is obvious and the
+             last item is not clipped mid-word against the padding. */
+          margin-inline: calc(-1 * var(--sp-4));
+          padding-inline: var(--sp-4);
+        }
+        .nav::-webkit-scrollbar { display: none; }
+        .nav a { white-space: nowrap; }
+        .ship-note {
+          grid-area: ship;
+          margin-left: 0;
+          font-size: 0.6875rem;
+          border-top: 1px solid var(--rule);
+          padding-top: var(--sp-2);
+        }
+      }
+
+      .site-foot {
+        border-top: 1px solid var(--rule);
+        margin-top: var(--sp-8);
+        padding: var(--sp-7) 0 var(--sp-8);
+      }
+      .foot-inner {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: var(--sp-6);
+        align-items: start;
+      }
+      .foot-col ul { list-style: none; display: flex; flex-direction: column; margin-top: var(--sp-2); }
+      .foot-col a {
+        font-size: var(--step--1);
+        color: var(--ink-2);
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+      }
+      .foot-note {
+        grid-column: 1 / -1;
+        font-size: var(--step--1);
+        color: var(--ink-3);
+        max-width: 56ch;
+        border-top: 1px solid var(--rule);
+        padding-top: var(--sp-4);
+      }
+    </style>
+  </body>
+</html>

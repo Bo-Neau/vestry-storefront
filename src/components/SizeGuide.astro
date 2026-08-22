@@ -1,0 +1,162 @@
+---
+/**
+ * Size guide in a native popover — opens over the page, never in a new tab.
+ *
+ * Research: a guide behind a link that opens a new tab is functionally
+ * absent on mobile, and incorrect sizing is the number one return reason.
+ * The popover attribute gives light-dismiss, Escape, and focus handling
+ * with zero JavaScript.
+ *
+ * Shows GARMENT measurements and says so explicitly — conflating garment
+ * and body measurements is itself a return driver.
+ */
+import type { SizeChart } from "../data/schema.ts";
+
+interface Props {
+  chart: SizeChart;
+  id: string;
+}
+const { chart, id } = Astro.props;
+
+const cm = (n: number) => `${n}`;
+const inches = (n: number) => (n / 2.54).toFixed(1);
+---
+
+<button type="button" class="sg-open" popovertarget={id}>
+  Size guide
+</button>
+
+<div id={id} popover="auto" class="sg-pop" aria-labelledby={`${id}-title`}>
+  <div class="sg-head">
+    <div>
+      <h2 id={`${id}-title`}>{chart.name}</h2>
+      <p class="sg-sub">
+        Garment measured laid flat, not body measurements. Compare against a
+        piece you already own that fits the way you want.
+      </p>
+    </div>
+    <button type="button" class="sg-close" popovertarget={id} popovertargetaction="hide" aria-label="Close size guide">
+      &times;
+    </button>
+  </div>
+
+  <div class="sg-scroll">
+    <table class="sg-table">
+      <caption class="sr-only">{chart.name}, in centimetres and inches</caption>
+      <thead>
+        <tr>
+          <th scope="col">Size</th>
+          {chart.rows[0] && chart.rows[0].chestCm > 0 && <th scope="col">Chest</th>}
+          <th scope="col">Waist</th>
+          <th scope="col">Length</th>
+        </tr>
+      </thead>
+      <tbody>
+        {chart.rows.map((r) => (
+          <tr>
+            <th scope="row">{r.size}</th>
+            {r.chestCm > 0 && (
+              <td>{cm(r.chestCm)}<span class="alt"> / {inches(r.chestCm)}"</span></td>
+            )}
+            <td>{cm(r.waistCm)}<span class="alt"> / {inches(r.waistCm)}"</span></td>
+            <td>{cm(r.lengthCm)}<span class="alt"> / {inches(r.lengthCm)}"</span></td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    <p class="sg-units">Centimetres / inches</p>
+  </div>
+
+  <div class="sg-how">
+    <h3>How to measure</h3>
+    <dl>
+      {chart.howToMeasure.map((m) => (
+        <div class="sg-row">
+          <dt>{m.part}</dt>
+          <dd>{m.instruction}</dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+</div>
+
+<style>
+  .sg-open {
+    background: none;
+    border: none;
+    /* Real tap height — the size guide is a primary conversion control on
+       mobile, not a footnote. */
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 var(--sp-2);
+    margin-inline: calc(-1 * var(--sp-2));
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-2);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+  .sg-open:hover { color: var(--ink); }
+
+  .sg-pop {
+    max-width: 560px;
+    width: calc(100vw - var(--sp-6));
+    max-height: 84vh;
+    overflow-y: auto;
+    border: 1px solid var(--rule-2);
+    background: var(--paper-2);
+    color: var(--ink);
+    padding: var(--sp-5);
+    display: none;
+    flex-direction: column;
+    gap: var(--sp-5);
+  }
+  .sg-pop:popover-open { display: flex; }
+  .sg-pop::backdrop { background: rgb(0 0 0 / 0.42); }
+
+  .sg-head { display: flex; gap: var(--sp-4); align-items: flex-start; justify-content: space-between; }
+  .sg-head h2 { font-size: var(--step-1); }
+  .sg-sub { font-size: var(--step--1); color: var(--ink-2); margin-top: var(--sp-2); max-width: 46ch; }
+  .sg-close {
+    background: none; border: none; cursor: pointer;
+    font-size: 1.5rem; line-height: 1; color: var(--ink-3); padding: 0 var(--sp-2);
+  }
+  .sg-close:hover { color: var(--ink); }
+
+  .sg-scroll { overflow-x: auto; }
+  .sg-table { border-collapse: collapse; width: 100%; font-size: var(--step--1); }
+  .sg-table th, .sg-table td {
+    text-align: left;
+    padding: var(--sp-2) var(--sp-3);
+    border-bottom: 1px solid var(--rule);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .sg-table thead th {
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-3);
+    font-weight: 500;
+  }
+  .sg-table tbody th { font-family: var(--mono); font-weight: 600; }
+  .sg-table .alt { color: var(--ink-3); }
+  .sg-units {
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-3);
+    margin-top: var(--sp-2);
+  }
+
+  .sg-how h3 { font-size: var(--step-0); margin-bottom: var(--sp-3); }
+  .sg-row { display: grid; grid-template-columns: 82px minmax(0, 1fr); gap: var(--sp-3); padding: var(--sp-2) 0; }
+  .sg-row dt { font-family: var(--mono); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--ink-3); padding-top: 2px; }
+  .sg-row dd { margin: 0; font-size: var(--step--1); color: var(--ink-2); }
+</style>
