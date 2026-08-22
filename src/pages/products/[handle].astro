@@ -55,9 +55,18 @@ const RUNS_NOTE: Record<typeof product.fit.runsTrueToSize, string> = {
   large: "Runs large — consider sizing down.",
 };
 
-const canonical = new URL(`/products/${product.handle}`, Astro.url).href;
+/**
+ * Built from Astro.site, NOT Astro.url.
+ *
+ * Astro.url is the request URL, so basing the canonical on it makes every
+ * host that serves the page canonicalise to itself — a preview deployment, a
+ * proxy, or an apex/www variant would each claim to be canonical, which is
+ * precisely what the tag exists to prevent.
+ */
+const siteBase = Astro.site ?? new URL("https://example.com");
+const canonical = new URL(`/products/${product.handle}`, siteBase).href;
 
-const siteOrigin = (Astro.site ?? new URL("https://example.com")).origin;
+const siteOrigin = siteBase.origin;
 const jsonLdProduct = productSchema(product, canonical, BRAND.name);
 const jsonLdCrumbs = breadcrumbSchema([
   { name: "Home", url: `${siteOrigin}/` },

@@ -27,6 +27,21 @@ convenient way to show a client a change before it goes live.
 None are required. With nothing set, the site runs on the sample catalogue —
 which is exactly what you want for a demo.
 
+**`SITE_URL` is not needed on Vercel.** The config reads
+`VERCEL_PROJECT_PRODUCTION_URL`, which Vercel injects automatically, so
+canonical tags, Open Graph URLs and the sitemap all resolve to the real
+deployment. Set `SITE_URL` only when moving to a custom domain.
+
+`site` is resolved at BUILD time, not per request — so after adding a custom
+domain you must redeploy, not just change the DNS.
+
+### Preview deployments
+
+Vercel gives every branch its own URL. Those are real and reachable, so
+anything not `VERCEL_ENV=production` is marked `noindex` and its robots.txt
+disallows everything. A client-review branch cannot end up in search results
+competing with the live site.
+
 Add them as you connect each service:
 
 | Variable | Needed for | Secret |
@@ -73,8 +88,8 @@ doing consciously.
 
 ## Before a real launch
 
-- [ ] Set `SITE_URL` to the real domain, or canonical tags and the sitemap
-      point at the wrong place
+- [ ] On a custom domain, set `SITE_URL` and **redeploy** — `site` is
+      build-time, so a DNS change alone will not update canonical tags
 - [ ] Connect Shopify, then run `npm run shopify:doctor`
 - [ ] Confirm compression is on
 - [ ] Submit `/sitemap.xml` in Google Search Console

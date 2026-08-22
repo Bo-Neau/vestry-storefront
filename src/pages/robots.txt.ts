@@ -1,4 +1,5 @@
 import type { APIRoute } from "astro";
+import { deployEnv, isIndexable } from "../config/env.ts";
 
 /**
  * robots.txt, generated so the sitemap URL always matches the deployed host.
@@ -14,6 +15,19 @@ import type { APIRoute } from "astro";
  */
 export const GET: APIRoute = ({ site }) => {
   const base = (site ?? new URL("https://example.com")).origin;
+
+  // Preview and development deployments are closed to crawlers entirely.
+  if (!isIndexable()) {
+    return new Response(
+      `# ${deployEnv()} deployment — not for indexing\nUser-agent: *\nDisallow: /\n`,
+      {
+        headers: {
+          "Content-Type": "text/plain; charset=utf-8",
+          "Cache-Control": "no-store",
+        },
+      },
+    );
+  }
 
   const body = `# ${base}
 User-agent: *

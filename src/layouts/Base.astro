@@ -2,6 +2,7 @@
 import "../styles/base.css";
 import { readCart } from "../lib/cart/index.ts";
 import { BRAND, COPY } from "../config/brand.ts";
+import { isIndexable } from "../config/env.ts";
 
 // Read on every page so the bag count is never stale after an add.
 const cart = await readCart(Astro.cookies);
@@ -28,6 +29,10 @@ const {
 const site = Astro.site ?? new URL("https://example.com");
 const canonicalUrl = canonical ?? new URL(Astro.url.pathname, site).href;
 const socialImage = new URL(ogImage ?? "/og-default.svg", site).href;
+
+// Preview and development deployments are never indexable, whatever the page
+// asks for. A client-review branch must not compete with the live site.
+const blockIndexing = noindex || !isIndexable();
 ---
 <!doctype html>
 <html lang="en">
@@ -46,7 +51,7 @@ const socialImage = new URL(ogImage ?? "/og-default.svg", site).href;
       signals across variants of the same collection. The facet links also
       carry rel="nofollow".
     */}
-    {noindex && <meta name="robots" content="noindex,follow" />}
+    {blockIndexing && <meta name="robots" content="noindex,follow" />}
 
     <meta property="og:type" content={ogType} />
     <meta property="og:title" content={title} />
