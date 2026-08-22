@@ -13,7 +13,11 @@ import vercel from "@astrojs/vercel";
  */
 const onVercel = Boolean(process.env.VERCEL);
 
-/** Trimmed value, or undefined when unset/blank. */
+/**
+ * Trimmed value, or undefined when unset/blank.
+ * @param {string} key
+ * @returns {string | undefined}
+ */
 function envValue(key) {
   const raw = process.env[key];
   if (typeof raw !== "string") return undefined;
@@ -21,7 +25,12 @@ function envValue(key) {
   return trimmed.length > 0 ? trimmed : undefined;
 }
 
-/** Parses a candidate into an absolute origin, or undefined if unusable. */
+/**
+ * Parses a candidate into an absolute origin, or undefined if unusable.
+ * @param {string | undefined} candidate
+ * @param {string} source
+ * @returns {string | undefined}
+ */
 function toUrl(candidate, source) {
   if (!candidate) return undefined;
   // Host-only values (Vercel supplies these without a scheme) get https.

@@ -26,15 +26,32 @@ const { shape, hex, hexAlt, view = "front", alt, loading = "lazy" } = Astro.prop
 // Stable id per instance so gradients/patterns don't collide across a grid.
 const uid = Math.random().toString(36).slice(2, 9);
 
+/**
+ * Silhouettes for the collection: cropped and longer painted jackets, a
+ * structured capelet, fitted peplum tops, fluted skirts and a bias column.
+ * Drawn to the same 400x520 frame as the photography crop, so replacing
+ * these with real images changes no layout.
+ */
 const BODY: Record<GarmentShape, string> = {
-  tee: "M150 100 L96 132 L60 250 L108 268 L104 470 L296 470 L292 268 L340 250 L304 132 L250 100 C240 124 220 133 200 133 C180 133 160 124 150 100 Z",
-  shirt: "M150 96 L92 130 L58 258 L106 276 L102 474 L298 474 L294 276 L342 258 L308 130 L250 96 L200 128 Z",
-  knit: "M152 104 L92 136 L54 330 L104 344 L102 462 L298 462 L296 344 L346 330 L308 136 L248 104 C238 126 220 134 200 134 C180 134 162 126 152 104 Z",
-  trouser: "M112 96 L288 96 L296 150 L272 470 L212 470 L200 250 L188 470 L128 470 L104 150 Z",
+  // cropped, open front, three-quarter sleeve
+  jacket: "M158 98 L112 128 L96 268 L134 280 L140 342 L260 342 L266 280 L304 268 L288 128 L242 98 L200 126 Z",
+  // structured capelet, flaring from a firm shoulder
+  cape: "M176 104 L118 148 L92 300 L308 300 L282 148 L224 104 L200 124 Z",
+  // fitted bodice released into a short peplum
+  top: "M162 106 L146 140 L143 296 L118 372 L282 372 L257 296 L254 140 L238 106 C230 124 216 132 200 132 C184 132 170 124 162 106 Z",
+  // narrow to the knee, then fluted
+  skirt: "M144 148 L136 200 L124 336 L106 472 L294 472 L276 336 L264 200 L256 148 Z",
+  // bias column, high neck, long sleeve
+  gown: "M166 96 L146 138 L138 470 L262 470 L254 138 L234 96 Z",
 };
 
+/**
+ * Surface, not garment type: the painted cotton and wool crepe read as a
+ * twill, raw silk as a slubbed weave, and the bias crepe as a fine plain
+ * weave. The fabric-detail view scales whichever applies.
+ */
 const TEXTURE: Record<GarmentShape, string> = {
-  tee: "woven", shirt: "woven", knit: "rib", trouser: "twill",
+  jacket: "twill", cape: "twill", top: "slub", skirt: "twill", gown: "woven",
 };
 const texture = TEXTURE[shape];
 const isDetail = view === "detail";
@@ -62,10 +79,12 @@ const isDetail = view === "detail";
         <path d="M0 0 V7 M3.5 0 V7" stroke="#fff" stroke-opacity="0.05" stroke-width="1" />
       </pattern>
     )}
-    {texture === "rib" && (
-      <pattern id={`t-${uid}`} width="10" height="10" patternUnits="userSpaceOnUse">
-        <path d="M2 0 V10" stroke="#000" stroke-opacity="0.08" stroke-width="2.5" />
-        <path d="M6.5 0 V10" stroke="#fff" stroke-opacity="0.07" stroke-width="2" />
+    {texture === "slub" && (
+      <pattern id={`t-${uid}`} width="12" height="12" patternUnits="userSpaceOnUse">
+        <path d="M0 3 H12 M0 8 H12" stroke="#000" stroke-opacity="0.05" stroke-width="1" />
+        <path d="M2 0 V12 M9 0 V12" stroke="#000" stroke-opacity="0.04" stroke-width="1" />
+        {/* irregular slubs, which is what distinguishes raw silk by eye */}
+        <path d="M3 5 h3 M7 10 h4 M1 9 h2" stroke="#000" stroke-opacity="0.10" stroke-width="1.6" />
       </pattern>
     )}
     {texture === "twill" && (
@@ -100,36 +119,51 @@ const isDetail = view === "detail";
         <path d={BODY[shape]} fill={`url(#t-${uid})`} />
         <path d={BODY[shape]} fill="none" stroke="#000" stroke-opacity="0.16" stroke-width="1.4" />
 
-        {shape !== "trouser" && view === "back" && (
-          <path d="M152 104 C168 118 182 122 200 122 C218 122 232 118 248 104"
-                fill="none" stroke="#000" stroke-opacity="0.22" stroke-width="2.5" />
+        {/* high neck on the gown */}
+        {shape === "gown" && (
+          <g>
+            <rect x="182" y="82" width="36" height="26" rx="4"
+                  fill="#000" fill-opacity="0.14" />
+            <path d="M166 96 L146 118 L136 330 L156 334 L162 140 Z" fill="#000" fill-opacity="0.06" />
+            <path d="M234 96 L254 118 L264 330 L244 334 L238 140 Z" fill="#000" fill-opacity="0.06" />
+          </g>
         )}
 
-        {shape === "shirt" && view !== "back" && (
+        {/* jacket: collar, front opening and cuff */}
+        {shape === "jacket" && (
           <g>
-            <path d="M200 128 L166 96 L150 96 L186 142 Z" fill="#000" fill-opacity="0.07" />
-            <path d="M200 128 L234 96 L250 96 L214 142 Z" fill="#000" fill-opacity="0.07" />
-            <path d="M200 132 V474" stroke="#000" stroke-opacity="0.14" stroke-width="2" />
-            {[186, 244, 302, 360, 418].map((cy) => (
-              <circle cx="200" cy={cy} r="4" fill="#fff" fill-opacity="0.55"
-                      stroke="#000" stroke-opacity="0.2" stroke-width="1" />
+            <path d="M200 126 L166 98 L150 98 L186 140 Z" fill="#000" fill-opacity="0.08" />
+            <path d="M200 126 L234 98 L250 98 L214 140 Z" fill="#000" fill-opacity="0.08" />
+            <path d="M200 130 V342" stroke="#000" stroke-opacity="0.16" stroke-width="1.6" fill="none" />
+            <path d="M102 254 L136 266" stroke="#000" stroke-opacity="0.14" stroke-width="1.6" fill="none" />
+            <path d="M298 254 L264 266" stroke="#000" stroke-opacity="0.14" stroke-width="1.6" fill="none" />
+          </g>
+        )}
+
+        {/* capelet: open front and shoulder line */}
+        {shape === "cape" && (
+          <g stroke="#000" stroke-opacity="0.15" stroke-width="1.6" fill="none">
+            <path d="M200 124 V300" />
+            <path d="M138 150 C168 168 232 168 262 150" />
+          </g>
+        )}
+
+        {/* peplum break and sculptural buttons */}
+        {shape === "top" && (
+          <g>
+            <path d="M143 296 H257" stroke="#000" stroke-opacity="0.16" stroke-width="1.6" fill="none" />
+            {[168, 208, 248].map((cy) => (
+              <circle cx="200" cy={cy} r="6" fill="#000" fill-opacity="0.30" />
             ))}
           </g>
         )}
 
-        {shape === "knit" && (
-          <g stroke="#000" stroke-opacity="0.15" stroke-width="1.4" fill="none">
-            <path d="M104 438 H296" />
-            <path d="M60 316 L104 330" />
-            <path d="M340 316 L296 330" />
-          </g>
-        )}
-
-        {shape === "trouser" && (
-          <g stroke="#000" stroke-opacity="0.15" stroke-width="1.5" fill="none">
-            <path d="M108 140 H292" />
-            <path d="M156 150 L146 460" />
-            <path d="M244 150 L254 460" />
+        {/* skirt: waist seam and flute lines */}
+        {shape === "skirt" && (
+          <g stroke="#000" stroke-opacity="0.13" stroke-width="1.4" fill="none">
+            <path d="M144 168 H256" />
+            <path d="M172 190 L150 470" />
+            <path d="M228 190 L250 470" />
           </g>
         )}
 

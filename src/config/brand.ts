@@ -22,18 +22,19 @@ export const BRAND = {
   legalName: "Storefront Ltd",
 
   /** One line. Homepage hero heading. */
-  tagline: "Clothes that tell you how they fit.",
+  tagline: "Painted by hand. Cut to the body.",
 
   /** Meta description for the homepage, and the fallback elsewhere. */
   description:
-    "Every product page carries the model's height, the size they wore, and " +
-    "garment measurements laid flat — so you can judge fit before it arrives.",
+    "Hand-painted outerwear, sculptural tailoring and bias-cut columns. Every " +
+    "piece lists the model's height, the size worn and garment measurements " +
+    "laid flat, so you can judge fit before it is cut.",
 
   /** Supporting paragraph under the hero. */
   intro:
-    "Every product page carries the model's height, the size they wore, and " +
-    "garment measurements laid flat — so you can judge fit before it arrives, " +
-    "not after.",
+    "Each piece is painted individually, so no two fall the same way. Every " +
+    "page lists the model's height, the size worn, and garment measurements " +
+    "taken flat — because a piece cut for you should not arrive as a surprise.",
 
   /** Season or campaign label above the hero. Set to null to hide. */
   eyebrow: "Autumn 2026",
@@ -45,13 +46,23 @@ export const BRAND = {
  * Amounts are in minor units (cents), matching Money throughout the codebase.
  */
 export const COMMERCE = {
-  freeShippingThreshold: { amount: 7500, currency: "USD" } as Money,
-  flatShippingRate: { amount: 600, currency: "USD" } as Money,
-  returnsWindowDays: 30,
+  /**
+   * Zero means free on every order, and the copy says so rather than
+   * announcing a threshold of nothing. At these prices a $75 threshold would
+   * read as absurd — terms have to match what is being sold.
+   */
+  freeShippingThreshold: { amount: 0, currency: "USD" } as Money,
+  flatShippingRate: { amount: 0, currency: "USD" } as Money,
+  /** Shorter than a stocked range: most pieces here are made to order. */
+  returnsWindowDays: 14,
   /** Set false if the client charges for returns — the copy adapts. */
   returnsAreFree: true,
-  /** Self-serve exchanges. High leverage in apparel; turn off if unsupported. */
-  exchangesSupported: true,
+  /**
+   * Off, because made-to-order pieces are cut to the buyer. Promising a
+   * one-step size swap the atelier cannot honour is worse than not offering
+   * it — the exchange line disappears everywhere when this is false.
+   */
+  exchangesSupported: false,
 } as const;
 
 /* ---------------- derived copy ---------------- */
@@ -67,16 +78,23 @@ const money = (m: Money): string =>
     minimumFractionDigits: 0, maximumFractionDigits: 0,
   }).format(m.amount / 100);
 
+const FREE_ON_EVERYTHING = COMMERCE.freeShippingThreshold.amount <= 0;
+
 export const COPY = {
   /** Thin line in the header. */
-  shippingBanner: COMMERCE.returnsAreFree
-    ? `Free shipping and returns over ${money(COMMERCE.freeShippingThreshold)}`
-    : `Free shipping over ${money(COMMERCE.freeShippingThreshold)}`,
+  shippingBanner: FREE_ON_EVERYTHING
+    ? (COMMERCE.returnsAreFree
+        ? "Complimentary shipping and returns worldwide"
+        : "Complimentary shipping worldwide")
+    : (COMMERCE.returnsAreFree
+        ? `Free shipping and returns over ${money(COMMERCE.freeShippingThreshold)}`
+        : `Free shipping over ${money(COMMERCE.freeShippingThreshold)}`),
 
   /** Product page policy list. */
-  shippingTerms:
-    `Free shipping over ${money(COMMERCE.freeShippingThreshold)}, ` +
-    `otherwise ${money(COMMERCE.flatShippingRate)} flat`,
+  shippingTerms: FREE_ON_EVERYTHING
+    ? "Complimentary insured shipping worldwide"
+    : `Free shipping over ${money(COMMERCE.freeShippingThreshold)}, ` +
+      `otherwise ${money(COMMERCE.flatShippingRate)} flat`,
 
   returnsTerms: COMMERCE.returnsAreFree
     ? `Free returns for ${COMMERCE.returnsWindowDays} days, unworn with tags`
@@ -91,8 +109,9 @@ export const COPY = {
 
   exchangeShort: "Exchanges are one step",
 
-  /** How far from free shipping. Returns null once the threshold is met. */
+  /** How far from free shipping. Null when free on everything, or once met. */
   amountToFreeShipping(subtotal: Money): string | null {
+    if (FREE_ON_EVERYTHING) return null;
     const remaining = COMMERCE.freeShippingThreshold.amount - subtotal.amount;
     if (remaining <= 0) return null;
     return money({ amount: remaining, currency: subtotal.currency });

@@ -30,12 +30,12 @@ export type Size = "XS" | "S" | "M" | "L" | "XL" | "XXL";
 /** Ordered for display. Never sort sizes alphabetically. */
 export const SIZE_ORDER: readonly Size[] = ["XS", "S", "M", "L", "XL", "XXL"];
 
-export type Fit = "Regular" | "Slim" | "Relaxed" | "Oversized";
-export type Neckline = "Crew" | "V-neck" | "Henley" | "Polo" | "Collared";
-export type SleeveLength = "Short" | "Long" | "Sleeveless";
+export type Fit = "Fitted" | "Tailored" | "Draped" | "Sculptural";
+export type Neckline = "High neck" | "Mandarin" | "Collared" | "Round" | "Open";
+export type SleeveLength = "Sleeveless" | "Short" | "Three-quarter" | "Long";
 export type TargetGender = "Men" | "Women" | "Unisex";
-export type Category = "T-shirts" | "Shirts" | "Knitwear" | "Trousers";
-export type GarmentShape = "tee" | "shirt" | "knit" | "trouser";
+export type Category = "Outerwear" | "Tops" | "Skirts" | "Dresses";
+export type GarmentShape = "jacket" | "cape" | "top" | "skirt" | "gown";
 
 /** Mirrors Shopify predefined apparel category metafields. */
 export interface ApparelAttributes {

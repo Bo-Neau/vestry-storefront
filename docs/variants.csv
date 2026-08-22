@@ -1,229 +1,85 @@
 handle,option1_colour,colour_hex,option2_size,sku,inventory_quantity
-everyday-crew,Chalk,#F2F0EA,XS,001-01-XS,6
-everyday-crew,Chalk,#F2F0EA,S,001-01-S,14
-everyday-crew,Chalk,#F2F0EA,M,001-01-M,4
-everyday-crew,Chalk,#F2F0EA,L,001-01-L,11
-everyday-crew,Chalk,#F2F0EA,XL,001-01-XL,5
-everyday-crew,Chalk,#F2F0EA,XXL,001-01-XXL,2
-everyday-crew,Ink,#1E1E1C,XS,001-02-XS,4
-everyday-crew,Ink,#1E1E1C,S,001-02-S,9
-everyday-crew,Ink,#1E1E1C,M,001-02-M,12
-everyday-crew,Ink,#1E1E1C,L,001-02-L,8
-everyday-crew,Ink,#1E1E1C,XL,001-02-XL,6
-everyday-crew,Ink,#1E1E1C,XXL,001-02-XXL,3
-everyday-crew,Heathered Oat,#C9BFAB,XS,001-03-XS,0
-everyday-crew,Heathered Oat,#C9BFAB,S,001-03-S,5
-everyday-crew,Heathered Oat,#C9BFAB,M,001-03-M,7
-everyday-crew,Heathered Oat,#C9BFAB,L,001-03-L,4
-everyday-crew,Heathered Oat,#C9BFAB,XL,001-03-XL,0
-everyday-crew,Heathered Oat,#C9BFAB,XXL,001-03-XXL,0
-everyday-crew,Slate,#5A6068,XS,001-04-XS,3
-everyday-crew,Slate,#5A6068,S,001-04-S,8
-everyday-crew,Slate,#5A6068,M,001-04-M,9
-everyday-crew,Slate,#5A6068,L,001-04-L,7
-everyday-crew,Slate,#5A6068,XL,001-04-XL,4
-everyday-crew,Slate,#5A6068,XXL,001-04-XXL,1
-everyday-crew,Faded Olive,#6E7355,XS,001-05-XS,2
-everyday-crew,Faded Olive,#6E7355,S,001-05-S,4
-everyday-crew,Faded Olive,#6E7355,M,001-05-M,0
-everyday-crew,Faded Olive,#6E7355,L,001-05-L,6
-everyday-crew,Faded Olive,#6E7355,XL,001-05-XL,3
-everyday-crew,Faded Olive,#6E7355,XXL,001-05-XXL,0
-boxy-pocket-tee,Sand,#D6C9B0,XS,002-01-XS,0
-boxy-pocket-tee,Sand,#D6C9B0,S,002-01-S,7
-boxy-pocket-tee,Sand,#D6C9B0,M,002-01-M,0
-boxy-pocket-tee,Sand,#D6C9B0,L,002-01-L,6
-boxy-pocket-tee,Sand,#D6C9B0,XL,002-01-XL,3
-boxy-pocket-tee,Sand,#D6C9B0,XXL,002-01-XXL,0
-boxy-pocket-tee,Ink,#1E1E1C,XS,002-02-XS,0
-boxy-pocket-tee,Ink,#1E1E1C,S,002-02-S,6
-boxy-pocket-tee,Ink,#1E1E1C,M,002-02-M,0
-boxy-pocket-tee,Ink,#1E1E1C,L,002-02-L,9
-boxy-pocket-tee,Ink,#1E1E1C,XL,002-02-XL,4
-boxy-pocket-tee,Ink,#1E1E1C,XXL,002-02-XXL,0
-boxy-pocket-tee,Burnt Rust,#9A5A3C,XS,002-03-XS,0
-boxy-pocket-tee,Burnt Rust,#9A5A3C,S,002-03-S,3
-boxy-pocket-tee,Burnt Rust,#9A5A3C,M,002-03-M,0
-boxy-pocket-tee,Burnt Rust,#9A5A3C,L,002-03-L,4
-boxy-pocket-tee,Burnt Rust,#9A5A3C,XL,002-03-XL,2
-boxy-pocket-tee,Burnt Rust,#9A5A3C,XXL,002-03-XXL,0
-long-sleeve-henley,Heathered Oat,#C9BFAB,XS,003-01-XS,3
-long-sleeve-henley,Heathered Oat,#C9BFAB,S,003-01-S,8
-long-sleeve-henley,Heathered Oat,#C9BFAB,M,003-01-M,10
-long-sleeve-henley,Heathered Oat,#C9BFAB,L,003-01-L,7
-long-sleeve-henley,Heathered Oat,#C9BFAB,XL,003-01-XL,4
-long-sleeve-henley,Heathered Oat,#C9BFAB,XXL,003-01-XXL,0
-long-sleeve-henley,Deep Navy,#252F45,XS,003-02-XS,2
-long-sleeve-henley,Deep Navy,#252F45,S,003-02-S,6
-long-sleeve-henley,Deep Navy,#252F45,M,003-02-M,9
-long-sleeve-henley,Deep Navy,#252F45,L,003-02-L,8
-long-sleeve-henley,Deep Navy,#252F45,XL,003-02-XL,5
-long-sleeve-henley,Deep Navy,#252F45,XXL,003-02-XXL,0
-long-sleeve-henley,Clay,#A8735C,XS,003-03-XS,0
-long-sleeve-henley,Clay,#A8735C,S,003-03-S,2
-long-sleeve-henley,Clay,#A8735C,M,003-03-M,4
-long-sleeve-henley,Clay,#A8735C,L,003-03-L,3
-long-sleeve-henley,Clay,#A8735C,XL,003-03-XL,0
-long-sleeve-henley,Clay,#A8735C,XXL,003-03-XXL,0
-ribbed-tank,Chalk,#F2F0EA,XS,004-01-XS,8
-ribbed-tank,Chalk,#F2F0EA,S,004-01-S,12
-ribbed-tank,Chalk,#F2F0EA,M,004-01-M,10
-ribbed-tank,Chalk,#F2F0EA,L,004-01-L,6
-ribbed-tank,Chalk,#F2F0EA,XL,004-01-XL,0
-ribbed-tank,Chalk,#F2F0EA,XXL,004-01-XXL,0
-ribbed-tank,Ink,#1E1E1C,XS,004-02-XS,7
-ribbed-tank,Ink,#1E1E1C,S,004-02-S,11
-ribbed-tank,Ink,#1E1E1C,M,004-02-M,9
-ribbed-tank,Ink,#1E1E1C,L,004-02-L,5
-ribbed-tank,Ink,#1E1E1C,XL,004-02-XL,0
-ribbed-tank,Ink,#1E1E1C,XXL,004-02-XXL,0
-oxford-button-down,Chalk,#F2F0EA,XS,005-01-XS,4
-oxford-button-down,Chalk,#F2F0EA,S,005-01-S,10
-oxford-button-down,Chalk,#F2F0EA,M,005-01-M,12
-oxford-button-down,Chalk,#F2F0EA,L,005-01-L,9
-oxford-button-down,Chalk,#F2F0EA,XL,005-01-XL,5
-oxford-button-down,Chalk,#F2F0EA,XXL,005-01-XXL,2
-oxford-button-down,Oxford Blue,#8FA6C4,XS,005-02-XS,3
-oxford-button-down,Oxford Blue,#8FA6C4,S,005-02-S,9
-oxford-button-down,Oxford Blue,#8FA6C4,M,005-02-M,0
-oxford-button-down,Oxford Blue,#8FA6C4,L,005-02-L,8
-oxford-button-down,Oxford Blue,#8FA6C4,XL,005-02-XL,4
-oxford-button-down,Oxford Blue,#8FA6C4,XXL,005-02-XXL,1
-oxford-button-down,Blue Stripe,#B9C9DC,XS,005-03-XS,2
-oxford-button-down,Blue Stripe,#B9C9DC,S,005-03-S,6
-oxford-button-down,Blue Stripe,#B9C9DC,M,005-03-M,7
-oxford-button-down,Blue Stripe,#B9C9DC,L,005-03-L,5
-oxford-button-down,Blue Stripe,#B9C9DC,XL,005-03-XL,3
-oxford-button-down,Blue Stripe,#B9C9DC,XXL,005-03-XXL,0
-oxford-button-down,Pale Sage,#B4BFA8,XS,005-04-XS,0
-oxford-button-down,Pale Sage,#B4BFA8,S,005-04-S,4
-oxford-button-down,Pale Sage,#B4BFA8,M,005-04-M,5
-oxford-button-down,Pale Sage,#B4BFA8,L,005-04-L,3
-oxford-button-down,Pale Sage,#B4BFA8,XL,005-04-XL,0
-oxford-button-down,Pale Sage,#B4BFA8,XXL,005-04-XXL,0
-camp-collar-shirt,Ecru,#E4DCC8,XS,006-01-XS,0
-camp-collar-shirt,Ecru,#E4DCC8,S,006-01-S,7
-camp-collar-shirt,Ecru,#E4DCC8,M,006-01-M,0
-camp-collar-shirt,Ecru,#E4DCC8,L,006-01-L,6
-camp-collar-shirt,Ecru,#E4DCC8,XL,006-01-XL,3
-camp-collar-shirt,Ecru,#E4DCC8,XXL,006-01-XXL,0
-camp-collar-shirt,Faded Teal,#547A78,XS,006-02-XS,0
-camp-collar-shirt,Faded Teal,#547A78,S,006-02-S,5
-camp-collar-shirt,Faded Teal,#547A78,M,006-02-M,0
-camp-collar-shirt,Faded Teal,#547A78,L,006-02-L,5
-camp-collar-shirt,Faded Teal,#547A78,XL,006-02-XL,2
-camp-collar-shirt,Faded Teal,#547A78,XXL,006-02-XXL,0
-camp-collar-shirt,Ink,#1E1E1C,XS,006-03-XS,0
-camp-collar-shirt,Ink,#1E1E1C,S,006-03-S,3
-camp-collar-shirt,Ink,#1E1E1C,M,006-03-M,0
-camp-collar-shirt,Ink,#1E1E1C,L,006-03-L,4
-camp-collar-shirt,Ink,#1E1E1C,XL,006-03-XL,2
-camp-collar-shirt,Ink,#1E1E1C,XXL,006-03-XXL,0
-cotton-overshirt,Stone,#B0A899,XS,007-01-XS,0
-cotton-overshirt,Stone,#B0A899,S,007-01-S,6
-cotton-overshirt,Stone,#B0A899,M,007-01-M,8
-cotton-overshirt,Stone,#B0A899,L,007-01-L,6
-cotton-overshirt,Stone,#B0A899,XL,007-01-XL,3
-cotton-overshirt,Stone,#B0A899,XXL,007-01-XXL,1
-cotton-overshirt,Dark Cocoa,#4A3A31,XS,007-02-XS,0
-cotton-overshirt,Dark Cocoa,#4A3A31,S,007-02-S,4
-cotton-overshirt,Dark Cocoa,#4A3A31,M,007-02-M,6
-cotton-overshirt,Dark Cocoa,#4A3A31,L,007-02-L,5
-cotton-overshirt,Dark Cocoa,#4A3A31,XL,007-02-XL,2
-cotton-overshirt,Dark Cocoa,#4A3A31,XXL,007-02-XXL,0
-merino-crew,Deep Navy,#252F45,XS,008-01-XS,3
-merino-crew,Deep Navy,#252F45,S,008-01-S,8
-merino-crew,Deep Navy,#252F45,M,008-01-M,11
-merino-crew,Deep Navy,#252F45,L,008-01-L,8
-merino-crew,Deep Navy,#252F45,XL,008-01-XL,4
-merino-crew,Deep Navy,#252F45,XXL,008-01-XXL,2
-merino-crew,Mid Grey Melange,#8A8A85,XS,008-02-XS,2
-merino-crew,Mid Grey Melange,#8A8A85,S,008-02-S,7
-merino-crew,Mid Grey Melange,#8A8A85,M,008-02-M,0
-merino-crew,Mid Grey Melange,#8A8A85,L,008-02-L,7
-merino-crew,Mid Grey Melange,#8A8A85,XL,008-02-XL,3
-merino-crew,Mid Grey Melange,#8A8A85,XXL,008-02-XXL,1
-merino-crew,Camel,#B08A5C,XS,008-03-XS,1
-merino-crew,Camel,#B08A5C,S,008-03-S,5
-merino-crew,Camel,#B08A5C,M,008-03-M,7
-merino-crew,Camel,#B08A5C,L,008-03-L,5
-merino-crew,Camel,#B08A5C,XL,008-03-XL,2
-merino-crew,Camel,#B08A5C,XXL,008-03-XXL,0
-merino-crew,Forest,#33463A,XS,008-04-XS,0
-merino-crew,Forest,#33463A,S,008-04-S,3
-merino-crew,Forest,#33463A,M,008-04-M,5
-merino-crew,Forest,#33463A,L,008-04-L,4
-merino-crew,Forest,#33463A,XL,008-04-XL,0
-merino-crew,Forest,#33463A,XXL,008-04-XXL,0
-fisherman-cable-knit,Undyed Natural,#DBD2BE,XS,009-01-XS,0
-fisherman-cable-knit,Undyed Natural,#DBD2BE,S,009-01-S,4
-fisherman-cable-knit,Undyed Natural,#DBD2BE,M,009-01-M,6
-fisherman-cable-knit,Undyed Natural,#DBD2BE,L,009-01-L,5
-fisherman-cable-knit,Undyed Natural,#DBD2BE,XL,009-01-XL,2
-fisherman-cable-knit,Undyed Natural,#DBD2BE,XXL,009-01-XXL,1
-fisherman-cable-knit,Moss,#6A6B4E,XS,009-02-XS,0
-fisherman-cable-knit,Moss,#6A6B4E,S,009-02-S,2
-fisherman-cable-knit,Moss,#6A6B4E,M,009-02-M,4
-fisherman-cable-knit,Moss,#6A6B4E,L,009-02-L,3
-fisherman-cable-knit,Moss,#6A6B4E,XL,009-02-XL,1
-fisherman-cable-knit,Moss,#6A6B4E,XXL,009-02-XXL,0
-lambswool-v-neck,Charcoal,#3D3D3C,XS,010-01-XS,4
-lambswool-v-neck,Charcoal,#3D3D3C,S,010-01-S,9
-lambswool-v-neck,Charcoal,#3D3D3C,M,010-01-M,0
-lambswool-v-neck,Charcoal,#3D3D3C,L,010-01-L,6
-lambswool-v-neck,Charcoal,#3D3D3C,XL,010-01-XL,3
-lambswool-v-neck,Charcoal,#3D3D3C,XXL,010-01-XXL,0
-lambswool-v-neck,Oatmeal,#CDC2A8,XS,010-02-XS,3
-lambswool-v-neck,Oatmeal,#CDC2A8,S,010-02-S,7
-lambswool-v-neck,Oatmeal,#CDC2A8,M,010-02-M,0
-lambswool-v-neck,Oatmeal,#CDC2A8,L,010-02-L,5
-lambswool-v-neck,Oatmeal,#CDC2A8,XL,010-02-XL,2
-lambswool-v-neck,Oatmeal,#CDC2A8,XXL,010-02-XXL,0
-lambswool-v-neck,Burgundy,#6B2A32,XS,010-03-XS,0
-lambswool-v-neck,Burgundy,#6B2A32,S,010-03-S,4
-lambswool-v-neck,Burgundy,#6B2A32,M,010-03-M,0
-lambswool-v-neck,Burgundy,#6B2A32,L,010-03-L,3
-lambswool-v-neck,Burgundy,#6B2A32,XL,010-03-XL,1
-lambswool-v-neck,Burgundy,#6B2A32,XXL,010-03-XXL,0
-pleated-wide-trouser,Stone,#B0A899,XS,011-01-XS,0
-pleated-wide-trouser,Stone,#B0A899,S,011-01-S,6
-pleated-wide-trouser,Stone,#B0A899,M,011-01-M,8
-pleated-wide-trouser,Stone,#B0A899,L,011-01-L,7
-pleated-wide-trouser,Stone,#B0A899,XL,011-01-XL,4
-pleated-wide-trouser,Stone,#B0A899,XXL,011-01-XXL,1
-pleated-wide-trouser,Deep Navy,#252F45,XS,011-02-XS,0
-pleated-wide-trouser,Deep Navy,#252F45,S,011-02-S,5
-pleated-wide-trouser,Deep Navy,#252F45,M,011-02-M,0
-pleated-wide-trouser,Deep Navy,#252F45,L,011-02-L,6
-pleated-wide-trouser,Deep Navy,#252F45,XL,011-02-XL,3
-pleated-wide-trouser,Deep Navy,#252F45,XXL,011-02-XXL,1
-pleated-wide-trouser,Ink,#1E1E1C,XS,011-03-XS,0
-pleated-wide-trouser,Ink,#1E1E1C,S,011-03-S,4
-pleated-wide-trouser,Ink,#1E1E1C,M,011-03-M,6
-pleated-wide-trouser,Ink,#1E1E1C,L,011-03-L,5
-pleated-wide-trouser,Ink,#1E1E1C,XL,011-03-XL,2
-pleated-wide-trouser,Ink,#1E1E1C,XXL,011-03-XXL,0
-tapered-chino,Khaki,#A89873,XS,012-01-XS,4
-tapered-chino,Khaki,#A89873,S,012-01-S,10
-tapered-chino,Khaki,#A89873,M,012-01-M,12
-tapered-chino,Khaki,#A89873,L,012-01-L,9
-tapered-chino,Khaki,#A89873,XL,012-01-XL,5
-tapered-chino,Khaki,#A89873,XXL,012-01-XXL,2
-tapered-chino,Deep Navy,#252F45,XS,012-02-XS,3
-tapered-chino,Deep Navy,#252F45,S,012-02-S,8
-tapered-chino,Deep Navy,#252F45,M,012-02-M,10
-tapered-chino,Deep Navy,#252F45,L,012-02-L,8
-tapered-chino,Deep Navy,#252F45,XL,012-02-XL,4
-tapered-chino,Deep Navy,#252F45,XXL,012-02-XXL,1
-tapered-chino,Faded Olive,#6E7355,XS,012-03-XS,2
-tapered-chino,Faded Olive,#6E7355,S,012-03-S,6
-tapered-chino,Faded Olive,#6E7355,M,012-03-M,0
-tapered-chino,Faded Olive,#6E7355,L,012-03-L,6
-tapered-chino,Faded Olive,#6E7355,XL,012-03-XL,3
-tapered-chino,Faded Olive,#6E7355,XXL,012-03-XXL,0
-tapered-chino,Ink,#1E1E1C,XS,012-04-XS,0
-tapered-chino,Ink,#1E1E1C,S,012-04-S,5
-tapered-chino,Ink,#1E1E1C,M,012-04-M,7
-tapered-chino,Ink,#1E1E1C,L,012-04-L,6
-tapered-chino,Ink,#1E1E1C,XL,012-04-XL,3
-tapered-chino,Ink,#1E1E1C,XXL,012-04-XXL,1
+painted-cropped-jacket,Unbleached,#E9E4D7,XS,001-01-XS,1
+painted-cropped-jacket,Unbleached,#E9E4D7,S,001-01-S,2
+painted-cropped-jacket,Unbleached,#E9E4D7,M,001-01-M,2
+painted-cropped-jacket,Unbleached,#E9E4D7,L,001-01-L,1
+painted-cropped-jacket,Unbleached,#E9E4D7,XL,001-01-XL,0
+painted-cropped-jacket,Unbleached,#E9E4D7,XXL,001-01-XXL,0
+painted-shoulder-capelet,Unbleached,#E9E4D7,XS,002-01-XS,1
+painted-shoulder-capelet,Unbleached,#E9E4D7,S,002-01-S,1
+painted-shoulder-capelet,Unbleached,#E9E4D7,M,002-01-M,2
+painted-shoulder-capelet,Unbleached,#E9E4D7,L,002-01-L,1
+painted-shoulder-capelet,Unbleached,#E9E4D7,XL,002-01-XL,1
+painted-shoulder-capelet,Unbleached,#E9E4D7,XXL,002-01-XXL,0
+structured-peplum-vest,Chalk,#EDE9E0,XS,003-01-XS,2
+structured-peplum-vest,Chalk,#EDE9E0,S,003-01-S,3
+structured-peplum-vest,Chalk,#EDE9E0,M,003-01-M,2
+structured-peplum-vest,Chalk,#EDE9E0,L,003-01-L,2
+structured-peplum-vest,Chalk,#EDE9E0,XL,003-01-XL,1
+structured-peplum-vest,Chalk,#EDE9E0,XXL,003-01-XXL,0
+structured-peplum-vest,Ink,#14130F,XS,003-02-XS,1
+structured-peplum-vest,Ink,#14130F,S,003-02-S,2
+structured-peplum-vest,Ink,#14130F,M,003-02-M,3
+structured-peplum-vest,Ink,#14130F,L,003-02-L,2
+structured-peplum-vest,Ink,#14130F,XL,003-02-XL,1
+structured-peplum-vest,Ink,#14130F,XXL,003-02-XXL,1
+painted-peplum-top,Raw Silk,#E4DCC8,XS,004-01-XS,1
+painted-peplum-top,Raw Silk,#E4DCC8,S,004-01-S,2
+painted-peplum-top,Raw Silk,#E4DCC8,M,004-01-M,2
+painted-peplum-top,Raw Silk,#E4DCC8,L,004-01-L,1
+painted-peplum-top,Raw Silk,#E4DCC8,XL,004-01-XL,0
+painted-peplum-top,Raw Silk,#E4DCC8,XXL,004-01-XXL,0
+silk-mandarin-blouse,Raw Silk,#E4DCC8,XS,005-01-XS,2
+silk-mandarin-blouse,Raw Silk,#E4DCC8,S,005-01-S,3
+silk-mandarin-blouse,Raw Silk,#E4DCC8,M,005-01-M,4
+silk-mandarin-blouse,Raw Silk,#E4DCC8,L,005-01-L,3
+silk-mandarin-blouse,Raw Silk,#E4DCC8,XL,005-01-XL,2
+silk-mandarin-blouse,Raw Silk,#E4DCC8,XXL,005-01-XXL,1
+silk-mandarin-blouse,Ink,#14130F,XS,005-02-XS,1
+silk-mandarin-blouse,Ink,#14130F,S,005-02-S,2
+silk-mandarin-blouse,Ink,#14130F,M,005-02-M,3
+silk-mandarin-blouse,Ink,#14130F,L,005-02-L,2
+silk-mandarin-blouse,Ink,#14130F,XL,005-02-XL,1
+silk-mandarin-blouse,Ink,#14130F,XXL,005-02-XXL,0
+fluted-column-skirt,Ink,#14130F,XS,006-01-XS,2
+fluted-column-skirt,Ink,#14130F,S,006-01-S,3
+fluted-column-skirt,Ink,#14130F,M,006-01-M,3
+fluted-column-skirt,Ink,#14130F,L,006-01-L,2
+fluted-column-skirt,Ink,#14130F,XL,006-01-XL,1
+fluted-column-skirt,Ink,#14130F,XXL,006-01-XXL,1
+fluted-column-skirt,Chalk,#EDE9E0,XS,006-02-XS,0
+fluted-column-skirt,Chalk,#EDE9E0,S,006-02-S,2
+fluted-column-skirt,Chalk,#EDE9E0,M,006-02-M,2
+fluted-column-skirt,Chalk,#EDE9E0,L,006-02-L,1
+fluted-column-skirt,Chalk,#EDE9E0,XL,006-02-XL,0
+fluted-column-skirt,Chalk,#EDE9E0,XXL,006-02-XXL,0
+raw-silk-fluted-skirt,Raw Silk,#E4DCC8,XS,007-01-XS,1
+raw-silk-fluted-skirt,Raw Silk,#E4DCC8,S,007-01-S,2
+raw-silk-fluted-skirt,Raw Silk,#E4DCC8,M,007-01-M,2
+raw-silk-fluted-skirt,Raw Silk,#E4DCC8,L,007-01-L,1
+raw-silk-fluted-skirt,Raw Silk,#E4DCC8,XL,007-01-XL,1
+raw-silk-fluted-skirt,Raw Silk,#E4DCC8,XXL,007-01-XXL,0
+column-gown,Ink,#14130F,XS,008-01-XS,1
+column-gown,Ink,#14130F,S,008-01-S,2
+column-gown,Ink,#14130F,M,008-01-M,2
+column-gown,Ink,#14130F,L,008-01-L,2
+column-gown,Ink,#14130F,XL,008-01-XL,1
+column-gown,Ink,#14130F,XXL,008-01-XXL,0
+painted-column-gown,Ink,#14130F,XS,009-01-XS,0
+painted-column-gown,Ink,#14130F,S,009-01-S,1
+painted-column-gown,Ink,#14130F,M,009-01-M,1
+painted-column-gown,Ink,#14130F,L,009-01-L,1
+painted-column-gown,Ink,#14130F,XL,009-01-XL,0
+painted-column-gown,Ink,#14130F,XXL,009-01-XXL,0
+painted-overshirt,Unbleached,#E9E4D7,XS,010-01-XS,1
+painted-overshirt,Unbleached,#E9E4D7,S,010-01-S,2
+painted-overshirt,Unbleached,#E9E4D7,M,010-01-M,3
+painted-overshirt,Unbleached,#E9E4D7,L,010-01-L,2
+painted-overshirt,Unbleached,#E9E4D7,XL,010-01-XL,1
+painted-overshirt,Unbleached,#E9E4D7,XXL,010-01-XXL,1
+painted-overshirt,Ash,#B9B4A6,XS,010-02-XS,0
+painted-overshirt,Ash,#B9B4A6,S,010-02-S,1
+painted-overshirt,Ash,#B9B4A6,M,010-02-M,2
+painted-overshirt,Ash,#B9B4A6,L,010-02-L,1
+painted-overshirt,Ash,#B9B4A6,XL,010-02-XL,0
+painted-overshirt,Ash,#B9B4A6,XXL,010-02-XXL,0

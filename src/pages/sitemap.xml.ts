@@ -9,7 +9,7 @@ import { loadProducts } from "../data/source.ts";
  * canonicalised elsewhere, so listing them would invite exactly the crawl
  * waste the canonical tags exist to prevent.
  */
-const COLLECTIONS = ["all", "t-shirts", "shirts", "knitwear", "trousers"];
+const COLLECTIONS = ["all", "outerwear", "tops", "skirts", "dresses"];
 
 const escape = (s: string): string =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");

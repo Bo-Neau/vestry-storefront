@@ -34,8 +34,8 @@ export interface CatalogueResult {
 
 const ORDERED: Partial<Record<FacetKey, readonly string[]>> = {
   size: SIZE_ORDER,
-  fit: ["Slim", "Regular", "Relaxed", "Oversized"],
-  sleeve: ["Sleeveless", "Short", "Long"],
+  fit: ["Fitted", "Tailored", "Draped", "Sculptural"],
+  sleeve: ["Sleeveless", "Short", "Three-quarter", "Long"],
   gender: ["Men", "Women", "Unisex"],
 };
 

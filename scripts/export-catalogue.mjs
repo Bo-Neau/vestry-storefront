@@ -12,16 +12,16 @@ import { PRODUCTS } from "../src/data/catalogue.ts";
 import { SIZE_ORDER } from "../src/data/schema.ts";
 
 const CATEGORY = {
-  "T-shirts": "Apparel & Accessories > Clothing > Clothing Tops > T-Shirts",
-  "Shirts":   "Apparel & Accessories > Clothing > Clothing Tops > Shirts",
-  "Knitwear": "Apparel & Accessories > Clothing > Clothing Tops > Sweaters",
-  "Trousers": "Apparel & Accessories > Clothing > Pants",
+  "Outerwear": "Apparel & Accessories > Clothing > Outerwear > Coats & Jackets",
+  "Tops":      "Apparel & Accessories > Clothing > Shirts & Tops",
+  "Skirts":    "Apparel & Accessories > Clothing > Skirts",
+  "Dresses":   "Apparel & Accessories > Clothing > Dresses",
 };
 
 const CHART_HANDLE = {
   "chart-tops": "tops-garment",
-  "chart-knitwear": "knitwear-garment",
-  "chart-trousers": "trousers-garment",
+  "chart-skirts": "skirts-garment",
+  "chart-dresses": "dresses-garment",
 };
 
 /** RFC 4180: quote if the field contains a comma, quote or newline. */

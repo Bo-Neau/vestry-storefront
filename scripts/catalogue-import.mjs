@@ -24,15 +24,16 @@ import { SIZE_CHARTS } from "../src/data/size-charts.ts";
 const CHECK_ONLY = process.argv.includes("--check");
 
 const CATEGORY_FROM_TAXONOMY = {
-  "T-Shirts": "T-shirts", "Shirts": "Shirts",
-  "Sweaters": "Knitwear", "Pants": "Trousers",
+  "Coats & Jackets": "Outerwear", "Outerwear": "Outerwear",
+  "Shirts & Tops": "Tops", "Tops": "Tops",
+  "Skirts": "Skirts", "Dresses": "Dresses",
 };
-const SHAPE = { "T-shirts": "tee", "Shirts": "shirt", "Knitwear": "knit", "Trousers": "trouser" };
-const CHART_ID = { "tops-garment": "chart-tops", "knitwear-garment": "chart-knitwear", "trousers-garment": "chart-trousers" };
+const SHAPE = { "Outerwear": "jacket", "Tops": "top", "Skirts": "skirt", "Dresses": "gown" };
+const CHART_ID = { "tops-garment": "chart-tops", "skirts-garment": "chart-skirts", "dresses-garment": "chart-dresses" };
 
-const FITS = ["Slim", "Regular", "Relaxed", "Oversized"];
-const NECKLINES = ["Crew", "V-neck", "Henley", "Polo", "Collared"];
-const SLEEVES = ["Short", "Long", "Sleeveless"];
+const FITS = ["Fitted", "Tailored", "Draped", "Sculptural"];
+const NECKLINES = ["High neck", "Mandarin", "Collared", "Round", "Open"];
+const SLEEVES = ["Sleeveless", "Short", "Three-quarter", "Long"];
 const GENDERS = ["Men", "Women", "Unisex"];
 const RUNS = ["small", "true", "large"];
 

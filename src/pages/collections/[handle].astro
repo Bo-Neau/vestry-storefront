@@ -11,11 +11,11 @@ import { queryCatalogue } from "../../lib/search/index.ts";
 import type { Category } from "../../data/schema.ts";
 
 const COLLECTIONS: Record<string, { title: string; category?: Category; blurb: string }> = {
-  "all":       { title: "Everything",  blurb: "The full range, twelve styles." },
-  "t-shirts":  { title: "T-shirts",    category: "T-shirts",  blurb: "Jersey weights from 160 to 220gsm." },
-  "shirts":    { title: "Shirts",      category: "Shirts",    blurb: "Woven cotton and linen, collared and camp." },
-  "knitwear":  { title: "Knitwear",    category: "Knitwear",  blurb: "Merino, lambswool and undyed British wool." },
-  "trousers":  { title: "Trousers",    category: "Trousers",  blurb: "Twill and chino, pleated and tapered." },
+  "all":       { title: "The Collection", blurb: "Ten pieces. Painted by hand, made to order." },
+  "outerwear": { title: "Outerwear", category: "Outerwear", blurb: "Painted cotton twill — cropped, longer, and the structured capelet." },
+  "tops":      { title: "Tops",      category: "Tops",      blurb: "Sculptural tailoring in wool crepe and undyed raw silk." },
+  "skirts":    { title: "Skirts",    category: "Skirts",    blurb: "Narrow to the knee, then released into a flute." },
+  "dresses":   { title: "Dresses",   category: "Dresses",   blurb: "Bias-cut columns, painted and plain." },
 };
 
 const { handle } = Astro.params;

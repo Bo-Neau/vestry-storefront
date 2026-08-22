@@ -1,60 +1,63 @@
 import type { SizeChart } from "./schema.ts";
 
 /**
- * Shopify metaobjects: authored once, referenced by many products.
- * Measurements are GARMENT laid flat, not body — the page says so
- * explicitly, because conflating the two is a top return cause.
+ * Size charts, as metaobjects would be in Shopify: authored once, referenced
+ * by many products.
+ *
+ * Garment measurements taken flat, never body measurements — the page states
+ * which, because conflating them is itself a return driver. For made-to-order
+ * pieces these are the base sample measurements before fitting.
  */
 export const SIZE_CHARTS: readonly SizeChart[] = [
   {
     id: "chart-tops",
-    name: "Tops — garment measurements",
+    name: "Tops and outerwear — garment measurements",
     rows: [
-      { size: "XS", chestCm: 96,  waistCm: 92,  lengthCm: 66 },
-      { size: "S",  chestCm: 102, waistCm: 98,  lengthCm: 68 },
-      { size: "M",  chestCm: 108, waistCm: 104, lengthCm: 70 },
-      { size: "L",  chestCm: 114, waistCm: 110, lengthCm: 72 },
-      { size: "XL", chestCm: 122, waistCm: 118, lengthCm: 74 },
-      { size: "XXL",chestCm: 130, waistCm: 126, lengthCm: 76 },
+      { size: "XS", chestCm: 84,  waistCm: 68,  lengthCm: 52 },
+      { size: "S",  chestCm: 88,  waistCm: 72,  lengthCm: 54 },
+      { size: "M",  chestCm: 94,  waistCm: 78,  lengthCm: 56 },
+      { size: "L",  chestCm: 100, waistCm: 84,  lengthCm: 58 },
+      { size: "XL", chestCm: 108, waistCm: 92,  lengthCm: 60 },
+      { size: "XXL",chestCm: 116, waistCm: 100, lengthCm: 62 },
     ],
     howToMeasure: [
-      { part: "Chest", instruction: "Lay the garment flat. Measure across the body one inch below the armhole, then double it." },
-      { part: "Waist", instruction: "Measure across the narrowest point of the body, then double it." },
-      { part: "Length", instruction: "Measure from the highest point of the shoulder straight down to the hem." },
+      { part: "Bust", instruction: "Lay the piece flat and fastened. Measure across the fullest point, then double it." },
+      { part: "Waist", instruction: "Measure across the narrowest point of the body, then double it. On peplum styles this sits above the flare." },
+      { part: "Length", instruction: "Measure from the highest shoulder point straight down to the hem, excluding any peplum." },
     ],
   },
   {
-    id: "chart-knitwear",
-    name: "Knitwear — garment measurements",
+    id: "chart-skirts",
+    name: "Skirts — garment measurements",
     rows: [
-      { size: "XS", chestCm: 100, waistCm: 96,  lengthCm: 64 },
-      { size: "S",  chestCm: 106, waistCm: 102, lengthCm: 66 },
-      { size: "M",  chestCm: 112, waistCm: 108, lengthCm: 68 },
-      { size: "L",  chestCm: 118, waistCm: 114, lengthCm: 70 },
-      { size: "XL", chestCm: 126, waistCm: 122, lengthCm: 72 },
-      { size: "XXL",chestCm: 134, waistCm: 130, lengthCm: 74 },
+      { size: "XS", chestCm: 0, waistCm: 64,  lengthCm: 74 },
+      { size: "S",  chestCm: 0, waistCm: 68,  lengthCm: 76 },
+      { size: "M",  chestCm: 0, waistCm: 74,  lengthCm: 78 },
+      { size: "L",  chestCm: 0, waistCm: 80,  lengthCm: 80 },
+      { size: "XL", chestCm: 0, waistCm: 88,  lengthCm: 82 },
+      { size: "XXL",chestCm: 0, waistCm: 96,  lengthCm: 84 },
     ],
     howToMeasure: [
-      { part: "Chest", instruction: "Lay flat without stretching the rib. Measure one inch below the armhole and double it." },
-      { part: "Waist", instruction: "Measure across the narrowest point, unstretched, then double it." },
-      { part: "Length", instruction: "Measure from the shoulder seam down to the bottom of the welt." },
+      { part: "Waist", instruction: "Fasten the skirt and lay it flat. Measure across the top of the waistband and double it." },
+      { part: "Hip", instruction: "Measure across 20cm below the waistband and double it. Fluted styles fall away below this point." },
+      { part: "Length", instruction: "Measure from the top of the waistband to the hem at the centre back." },
     ],
   },
   {
-    id: "chart-trousers",
-    name: "Trousers — garment measurements",
+    id: "chart-dresses",
+    name: "Dresses — garment measurements",
     rows: [
-      { size: "XS", chestCm: 0, waistCm: 74,  lengthCm: 100 },
-      { size: "S",  chestCm: 0, waistCm: 79,  lengthCm: 102 },
-      { size: "M",  chestCm: 0, waistCm: 84,  lengthCm: 104 },
-      { size: "L",  chestCm: 0, waistCm: 90,  lengthCm: 106 },
-      { size: "XL", chestCm: 0, waistCm: 97,  lengthCm: 108 },
-      { size: "XXL",chestCm: 0, waistCm: 104, lengthCm: 110 },
+      { size: "XS", chestCm: 84,  waistCm: 66,  lengthCm: 148 },
+      { size: "S",  chestCm: 88,  waistCm: 70,  lengthCm: 150 },
+      { size: "M",  chestCm: 94,  waistCm: 76,  lengthCm: 152 },
+      { size: "L",  chestCm: 100, waistCm: 82,  lengthCm: 154 },
+      { size: "XL", chestCm: 108, waistCm: 90,  lengthCm: 156 },
+      { size: "XXL",chestCm: 116, waistCm: 98,  lengthCm: 158 },
     ],
     howToMeasure: [
-      { part: "Waist", instruction: "Fasten the trouser and lay it flat. Measure across the top of the waistband and double it." },
-      { part: "Inseam", instruction: "Measure from the crotch seam down the inside leg to the hem." },
-      { part: "Length", instruction: "Measure from the top of the waistband to the hem along the outside leg." },
+      { part: "Bust", instruction: "Lay flat. Measure across the fullest point of the bodice, then double it." },
+      { part: "Waist", instruction: "Measure across the narrowest point, then double it." },
+      { part: "Length", instruction: "Measure from the highest shoulder point to the hem. Column styles are cut to sit on the floor with a heel." },
     ],
   },
 ];

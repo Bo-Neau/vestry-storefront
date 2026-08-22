@@ -158,15 +158,15 @@ function oneOf<T extends string>(
 }
 
 const SHAPE_BY_CATEGORY: Record<Category, GarmentShape> = {
-  "T-shirts": "tee", "Shirts": "shirt", "Knitwear": "knit", "Trousers": "trouser",
+  "Outerwear": "jacket", "Tops": "top", "Skirts": "skirt", "Dresses": "gown",
 };
 
 function categoryFor(productType: string | null): Category {
   const t = (productType ?? "").toLowerCase();
-  if (t.includes("trouser") || t.includes("pant") || t.includes("chino")) return "Trousers";
-  if (t.includes("sweater") || t.includes("knit")) return "Knitwear";
-  if (t.includes("shirt") && !t.includes("t-shirt") && !t.includes("tshirt")) return "Shirts";
-  return "T-shirts";
+  if (t.includes("dress") || t.includes("gown")) return "Dresses";
+  if (t.includes("skirt")) return "Skirts";
+  if (t.includes("jacket") || t.includes("coat") || t.includes("cape") || t.includes("outer")) return "Outerwear";
+  return "Tops";
 }
 
 /* ---------------- size chart ---------------- */
@@ -305,12 +305,12 @@ export function mapProduct(raw: RawProduct): Product {
     summary: text(m, CUSTOM.summary) ?? raw.description.split(/(?<=\.)\s/)[0] ?? "",
     description: raw.description,
     attributes: {
-      fit: oneOf<Fit>(text(m, CUSTOM.fitCut), ["Slim", "Regular", "Relaxed", "Oversized"], "Regular"),
+      fit: oneOf<Fit>(text(m, CUSTOM.fitCut), ["Fitted", "Tailored", "Draped", "Sculptural"], "Tailored"),
       ...(categoryValue(m, CATEGORY.neckline)
-        ? { neckline: oneOf<Neckline>(categoryValue(m, CATEGORY.neckline), ["Crew", "V-neck", "Henley", "Polo", "Collared"], "Crew") }
+        ? { neckline: oneOf<Neckline>(categoryValue(m, CATEGORY.neckline), ["High neck", "Mandarin", "Collared", "Round", "Open"], "Round") }
         : {}),
       ...(categoryValue(m, CATEGORY.sleeveLength)
-        ? { sleeveLength: oneOf<SleeveLength>(categoryValue(m, CATEGORY.sleeveLength), ["Short", "Long", "Sleeveless"], "Short") }
+        ? { sleeveLength: oneOf<SleeveLength>(categoryValue(m, CATEGORY.sleeveLength), ["Sleeveless", "Short", "Three-quarter", "Long"], "Long") }
         : {}),
       fabric: categoryValue(m, CATEGORY.fabric) ?? "—",
       fabricWeightGsm: int(m, CUSTOM.fabricWeightGsm) ?? 0,

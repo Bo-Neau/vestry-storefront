@@ -26,8 +26,8 @@ const siteOrigin = (Astro.site ?? new URL("https://example.com")).origin;
       <h1>{BRAND.tagline}</h1>
       <p class="hero-lede">{BRAND.intro}</p>
       <div class="hero-actions">
-        <a href="/collections/all" class="btn">Shop everything</a>
-        <a href="/collections/knitwear" class="btn ghost">New knitwear</a>
+        <a href="/collections/all" class="btn">View the collection</a>
+        <a href="/collections/dresses" class="btn ghost">Dresses</a>
       </div>
     </div>
   </section>
@@ -50,7 +50,7 @@ const siteOrigin = (Astro.site ?? new URL("https://example.com")).origin;
   <section class="shell featured">
     <div class="featured-head">
       <h2>Selected styles</h2>
-      <a href="/collections/all" class="more">All twelve styles</a>
+      <a href="/collections/all" class="more">All ten pieces</a>
     </div>
     <ul class="grid">
       {featured.map((product, i) => (

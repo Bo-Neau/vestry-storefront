@@ -15,15 +15,40 @@ import { validateAdd } from "../src/lib/cart/index.ts";
 import { MAX_QUANTITY_PER_LINE } from "../src/lib/cart/types.ts";
 import { PRODUCTS } from "../src/data/catalogue.ts";
 
-const CREW = "everyday-crew";
-
 /**
- * Resolved from the catalogue rather than hardcoded. Colourway ids are
- * derived from the product handle and colour name when the catalogue is
- * generated from CSV, so a literal id here would break every time the sheets
- * are re-imported — testing the fixture instead of the behaviour.
+ * Fixtures are DERIVED from the catalogue, never named.
+ *
+ * Hardcoded handles and colourway ids test the sample data rather than the
+ * behaviour: they broke once when the catalogue was regenerated from CSV, and
+ * again when the sample range was replaced entirely. Selecting by property —
+ * "a product with stock", "a sold-out variant" — survives both.
  */
-const WHITE = PRODUCTS.find((p) => p.handle === CREW).colorways[0].id;
+const stocked = PRODUCTS.find((p) =>
+  p.colorways.some((c) => c.sizes.some((s) => s.inventory > 0)),
+);
+if (!stocked) throw new Error("catalogue has no product with any stock");
+
+const CREW = stocked.handle;
+const WHITE = stocked.colorways.find((c) =>
+  c.sizes.some((s) => s.inventory > 0),
+).id;
+
+/** A variant that is genuinely sold out, wherever it happens to live. */
+const SOLD_OUT = (() => {
+  for (const p of PRODUCTS) {
+    for (const c of p.colorways) {
+      const s = c.sizes.find((x) => x.inventory === 0);
+      if (s) return { handle: p.handle, colorwayId: c.id, size: s.size };
+    }
+  }
+  throw new Error("catalogue has no sold-out variant — this test would be vacuous");
+})();
+
+/** A variant that is genuinely in stock. */
+const IN_STOCK = (() => {
+  const c = stocked.colorways.find((c) => c.sizes.some((s) => s.inventory > 0));
+  return { handle: stocked.handle, colorwayId: c.id, size: c.sizes.find((s) => s.inventory > 0).size };
+})();
 
 /* --- cookie parsing is hostile-input territory -------------------------- */
 
@@ -126,8 +151,8 @@ test("incrementing cannot exceed the cap", () => {
 });
 
 test("setting quantity to zero removes the line", () => {
-  const lines = addLine([], { handle: CREW, colorwayId: WHITE, size: "M", quantity: 2 });
-  assert.equal(setQuantity(lines, lineKey(CREW, WHITE, "M"), 0).length, 0);
+  const lines = addLine([], { handle: CREW, colorwayId: WHITE, size: IN_STOCK.size, quantity: 2 });
+  assert.equal(setQuantity(lines, lineKey(CREW, WHITE, IN_STOCK.size), 0).length, 0);
 });
 
 test("remove only affects the matching line", () => {
@@ -149,24 +174,13 @@ test("line keys round-trip", () => {
 
 test("rejects a sold-out variant even though the form disables it", () => {
   // Forms are client-side and can be replayed; state changes re-check.
-  const boxy = PRODUCTS.find((p) => p.handle === "boxy-pocket-tee");
-  const sand = boxy.colorways[0];
-  const soldOut = sand.sizes.find((s) => s.inventory === 0);
-  const result = validateAdd(PRODUCTS, {
-    handle: boxy.handle, colorwayId: sand.id, size: soldOut.size, quantity: 1,
-  });
+  const result = validateAdd(PRODUCTS, { ...SOLD_OUT, quantity: 1 });
   assert.equal(result.ok, false);
   assert.match(result.reason, /sold out/i);
 });
 
 test("accepts a variant that is genuinely in stock", () => {
-  const crew = PRODUCTS.find((p) => p.handle === CREW);
-  const white = crew.colorways.find((c) => c.id === WHITE);
-  const inStock = white.sizes.find((s) => s.inventory > 0);
-  assert.deepEqual(
-    validateAdd(PRODUCTS, { handle: CREW, colorwayId: WHITE, size: inStock.size, quantity: 1 }),
-    { ok: true },
-  );
+  assert.deepEqual(validateAdd(PRODUCTS, { ...IN_STOCK, quantity: 1 }), { ok: true });
 });
 
 test("rejects unknown products and quantities out of range", () => {
