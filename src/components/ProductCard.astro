@@ -29,14 +29,30 @@ const off = product.compareAtPrice
 
 <article class="card">
   <div class="card-media">
-    <ProductImage
-      colorway={lead}
-      shape={product.shape}
-      view="front"
-      alt=""
-      priority={loading === "eager"}
-      sizes="(max-width: 860px) 45vw, (max-width: 1320px) 24vw, 300px"
-    />
+    <span class="shot front">
+      <ProductImage
+        colorway={lead}
+        shape={product.shape}
+        view="front"
+        alt=""
+        priority={loading === "eager"}
+        sizes="(max-width: 860px) 45vw, (max-width: 1320px) 24vw, 300px"
+      />
+    </span>
+    <!--
+      Second view, revealed on hover. Loaded lazily and never given priority:
+      it must not compete with the first image for bandwidth, since most
+      visitors never hover a given card.
+    -->
+    <span class="shot back" aria-hidden="true">
+      <ProductImage
+        colorway={lead}
+        shape={product.shape}
+        view="back"
+        alt=""
+        sizes="(max-width: 860px) 45vw, (max-width: 1320px) 24vw, 300px"
+      />
+    </span>
     {off > 0 && <span class="flag">{off}% off</span>}
   </div>
 
@@ -102,8 +118,40 @@ const off = product.compareAtPrice
     background: var(--paper-3);
     overflow: hidden;
   }
-  .card-media :global(.garment) { transition: transform .4s ease; }
-  .card:hover .card-media :global(.garment) { transform: scale(1.02); }
+
+  /*
+    Hover reveals the second view — the standard way a clothing grid shows
+    the back of a piece without a click. Done with two stacked images and a
+    crossfade, so it costs no JavaScript.
+  */
+  .shot { display: block; }
+  .shot.back {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+  }
+  .shot.back :global(.garment),
+  .shot.back :global(.product-img) { height: 100%; object-fit: cover; }
+
+  @media (hover: hover) {
+    .shot { transition: opacity .45s ease, transform .6s ease; }
+    .card:hover .shot.front { opacity: 0; }
+    .card:hover .shot.back  { opacity: 1; }
+    .card:hover .card-media :global(.garment),
+    .card:hover .card-media :global(.product-img) { transform: scale(1.02); }
+  }
+
+  /* A touch device has no hover, so the second view would never appear and
+     the fade would only ever be a cost. Keep the front image and nothing else. */
+  @media (hover: none) {
+    .shot.back { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .shot { transition: none; }
+    .card:hover .card-media :global(.garment),
+    .card:hover .card-media :global(.product-img) { transform: none; }
+  }
 
   .flag {
     position: absolute;

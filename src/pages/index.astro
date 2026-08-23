@@ -1,35 +1,146 @@
 ---
 import Base from "../layouts/Base.astro";
 import ProductCard from "../components/ProductCard.astro";
-import { loadProducts } from "../data/source.ts";
+import Garment from "../components/Garment.astro";
 import JsonLd from "../components/JsonLd.astro";
 import { organisationSchema, websiteSchema } from "../lib/seo/structured-data.ts";
 import { BRAND, COMMERCE, COPY } from "../config/brand.ts";
+import { loadProducts } from "../data/source.ts";
+import { LOOKS, piecesFor, lookTotal } from "../data/looks.ts";
+import { formatMoney } from "../lib/money.ts";
+import type { GarmentShape } from "../data/schema.ts";
 
 const { products } = await loadProducts();
-const featured = products.slice(0, 8);
-
 const siteOrigin = (Astro.site ?? new URL("https://example.com")).origin;
+
+// The hero leads on the piece the collection is built around.
+const heroPiece = products.find((p) => p.handle === "painted-column-gown")
+  ?? products.find((p) => p.category === "Dresses")
+  ?? products[0];
+
+const looks = LOOKS.map((look) => {
+  const pieces = piecesFor(look, products);
+  return { look, pieces, hero: pieces.find((p) => p.handle === look.heroHandle) ?? pieces[0] };
+}).filter((l) => l.pieces.length > 0);
+
+const CATEGORIES = [
+  { title: "Outerwear", href: "/collections/outerwear", note: "Painted cotton twill" },
+  { title: "Tops",      href: "/collections/tops",      note: "Wool crepe and raw silk" },
+  { title: "Skirts",    href: "/collections/skirts",    note: "Narrow, then fluted" },
+  { title: "Dresses",   href: "/collections/dresses",   note: "Bias-cut columns" },
+];
+
+const categoryLead = (title: string) =>
+  products.find((p) => p.category === title) ?? products[0];
+
+const featured = products.slice(0, 8);
 ---
 
-<Base
-  title={`${BRAND.name} — ${BRAND.tagline}`}
-  description={BRAND.description}
->
+<Base title={`${BRAND.name} — ${BRAND.tagline}`} description={BRAND.description}>
   <Fragment slot="head">
     <JsonLd data={organisationSchema(siteOrigin, BRAND.name)} />
     <JsonLd data={websiteSchema(siteOrigin, BRAND.name)} />
   </Fragment>
-  <section class="hero shell">
+
+  <!-- Editorial opening: one piece, full height, nothing competing with it. -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero-media">
+      {heroPiece && (
+        <Garment
+          shape={heroPiece.shape as GarmentShape}
+          hex={heroPiece.colorways[0]!.hex}
+          hexAlt={heroPiece.colorways[0]!.hexAlt}
+          view="front"
+          alt={`${heroPiece.title} in ${heroPiece.colorways[0]!.name}`}
+          loading="eager"
+        />
+      )}
+    </div>
     <div class="hero-copy">
       {BRAND.eyebrow && <p class="label">{BRAND.eyebrow}</p>}
-      <h1>{BRAND.tagline}</h1>
+      <h1 id="hero-title">{BRAND.tagline}</h1>
       <p class="hero-lede">{BRAND.intro}</p>
       <div class="hero-actions">
         <a href="/collections/all" class="btn">View the collection</a>
-        <a href="/collections/dresses" class="btn ghost">Dresses</a>
+        {looks[0] && (
+          <a href={`/looks/${looks[0].look.handle}`} class="btn ghost">
+            Shop {looks[0].look.title}
+          </a>
+        )}
       </div>
     </div>
+  </section>
+
+  <!-- Shop the look: outfit merchandising, which answers "what do I wear
+       this with" rather than "here are more products". -->
+  <section class="shell looks" aria-labelledby="looks-title">
+    <div class="sec-head">
+      <p class="label">Styled together</p>
+      <h2 id="looks-title">Shop the look</h2>
+    </div>
+
+    <ul class="look-list">
+      {looks.map(({ look, pieces, hero }) => (
+        <li class="look">
+          <a href={`/looks/${look.handle}`} class="look-media" tabindex="-1" aria-hidden="true">
+            {hero && (
+              <Garment
+                shape={hero.shape as GarmentShape}
+                hex={hero.colorways[0]!.hex}
+                hexAlt={hero.colorways[0]!.hexAlt}
+                view="front"
+                alt=""
+              />
+            )}
+          </a>
+          <div class="look-body">
+            <h3><a href={`/looks/${look.handle}`}>{look.title}</a></h3>
+            <p class="look-note">{look.note}</p>
+            <p class="look-meta">
+              {pieces.map((p) => p.title).join(" · ")}
+            </p>
+            <p class="look-price money">
+              {formatMoney({ amount: lookTotal(pieces), currency: "USD" })} together
+            </p>
+            <a href={`/looks/${look.handle}`} class="btn small">Shop this look</a>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <!-- Category entries, as images rather than a text menu. -->
+  <section class="shell cats" aria-labelledby="cats-title">
+    <div class="sec-head">
+      <p class="label">By category</p>
+      <h2 id="cats-title">The collection</h2>
+    </div>
+    <ul class="cat-list">
+      {CATEGORIES.map((c) => {
+        const lead = categoryLead(c.title);
+        return (
+          <li class="cat">
+            <a href={c.href}>
+              <span class="cat-media" aria-hidden="true">
+                {lead && (
+                  <Garment
+                    shape={lead.shape as GarmentShape}
+                    hex={lead.colorways[0]!.hex}
+                    hexAlt={lead.colorways[0]!.hexAlt}
+                    view="front"
+                    alt=""
+                  />
+                )}
+              </span>
+              <span class="cat-text">
+                <span class="cat-title">{c.title}</span>
+                <span class="cat-note">{c.note}</span>
+              </span>
+            </a>
+          </li>
+        );
+      })}
+    </ul>
   </section>
 
   <section class="shell trust">
@@ -43,13 +154,13 @@ const siteOrigin = (Astro.site ?? new URL("https://example.com")).origin;
     </div>
     <div class="trust-item">
       <h2>{COPY.returnsShort}</h2>
-      <p>{COMMERCE.exchangesSupported ? "Exchanges are one step. If the size is wrong, swapping it should be easy." : "Straightforward returns if the size is wrong."}</p>
+      <p>{COMMERCE.exchangesSupported ? "Exchanges are one step. If the size is wrong, swapping it should be easy." : "Most pieces are cut to order, so please check the measurements before ordering."}</p>
     </div>
   </section>
 
   <section class="shell featured">
     <div class="featured-head">
-      <h2>Selected styles</h2>
+      <h2>Selected pieces</h2>
       <a href="/collections/all" class="more">All ten pieces</a>
     </div>
     <ul class="grid">
@@ -61,17 +172,34 @@ const siteOrigin = (Astro.site ?? new URL("https://example.com")).origin;
 </Base>
 
 <style>
-  .hero { padding-block: var(--sp-8) var(--sp-7); }
-  .hero-copy { max-width: 48ch; display: flex; flex-direction: column; gap: var(--sp-4); }
-  .hero h1 { font-size: var(--step-4); line-height: 1.04; }
+  /* ---------- hero ---------- */
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    align-items: stretch;
+    border-bottom: 1px solid var(--rule);
+  }
+  .hero-media { background: var(--paper-3); overflow: hidden; }
+  .hero-media :global(.garment) { width: 100%; height: 100%; object-fit: cover; aspect-ratio: auto; min-height: 78vh; }
+  .hero-copy {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--sp-4);
+    padding: var(--sp-8) var(--sp-7);
+    max-width: 52ch;
+  }
+  .hero-copy h1 { font-size: var(--step-4); line-height: 1.04; }
   .hero-lede { font-size: var(--step-1); color: var(--ink-2); line-height: 1.5; }
   .hero-actions { display: flex; gap: var(--sp-3); flex-wrap: wrap; margin-top: var(--sp-2); }
 
   .btn {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
     background: var(--ink);
     color: var(--paper);
-    padding: var(--sp-3) var(--sp-5);
+    padding: 0 var(--sp-5);
     font-family: var(--mono);
     font-size: 0.6875rem;
     text-transform: uppercase;
@@ -79,8 +207,59 @@ const siteOrigin = (Astro.site ?? new URL("https://example.com")).origin;
   }
   .btn:hover { text-decoration: none; opacity: 0.88; }
   .btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--rule-2); }
-  .btn.ghost:hover { border-color: var(--ink); }
+  .btn.ghost:hover { border-color: var(--ink); opacity: 1; }
+  .btn.small { min-height: 44px; align-self: flex-start; }
 
+  .sec-head { display: flex; flex-direction: column; gap: var(--sp-2); margin-bottom: var(--sp-5); }
+  .sec-head h2 { font-size: var(--step-3); letter-spacing: -0.02em; }
+
+  /* ---------- looks ---------- */
+  .looks { padding-block: var(--sp-8) var(--sp-7); }
+  .look-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--sp-6) var(--sp-5);
+  }
+  .look { display: flex; flex-direction: column; gap: var(--sp-4); }
+  .look-media { display: block; background: var(--paper-3); overflow: hidden; }
+  .look-media :global(.garment) { transition: transform .6s ease; }
+  .look:hover .look-media :global(.garment) { transform: scale(1.03); }
+  .look-body { display: flex; flex-direction: column; gap: var(--sp-2); }
+  .look-body h3 { font-size: var(--step-2); letter-spacing: -0.018em; }
+  .look-note { font-size: var(--step--1); color: var(--ink-2); max-width: 40ch; }
+  .look-meta {
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--ink-3);
+  }
+  .look-price { font-size: var(--step-0); margin-top: var(--sp-1); }
+
+  /* ---------- categories ---------- */
+  .cats { padding-block: var(--sp-7); border-top: 1px solid var(--rule); }
+  .cat-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--sp-4);
+  }
+  .cat a { display: flex; flex-direction: column; gap: var(--sp-3); }
+  .cat a:hover { text-decoration: none; }
+  .cat-media { display: block; background: var(--paper-3); overflow: hidden; }
+  .cat-media :global(.garment) { transition: transform .5s ease; }
+  .cat a:hover .cat-media :global(.garment) { transform: scale(1.03); }
+  .cat-text { display: flex; flex-direction: column; gap: 2px; }
+  .cat-title {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.11em;
+  }
+  .cat-note { font-size: var(--step--1); color: var(--ink-3); }
+
+  /* ---------- trust ---------- */
   .trust {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -93,24 +272,41 @@ const siteOrigin = (Astro.site ?? new URL("https://example.com")).origin;
   .trust-item h2 { font-size: var(--step-0); }
   .trust-item p { font-size: var(--step--1); color: var(--ink-2); }
 
+  /* ---------- featured ---------- */
   .featured { padding-block: var(--sp-7) 0; }
   .featured-head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: var(--sp-4);
-    margin-bottom: var(--sp-5);
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: var(--sp-4); margin-bottom: var(--sp-5);
   }
   .featured-head h2 { font-size: var(--step-2); }
-  .more { font-size: var(--step--1); color: var(--ink-2); }
-
+  .more {
+    font-size: var(--step--1);
+    color: var(--ink-2);
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
   .grid {
     list-style: none;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(216px, 1fr));
     gap: var(--sp-6) var(--sp-5);
   }
+
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: minmax(0, 1fr); }
+    .hero-media :global(.garment) { min-height: 56vh; }
+    .hero-copy { padding: var(--sp-6) var(--sp-4) var(--sp-7); max-width: none; }
+  }
   @media (max-width: 860px) {
     .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--sp-5) var(--sp-4); }
+    .cat-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .look-media :global(.garment),
+    .cat-media :global(.garment) { transition: none; }
+    .look:hover .look-media :global(.garment),
+    .cat a:hover .cat-media :global(.garment) { transform: none; }
   }
 </style>

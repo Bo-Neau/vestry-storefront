@@ -1,0 +1,156 @@
+---
+import Base from "../../layouts/Base.astro";
+import ProductCard from "../../components/ProductCard.astro";
+import Garment from "../../components/Garment.astro";
+import JsonLd from "../../components/JsonLd.astro";
+import { breadcrumbSchema } from "../../lib/seo/structured-data.ts";
+import { loadProducts } from "../../data/source.ts";
+import { lookByHandle, piecesFor, lookTotal, LOOKS } from "../../data/looks.ts";
+import { formatMoney } from "../../lib/money.ts";
+import { pageTitle } from "../../config/brand.ts";
+import type { GarmentShape } from "../../data/schema.ts";
+
+const { handle } = Astro.params;
+const look = handle ? lookByHandle(handle) : undefined;
+
+if (!look) {
+  Astro.response.status = 404;
+  return Astro.rewrite("/404");
+}
+
+const { products } = await loadProducts();
+const pieces = piecesFor(look, products);
+const hero = pieces.find((p) => p.handle === look.heroHandle) ?? pieces[0];
+const total = lookTotal(pieces);
+
+const siteBase = Astro.site ?? new URL("https://example.com");
+const canonical = new URL(`/looks/${look.handle}`, siteBase).href;
+const crumbs = breadcrumbSchema([
+  { name: "Home", url: `${siteBase.origin}/` },
+  { name: "Looks", url: `${siteBase.origin}/looks/${look.handle}` },
+  { name: look.title, url: canonical },
+]);
+
+const others = LOOKS.filter((l) => l.handle !== look.handle);
+---
+
+<Base title={pageTitle(look.title)} description={look.note} canonical={canonical}>
+  <Fragment slot="head"><JsonLd data={crumbs} /></Fragment>
+
+  <div class="shell">
+    <nav aria-label="Breadcrumb" class="crumbs">
+      <a href="/">Home</a> <span aria-hidden="true">/</span> <span>{look.title}</span>
+    </nav>
+
+    <header class="look-head">
+      <p class="label">The look</p>
+      <h1>{look.title}</h1>
+      <p class="note">{look.note}</p>
+      <p class="total">
+        {pieces.length} pieces · {formatMoney({ amount: total, currency: "USD" })} together
+      </p>
+    </header>
+
+    <div class="look-body">
+      <div class="look-visual">
+        {hero && (
+          <Garment
+            shape={hero.shape as GarmentShape}
+            hex={hero.colorways[0]!.hex}
+            hexAlt={hero.colorways[0]!.hexAlt}
+            view="front"
+            alt={`${look.title} — ${hero.title}`}
+            loading="eager"
+          />
+        )}
+      </div>
+
+      <section class="look-pieces" aria-label={`Pieces in ${look.title}`}>
+        <h2>Every piece</h2>
+        <ul class="pieces">
+          {pieces.map((p) => (
+            <li><ProductCard product={p} /></li>
+          ))}
+        </ul>
+        <p class="look-note">
+          Each piece is sold on its own — add them separately so you can choose
+          your size for each.
+        </p>
+      </section>
+    </div>
+
+    {others.length > 0 && (
+      <section class="other-looks" aria-labelledby="other-looks-title">
+        <h2 id="other-looks-title">Other looks</h2>
+        <ul class="other-list">
+          {others.map((l) => (
+            <li><a href={`/looks/${l.handle}`}>{l.title}</a></li>
+          ))}
+        </ul>
+      </section>
+    )}
+  </div>
+</Base>
+
+<style>
+  .crumbs {
+    display: flex; gap: var(--sp-2); flex-wrap: wrap;
+    font-size: var(--step--1); color: var(--ink-3);
+    padding-block: var(--sp-5) var(--sp-4);
+  }
+  .crumbs a { color: var(--ink-2); display: inline-block; padding-block: var(--sp-2); }
+
+  .look-head { display: flex; flex-direction: column; gap: var(--sp-3); max-width: 56ch; }
+  .look-head h1 { font-size: var(--step-4); line-height: 1.04; }
+  .note { font-size: var(--step-1); color: var(--ink-2); line-height: 1.5; }
+  .total {
+    font-family: var(--mono);
+    font-size: var(--step--1);
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .look-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    gap: var(--sp-7);
+    align-items: start;
+    padding-block: var(--sp-6) var(--sp-8);
+  }
+  .look-visual { background: var(--paper-3); position: sticky; top: 88px; }
+
+  .look-pieces { display: flex; flex-direction: column; gap: var(--sp-5); }
+  .look-pieces h2 { font-size: var(--step-2); }
+  .pieces {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: var(--sp-6) var(--sp-5);
+  }
+  .look-note { font-size: var(--step--1); color: var(--ink-3); max-width: 46ch; }
+
+  .other-looks {
+    border-top: 1px solid var(--rule);
+    padding-block: var(--sp-6);
+    display: flex; flex-direction: column; gap: var(--sp-4);
+  }
+  .other-looks h2 { font-size: var(--step-1); }
+  .other-list { list-style: none; display: flex; gap: var(--sp-5); flex-wrap: wrap; }
+  .other-list a {
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    border-bottom: 1px solid var(--rule-2);
+  }
+  .other-list a:hover { border-color: var(--ink); text-decoration: none; }
+
+  @media (max-width: 900px) {
+    .look-body { grid-template-columns: minmax(0, 1fr); gap: var(--sp-5); }
+    .look-visual { position: static; }
+    .pieces { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--sp-5) var(--sp-4); }
+  }
+</style>

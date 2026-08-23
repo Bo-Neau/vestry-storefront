@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import { loadProducts } from "../data/source.ts";
+import { LOOKS } from "../data/looks.ts";
 
 /**
  * Sitemap, generated from live data.
@@ -31,6 +32,13 @@ export const GET: APIRoute = async ({ site }) => {
       loc: `${base}/products/${p.handle}`,
       priority: "0.9",
       freq: "weekly",
+    })),
+    // Look pages are real landing pages — styled outfits are how people
+    // search for clothes ("what do I wear this with"), so they belong here.
+    ...LOOKS.map((l) => ({
+      loc: `${base}/looks/${l.handle}`,
+      priority: "0.7",
+      freq: "monthly",
     })),
   ];
 
