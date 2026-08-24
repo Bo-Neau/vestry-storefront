@@ -16,28 +16,30 @@ import type { Money } from "../data/schema.ts";
 
 export const BRAND = {
   /** Shown in the header, page titles, Open Graph and structured data. */
-  name: "Storefront",
+  name: "Manussa",
 
   /** Legal entity, if it differs. Used in policy copy. */
-  legalName: "Storefront Ltd",
+  legalName: "Auracore Company",
 
-  /** One line. Homepage hero heading. */
-  tagline: "Painted by hand. Cut to the body.",
+  /** The brand's own line, from the booklet. */
+  tagline: "Art You Can Wear",
 
   /** Meta description for the homepage, and the fallback elsewhere. */
   description:
-    "Hand-painted outerwear, sculptural tailoring and bias-cut columns. Every " +
-    "piece lists the model's height, the size worn and garment measurements " +
-    "laid flat, so you can judge fit before it is cut.",
+    "Myanmar-based designer clothing where fashion and art meet. Hand-painted " +
+    "textiles, hand-worked embroidery and traditional silhouettes reimagined. " +
+    "Every piece lists the model's height, the size worn and garment " +
+    "measurements taken flat.",
 
   /** Supporting paragraph under the hero. */
   intro:
-    "Each piece is painted individually, so no two fall the same way. Every " +
-    "page lists the model's height, the size worn, and garment measurements " +
-    "taken flat — because a piece cut for you should not arrive as a surprise.",
+    "Timeless silhouettes infused with artistic essence and the heritage of " +
+    "Myanmar. Every garment and stitch carries an origin, an intention and a " +
+    "story, realised in cloth — and every page tells you the model's height, " +
+    "the size she wore, and the measurements taken flat.",
 
   /** Season or campaign label above the hero. Set to null to hide. */
-  eyebrow: "Autumn 2026",
+  eyebrow: "The Hope Collection",
 } as const;
 
 /**

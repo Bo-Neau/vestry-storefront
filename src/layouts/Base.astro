@@ -71,7 +71,10 @@ const blockIndexing = noindex || !isIndexable();
 
     <header class="site-head">
       <div class="shell head-inner">
-        <a href="/" class="brand" aria-label={`${BRAND.name} — home`}>{BRAND.name}</a>
+        <a href="/" class="brand" aria-label={`${BRAND.name} — home`}>
+          <img src="/brand/logo-mark.png" alt="" width="28" height="28" class="brand-mark" />
+          <span>{BRAND.name}</span>
+        </a>
 
         <nav aria-label="Shop">
           <ul class="nav">
@@ -136,11 +139,21 @@ const blockIndexing = noindex || !isIndexable();
         flex-wrap: wrap;
       }
       .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-2);
+        font-family: var(--display);
         font-size: var(--step-1);
-        font-weight: 600;
+        font-weight: 500;
         text-transform: uppercase;
-        letter-spacing: 0.22em;
+        letter-spacing: 0.2em;
       }
+      /* The mark is drawn dark; invert it when the page ground goes dark. */
+      .brand-mark { width: 26px; height: 26px; object-fit: contain; }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) .brand-mark { filter: invert(1) brightness(1.6); }
+      }
+      :root[data-theme="dark"] .brand-mark { filter: invert(1) brightness(1.6); }
       .brand:hover { text-decoration: none; }
       .nav {
         display: flex;

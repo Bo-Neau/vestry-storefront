@@ -58,7 +58,12 @@ export const PRODUCTS: readonly Product[] = [
     fit: { modelHeightCm: 178, modelSizeWorn: "S", runsTrueToSize: "small" },
     sizeChartId: "chart-tops",
     colorways: [
-      { id: "painted-cropped-jacket-unbleached", name: "Unbleached", hex: "#E9E4D7", sizes: stock(1, 2, 2, 1, 0, 0) },
+      { id: "painted-cropped-jacket-unbleached", name: "Unbleached", hex: "#E9E4D7", sizes: stock(1, 2, 2, 1, 0, 0),
+      images: [
+        { src: "/photography/beaded-jacket-front.jpg", alt: "Painted Cropped Jacket, front view", width: 1365, height: 2048, view: "front" },
+        { src: "/photography/beaded-jacket-angle.jpg", alt: "Painted Cropped Jacket, alternate view", width: 1344, height: 2016, view: "back" },
+      ],
+      },
     ],
     care: ["Specialist dry clean only", "Do not press the painted panel", "Store on a padded hanger"],
     details: ["Made to order, 4–6 weeks", "Painted in the atelier", "Model wears size S"],
@@ -91,7 +96,12 @@ export const PRODUCTS: readonly Product[] = [
     fit: { modelHeightCm: 178, modelSizeWorn: "S", runsTrueToSize: "true" },
     sizeChartId: "chart-tops",
     colorways: [
-      { id: "painted-shoulder-capelet-unbleached", name: "Unbleached", hex: "#E9E4D7", sizes: stock(1, 1, 2, 1, 1, 0) },
+      { id: "painted-shoulder-capelet-unbleached", name: "Unbleached", hex: "#E9E4D7", sizes: stock(1, 1, 2, 1, 1, 0),
+      images: [
+        { src: "/photography/painted-capelet-cutout.jpg", alt: "Painted Shoulder Capelet, front view", width: 1033, height: 1549, view: "front" },
+        { src: "/photography/capelet-over-gown-cutout.jpg", alt: "Painted Shoulder Capelet, alternate view", width: 620, height: 1453, view: "back" },
+      ],
+      },
     ],
     care: ["Specialist dry clean only", "Do not press the painted panel", "Store flat"],
     details: ["Made to order, 4–6 weeks", "Painted in the atelier", "Model wears size S"],
@@ -123,7 +133,11 @@ export const PRODUCTS: readonly Product[] = [
     fit: { modelHeightCm: 175, modelSizeWorn: "S", runsTrueToSize: "small" },
     sizeChartId: "chart-tops",
     colorways: [
-      { id: "structured-peplum-vest-chalk", name: "Chalk", hex: "#EDE9E0", sizes: stock(2, 3, 2, 2, 1, 0) },
+      { id: "structured-peplum-vest-chalk", name: "Chalk", hex: "#EDE9E0", sizes: stock(2, 3, 2, 2, 1, 0),
+      images: [
+        { src: "/photography/collection-lineup.jpg", alt: "Structured Peplum Vest, front view", width: 2016, height: 1344, view: "front" },
+      ],
+      },
       { id: "structured-peplum-vest-ink",   name: "Ink",   hex: "#14130F", sizes: stock(1, 2, 3, 2, 1, 1) },
     ],
     care: ["Dry clean only", "Cool iron on the reverse", "Do not iron the buttons"],
@@ -158,7 +172,12 @@ export const PRODUCTS: readonly Product[] = [
     fit: { modelHeightCm: 175, modelSizeWorn: "S", runsTrueToSize: "small" },
     sizeChartId: "chart-tops",
     colorways: [
-      { id: "painted-peplum-top-raw-silk", name: "Raw Silk", hex: "#E4DCC8", sizes: stock(1, 2, 2, 1, 0, 0) },
+      { id: "painted-peplum-top-raw-silk", name: "Raw Silk", hex: "#E4DCC8", sizes: stock(1, 2, 2, 1, 0, 0),
+      images: [
+        { src: "/photography/painted-corset-mannequin.jpg", alt: "Painted Peplum Top, front view", width: 896, height: 1344, view: "front" },
+        { src: "/photography/raw-silk-gown-mannequin.jpg", alt: "Painted Peplum Top, alternate view", width: 1366, height: 2048, view: "back" },
+      ],
+      },
     ],
     care: ["Specialist dry clean only", "Do not press the painted panel", "Silk marks with water"],
     details: ["Made to order, 4–6 weeks", "Undyed raw silk", "Model wears size S"],
@@ -191,7 +210,12 @@ export const PRODUCTS: readonly Product[] = [
     fit: { modelHeightCm: 175, modelSizeWorn: "M", runsTrueToSize: "true" },
     sizeChartId: "chart-tops",
     colorways: [
-      { id: "silk-mandarin-blouse-raw-silk", name: "Raw Silk", hex: "#E4DCC8", sizes: stock(2, 3, 4, 3, 2, 1) },
+      { id: "silk-mandarin-blouse-raw-silk", name: "Raw Silk", hex: "#E4DCC8", sizes: stock(2, 3, 4, 3, 2, 1),
+      images: [
+        { src: "/photography/day-to-night-trio.jpg", alt: "Silk Mandarin Blouse, front view", width: 860, height: 1290, view: "front" },
+        { src: "/photography/mens-jacket-model.jpg", alt: "Silk Mandarin Blouse, alternate view", width: 837, height: 1255, view: "back" },
+      ],
+      },
       { id: "silk-mandarin-blouse-ink",      name: "Ink",      hex: "#14130F", sizes: stock(1, 2, 3, 2, 1, 0) },
     ],
     care: ["Dry clean recommended", "Cool iron on the reverse", "Silk marks with water"],
@@ -223,7 +247,11 @@ export const PRODUCTS: readonly Product[] = [
     sizeChartId: "chart-skirts",
     colorways: [
       { id: "fluted-column-skirt-ink",   name: "Ink",   hex: "#14130F", sizes: stock(2, 3, 3, 2, 1, 1) },
-      { id: "fluted-column-skirt-chalk", name: "Chalk", hex: "#EDE9E0", sizes: stock(0, 2, 2, 1, 0, 0) },
+      { id: "fluted-column-skirt-chalk", name: "Chalk", hex: "#EDE9E0", sizes: stock(0, 2, 2, 1, 0, 0),
+      images: [
+        { src: "/photography/printed-peplum-model.jpg", alt: "Fluted Column Skirt, front view", width: 1344, height: 2016, view: "front" },
+      ],
+      },
     ],
     care: ["Dry clean only", "Cool iron on the reverse", "Hang to store"],
     details: ["Made in the atelier", "Hem finished by hand", "Model wears size S"],
@@ -254,7 +282,12 @@ export const PRODUCTS: readonly Product[] = [
     fit: { modelHeightCm: 175, modelSizeWorn: "S", runsTrueToSize: "true" },
     sizeChartId: "chart-skirts",
     colorways: [
-      { id: "raw-silk-fluted-skirt-raw-silk", name: "Raw Silk", hex: "#E4DCC8", sizes: stock(1, 2, 2, 1, 1, 0) },
+      { id: "raw-silk-fluted-skirt-raw-silk", name: "Raw Silk", hex: "#E4DCC8", sizes: stock(1, 2, 2, 1, 1, 0),
+      images: [
+        { src: "/photography/raw-silk-gown-cutout.jpg", alt: "Raw Silk Fluted Skirt, front view", width: 700, height: 2048, view: "front" },
+        { src: "/photography/raw-silk-gown-mannequin.jpg", alt: "Raw Silk Fluted Skirt, alternate view", width: 1366, height: 2048, view: "back" },
+      ],
+      },
     ],
     care: ["Dry clean only", "Silk marks with water", "Hang to store"],
     details: ["Made to order, 4–6 weeks", "Cut from the same bolt as the peplum top", "Model wears size S"],
@@ -286,7 +319,12 @@ export const PRODUCTS: readonly Product[] = [
     fit: { modelHeightCm: 180, modelSizeWorn: "S", runsTrueToSize: "true" },
     sizeChartId: "chart-dresses",
     colorways: [
-      { id: "column-gown-ink", name: "Ink", hex: "#14130F", sizes: stock(1, 2, 2, 2, 1, 0) },
+      { id: "column-gown-ink", name: "Ink", hex: "#14130F", sizes: stock(1, 2, 2, 2, 1, 0),
+      images: [
+        { src: "/photography/capelet-over-gown-cutout.jpg", alt: "Column Gown, front view", width: 620, height: 1453, view: "front" },
+        { src: "/photography/lace-gown-model.jpg", alt: "Column Gown, alternate view", width: 1271, height: 1906, view: "back" },
+      ],
+      },
     ],
     care: ["Specialist dry clean only", "Store on a padded hanger", "Do not fold"],
     details: ["Made to order, 6–8 weeks", "Hem cut to your height at fitting", "Model wears size S"],
@@ -320,7 +358,12 @@ export const PRODUCTS: readonly Product[] = [
     fit: { modelHeightCm: 180, modelSizeWorn: "S", runsTrueToSize: "true" },
     sizeChartId: "chart-dresses",
     colorways: [
-      { id: "painted-column-gown-ink", name: "Ink", hex: "#14130F", sizes: stock(0, 1, 1, 1, 0, 0) },
+      { id: "painted-column-gown-ink", name: "Ink", hex: "#14130F", sizes: stock(0, 1, 1, 1, 0, 0),
+      images: [
+        { src: "/photography/patchwork-jacket-model.jpg", alt: "Painted Column Gown, front view", width: 1328, height: 1992, view: "front" },
+        { src: "/photography/blue-denim-pair.jpg", alt: "Painted Column Gown, alternate view", width: 896, height: 1344, view: "back" },
+      ],
+      },
     ],
     care: ["Specialist dry clean only", "Do not press the painted panel", "Store on a padded hanger"],
     details: ["Made to order, 8–10 weeks", "Painted individually — no two alike", "Model wears size S"],
@@ -352,7 +395,12 @@ export const PRODUCTS: readonly Product[] = [
     fit: { modelHeightCm: 178, modelSizeWorn: "M", runsTrueToSize: "large" },
     sizeChartId: "chart-tops",
     colorways: [
-      { id: "painted-overshirt-unbleached", name: "Unbleached", hex: "#E9E4D7", sizes: stock(1, 2, 3, 2, 1, 1) },
+      { id: "painted-overshirt-unbleached", name: "Unbleached", hex: "#E9E4D7", sizes: stock(1, 2, 3, 2, 1, 1),
+      images: [
+        { src: "/photography/white-denim-pair.jpg", alt: "Painted Overshirt, front view", width: 1942, height: 1295, view: "front" },
+        { src: "/photography/day-to-night-artwork.jpg", alt: "Painted Overshirt, alternate view", width: 847, height: 1271, view: "back" },
+      ],
+      },
       { id: "painted-overshirt-ash",        name: "Ash",        hex: "#B9B4A6", sizes: stock(0, 1, 2, 1, 0, 0) },
     ],
     care: ["Specialist dry clean only", "Do not press the painted panel", "Hang to store"],

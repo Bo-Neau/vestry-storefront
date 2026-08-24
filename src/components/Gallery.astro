@@ -19,12 +19,25 @@ interface Props {
 }
 const { shape, colorway, title } = Astro.props;
 
-const VIEWS = [
+const ALL_VIEWS = [
   { view: "front" as const,  label: "front view" },
   { view: "back" as const,   label: "back view" },
   { view: "flat" as const,   label: "laid flat" },
   { view: "detail" as const, label: "fabric detail" },
 ];
+
+/**
+ * Once a colourway has real photography, show only the views that exist.
+ *
+ * Padding two photographs out to four with generated drawings reads as an
+ * unfinished page — worse than three honest images. Colourways with no
+ * photography yet keep the full placeholder set so the layout can still be
+ * reviewed before a shoot.
+ */
+const shot = new Set((colorway.images ?? []).map((i) => i.view));
+const VIEWS = shot.size > 0
+  ? ALL_VIEWS.filter((v) => shot.has(v.view))
+  : ALL_VIEWS;
 ---
 
 <div class="gallery">
