@@ -44,7 +44,7 @@ const CSP = [
   "upgrade-insecure-requests",
 ].join("; ");
 
-export const onRequest: MiddlewareHandler = async (context, next) => {
+export const onRequest: MiddlewareHandler = async (_context, next) => {
   const response = await next();
 
   // Static assets are served by the adapter; headers still apply to all.

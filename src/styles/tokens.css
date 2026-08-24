@@ -102,7 +102,7 @@
   /* ink — the black column gown, warm rather than blue-black */
   --ink:          #14130F;
   --ink-2:        #45433B;
-  --ink-3:        #66645A;
+  --ink-3:        #656359;
 
   --rule:         #D9D6CB;
   --rule-2:       #BFBCAF;
@@ -114,7 +114,7 @@
   /* semantic states, kept clearly distinct from the accent */
   --in-stock:     #40613F;
   --low-stock:    #7A5410;
-  --out-stock:    #8F8C80;
+  --out-stock:    #666357;
   --sale:         #7A2A22;
 
   /* type — display for headings, body for reading, mono for labels and data */
@@ -153,14 +153,14 @@
     --paper-3:    #26241F;
     --ink:        #EDEAE0;
     --ink-2:      #ACA89B;
-    --ink-3:      #8D8A7C;
+    --ink-3:      #8E8B7D;
     --rule:       #2C2A25;
     --rule-2:     #3D3A33;
     --accent:     #A3B0B4;
     --accent-ink: #131210;
     --in-stock:   #7FA37A;
     --low-stock:  #C99C4A;
-    --out-stock:  #6C6960;
+    --out-stock:  #8E8B82;
     --sale:       #D98A7E;
   }
 }
@@ -170,13 +170,13 @@
   --paper-3:    #26241F;
   --ink:        #EDEAE0;
   --ink-2:      #ACA89B;
-  --ink-3:      #8D8A7C;
+  --ink-3:      #8E8B7D;
   --rule:       #2C2A25;
   --rule-2:     #3D3A33;
   --accent:     #A3B0B4;
   --accent-ink: #131210;
   --in-stock:   #7FA37A;
   --low-stock:  #C99C4A;
-  --out-stock:  #6C6960;
+  --out-stock:  #8E8B82;
   --sale:       #D98A7E;
 }

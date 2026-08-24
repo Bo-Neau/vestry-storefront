@@ -173,7 +173,9 @@ const off = product.compareAtPrice
     top: var(--sp-3);
     left: var(--sp-3);
     background: var(--sale);
-    color: #fff;
+    /* Both sides from the same token set — --sale is deep in light and pale
+       in dark, so a fixed white would go thin on the dark variant. */
+    color: var(--paper);
     font-family: var(--mono);
     font-size: 0.6875rem;
     text-transform: uppercase;
@@ -195,7 +197,13 @@ const off = product.compareAtPrice
     inset: 0;
     z-index: 1;
   }
-  .swatches, .sizes { position: relative; z-index: 2; }
+  /*
+    Only the swatches need to sit above the stretched link — their colour name
+    is a title tooltip, which needs the span itself to be the hover target.
+    The size row is plain text, and lifting it too carved a dead strip out of
+    the bottom of the card where taps landed on nothing.
+  */
+  .swatches { position: relative; z-index: 2; }
 
   .card-price { font-size: var(--step-0); display: flex; gap: var(--sp-2); align-items: baseline; }
   .was { color: var(--ink-3); font-size: var(--step--1); }
