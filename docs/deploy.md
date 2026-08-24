@@ -86,6 +86,36 @@ injected script from a product description or review cannot run. Adding
 analytics or a chat widget requires relaxing that line, and it is worth
 doing consciously.
 
+## If a push does not deploy
+
+Vercel refuses to build a commit whose **author email** it cannot map to a
+Vercel account with access to the project. The build never starts, so there is
+no build log to read — the only signal is a failed commit status on GitHub
+linking to Vercel's "project collaboration" troubleshooting page.
+
+The usual cause is an unset git identity, which makes git fall back to
+`user@machine.local`:
+
+```bash
+git config user.email
+```
+
+If that prints nothing, or anything other than the address on your Vercel
+account, set it before committing:
+
+```bash
+git config user.email "you@example.com"
+```
+
+Vercel builds the **tip** of the branch, so a correctly authored commit on top
+deploys everything below it. There is no need to rewrite history.
+
+To check whether Vercel accepted a specific commit:
+
+```bash
+gh api repos/OWNER/REPO/commits/SHA/status --jq '.statuses[] | "\(.state) \(.target_url)"'
+```
+
 ## Before a real launch
 
 - [ ] On a custom domain, set `SITE_URL` and **redeploy** — `site` is
