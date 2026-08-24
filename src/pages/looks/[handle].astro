@@ -1,14 +1,13 @@
 ---
 import Base from "../../layouts/Base.astro";
 import ProductCard from "../../components/ProductCard.astro";
-import Garment from "../../components/Garment.astro";
+import ProductImage from "../../components/ProductImage.astro";
 import JsonLd from "../../components/JsonLd.astro";
 import { breadcrumbSchema } from "../../lib/seo/structured-data.ts";
 import { loadProducts } from "../../data/source.ts";
 import { lookByHandle, piecesFor, lookTotal, LOOKS } from "../../data/looks.ts";
 import { formatMoney } from "../../lib/money.ts";
 import { pageTitle } from "../../config/brand.ts";
-import type { GarmentShape } from "../../data/schema.ts";
 
 const { handle } = Astro.params;
 const look = handle ? lookByHandle(handle) : undefined;
@@ -54,13 +53,13 @@ const others = LOOKS.filter((l) => l.handle !== look.handle);
     <div class="look-body">
       <div class="look-visual">
         {hero && (
-          <Garment
-            shape={hero.shape as GarmentShape}
-            hex={hero.colorways[0]!.hex}
-            hexAlt={hero.colorways[0]!.hexAlt}
+          <ProductImage
+            colorway={hero.colorways[0]!}
+            shape={hero.shape}
             view="front"
             alt={`${look.title} — ${hero.title}`}
-            loading="eager"
+            priority
+            sizes="(max-width: 900px) 92vw, 46vw"
           />
         )}
       </div>

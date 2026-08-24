@@ -1,14 +1,13 @@
 ---
 import Base from "../layouts/Base.astro";
 import ProductCard from "../components/ProductCard.astro";
-import Garment from "../components/Garment.astro";
+import ProductImage from "../components/ProductImage.astro";
 import JsonLd from "../components/JsonLd.astro";
 import { organisationSchema, websiteSchema } from "../lib/seo/structured-data.ts";
 import { BRAND, COMMERCE, COPY } from "../config/brand.ts";
 import { loadProducts } from "../data/source.ts";
 import { LOOKS, piecesFor, lookTotal } from "../data/looks.ts";
 import { formatMoney } from "../lib/money.ts";
-import type { GarmentShape } from "../data/schema.ts";
 
 const { products } = await loadProducts();
 const siteOrigin = (Astro.site ?? new URL("https://example.com")).origin;
@@ -24,14 +23,17 @@ const looks = LOOKS.map((look) => {
 }).filter((l) => l.pieces.length > 0);
 
 const CATEGORIES = [
-  { title: "Outerwear", href: "/collections/outerwear", note: "Painted cotton twill" },
-  { title: "Tops",      href: "/collections/tops",      note: "Wool crepe and raw silk" },
-  { title: "Skirts",    href: "/collections/skirts",    note: "Narrow, then fluted" },
-  { title: "Dresses",   href: "/collections/dresses",   note: "Bias-cut columns" },
+  { title: "Outerwear", href: "/collections/outerwear", note: "Painted, stitched and pieced", lead: "painted-capelet" },
+  { title: "Tops",      href: "/collections/tops",      note: "Sculptural bodices",           lead: "painted-corset-bodice" },
+  { title: "Skirts",    href: "/collections/skirts",    note: "Narrow, then fluted",           lead: "raw-silk-fluted-skirt" },
+  { title: "Dresses",   href: "/collections/dresses",   note: "Columns and gowns",             lead: "coral-embroidered-gown" },
 ];
 
-const categoryLead = (title: string) =>
-  products.find((p) => p.category === title) ?? products[0];
+/** Named piece first; fall back to anything in the category if it moves. */
+const categoryLead = (c: { title: string; lead: string }) =>
+  products.find((p) => p.handle === c.lead)
+  ?? products.find((p) => p.category === c.title)
+  ?? products[0];
 
 const featured = products.slice(0, 8);
 ---
@@ -85,12 +87,12 @@ const featured = products.slice(0, 8);
         <li class="look">
           <a href={`/looks/${look.handle}`} class="look-media" tabindex="-1" aria-hidden="true">
             {hero && (
-              <Garment
-                shape={hero.shape as GarmentShape}
-                hex={hero.colorways[0]!.hex}
-                hexAlt={hero.colorways[0]!.hexAlt}
+              <ProductImage
+                colorway={hero.colorways[0]!}
+                shape={hero.shape}
                 view="front"
                 alt=""
+                sizes="(max-width: 860px) 92vw, (max-width: 1320px) 44vw, 420px"
               />
             )}
           </a>
@@ -118,18 +120,18 @@ const featured = products.slice(0, 8);
     </div>
     <ul class="cat-list">
       {CATEGORIES.map((c) => {
-        const lead = categoryLead(c.title);
+        const lead = categoryLead(c);
         return (
           <li class="cat">
             <a href={c.href}>
               <span class="cat-media" aria-hidden="true">
                 {lead && (
-                  <Garment
-                    shape={lead.shape as GarmentShape}
-                    hex={lead.colorways[0]!.hex}
-                    hexAlt={lead.colorways[0]!.hexAlt}
+                  <ProductImage
+                    colorway={lead.colorways[0]!}
+                    shape={lead.shape}
                     view="front"
                     alt=""
+                    sizes="(max-width: 860px) 46vw, (max-width: 1320px) 24vw, 300px"
                   />
                 )}
               </span>

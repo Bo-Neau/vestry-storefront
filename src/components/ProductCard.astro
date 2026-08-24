@@ -19,6 +19,17 @@ interface Props {
 const { product, loading = "lazy" } = Astro.props;
 
 const lead = product.colorways[0]!;
+
+/**
+ * Only offer the hover swap when a second real photograph exists.
+ *
+ * Where a colourway has photography but only one angle, swapping to a
+ * generated drawing on hover looks like a loading failure. Where it has no
+ * photography at all, both sides are placeholders and the swap still reads
+ * correctly, so it stays.
+ */
+const shotViews = new Set((lead.images ?? []).map((i) => i.view));
+const hasSecondView = shotViews.size === 0 || shotViews.has("back");
 const inStock = SIZE_ORDER.filter((s) => hasStock(product, s));
 const soldOut = SIZE_ORDER.filter((s) => !hasStock(product, s));
 const rating = averageRating(product);
@@ -44,15 +55,17 @@ const off = product.compareAtPrice
       it must not compete with the first image for bandwidth, since most
       visitors never hover a given card.
     -->
-    <span class="shot back" aria-hidden="true">
-      <ProductImage
-        colorway={lead}
-        shape={product.shape}
-        view="back"
-        alt=""
-        sizes="(max-width: 860px) 45vw, (max-width: 1320px) 24vw, 300px"
-      />
-    </span>
+    {hasSecondView && (
+      <span class="shot back" aria-hidden="true">
+        <ProductImage
+          colorway={lead}
+          shape={product.shape}
+          view="back"
+          alt=""
+          sizes="(max-width: 860px) 45vw, (max-width: 1320px) 24vw, 300px"
+        />
+      </span>
+    )}
     {off > 0 && <span class="flag">{off}% off</span>}
   </div>
 
