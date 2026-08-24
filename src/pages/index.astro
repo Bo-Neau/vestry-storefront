@@ -42,20 +42,21 @@ const featured = products.slice(0, 8);
     <JsonLd data={websiteSchema(siteOrigin, BRAND.name)} />
   </Fragment>
 
-  <!-- Editorial opening: one piece, full height, nothing competing with it. -->
+  <!--
+    Full-bleed opening, the way the booklet opens: the collection on its
+    stands, with the brand's own line over it. The image is the LCP element,
+    so it loads eagerly at high priority and nothing else competes with it.
+  -->
   <section class="hero" aria-labelledby="hero-title">
-    <div class="hero-media">
-      {heroPiece && (
-        <Garment
-          shape={heroPiece.shape as GarmentShape}
-          hex={heroPiece.colorways[0]!.hex}
-          hexAlt={heroPiece.colorways[0]!.hexAlt}
-          view="front"
-          alt={`${heroPiece.title} in ${heroPiece.colorways[0]!.name}`}
-          loading="eager"
-        />
-      )}
-    </div>
+    <img
+      class="hero-img"
+      src="/photography/collection-lineup.jpg"
+      width="2016" height="1344"
+      alt="The Manussa collection shown on stands against carved wood"
+      fetchpriority="high"
+      decoding="sync"
+    />
+    <div class="hero-scrim" aria-hidden="true"></div>
     <div class="hero-copy">
       {BRAND.eyebrow && <p class="label">{BRAND.eyebrow}</p>}
       <h1 id="hero-title">{BRAND.tagline}</h1>
@@ -64,7 +65,7 @@ const featured = products.slice(0, 8);
         <a href="/collections/all" class="btn">View the collection</a>
         {looks[0] && (
           <a href={`/looks/${looks[0].look.handle}`} class="btn ghost">
-            Shop {looks[0].look.title}
+            {looks[0].look.title}
           </a>
         )}
       </div>
@@ -143,6 +144,20 @@ const featured = products.slice(0, 8);
     </ul>
   </section>
 
+  <section class="atelier" aria-label="The atelier">
+    <img
+      src="/photography/atelier-group.jpg"
+      width="1218" height="812"
+      alt="The Manussa team wearing pieces from the collection"
+      loading="lazy" decoding="async"
+    />
+    <p class="atelier-note">
+      Founded by an art collector, a designer and a maker raised in an artistic
+      family — bound by one purpose: to craft contemporary pieces that honour
+      traditional textiles and hand-worked embroidery.
+    </p>
+  </section>
+
   <section class="shell trust">
     <div class="trust-item">
       <h2>Measured, not guessed</h2>
@@ -174,24 +189,72 @@ const featured = products.slice(0, 8);
 <style>
   /* ---------- hero ---------- */
   .hero {
-    display: grid;
-    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
-    align-items: stretch;
-    border-bottom: 1px solid var(--rule);
+    position: relative;
+    min-height: min(82vh, 760px);
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+    background: var(--ink);
   }
-  .hero-media { background: var(--paper-3); overflow: hidden; }
-  .hero-media :global(.garment) { width: 100%; height: 100%; object-fit: cover; aspect-ratio: auto; min-height: 78vh; }
+  .hero-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 42%;
+  }
+  /*
+    The photograph is dark and busy at the base, so type needs a ground to sit
+    on. A gradient rather than a flat wash keeps the garments readable at the
+    top while the copy stays legible at the bottom.
+  */
+  .hero-scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgb(10 9 7 / 0.86) 0%,
+      rgb(10 9 7 / 0.62) 28%,
+      rgb(10 9 7 / 0.18) 56%,
+      rgb(10 9 7 / 0.05) 100%
+    );
+  }
   .hero-copy {
+    position: relative;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     gap: var(--sp-4);
-    padding: var(--sp-8) var(--sp-7);
-    max-width: 52ch;
+    padding: var(--sp-8) var(--sp-6);
+    max-width: 58ch;
+    width: 100%;
+    margin: 0 auto;
+    max-width: var(--maxw);
   }
-  .hero-copy h1 { font-size: var(--step-4); line-height: 1.04; }
-  .hero-lede { font-size: var(--step-1); color: var(--ink-2); line-height: 1.5; }
+  /* Fixed light values, not tokens: this type always sits on a dark
+     photograph, whichever theme the visitor is in. */
+  .hero-copy .label { color: rgb(255 255 255 / 0.72); }
+  .hero-copy h1 {
+    font-size: var(--step-4);
+    line-height: 1.02;
+    color: #FFFFFF;
+    max-width: 14ch;
+    letter-spacing: 0.01em;
+  }
+  .hero-lede {
+    font-size: var(--step-1);
+    color: rgb(255 255 255 / 0.84);
+    line-height: 1.5;
+    max-width: 46ch;
+  }
   .hero-actions { display: flex; gap: var(--sp-3); flex-wrap: wrap; margin-top: var(--sp-2); }
+  .hero .btn { background: #FFFFFF; color: var(--ink); }
+  .hero .btn.ghost {
+    background: transparent;
+    color: #FFFFFF;
+    border-color: rgb(255 255 255 / 0.5);
+  }
+  .hero .btn.ghost:hover { border-color: #FFFFFF; }
 
   .btn {
     display: inline-flex;
@@ -259,6 +322,29 @@ const featured = products.slice(0, 8);
   }
   .cat-note { font-size: var(--step--1); color: var(--ink-3); }
 
+  /* ---------- atelier ---------- */
+  .atelier {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    gap: var(--sp-6);
+    align-items: center;
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: var(--sp-7) var(--sp-5);
+  }
+  .atelier img { width: 100%; height: auto; }
+  .atelier-note {
+    font-family: var(--display);
+    font-size: var(--step-2);
+    line-height: 1.35;
+    color: var(--ink-2);
+    max-width: 32ch;
+  }
+  @media (max-width: 860px) {
+    .atelier { grid-template-columns: minmax(0, 1fr); gap: var(--sp-4); padding-inline: var(--sp-4); }
+    .atelier-note { font-size: var(--step-1); max-width: none; }
+  }
+
   /* ---------- trust ---------- */
   .trust {
     display: grid;
@@ -294,9 +380,23 @@ const featured = products.slice(0, 8);
   }
 
   @media (max-width: 900px) {
-    .hero { grid-template-columns: minmax(0, 1fr); }
-    .hero-media :global(.garment) { min-height: 56vh; }
-    .hero-copy { padding: var(--sp-6) var(--sp-4) var(--sp-7); max-width: none; }
+    .hero { min-height: min(74vh, 620px); }
+    .hero-copy { padding: var(--sp-7) var(--sp-4) var(--sp-6); }
+    .hero-copy h1 { max-width: 100%; }
+    /*
+      On a narrow screen the copy is taller and reaches further up the frame,
+      into the pale mannequins. The desktop gradient runs out before it gets
+      there, so carry the dark further and hold it longer.
+    */
+    .hero-scrim {
+      background: linear-gradient(
+        to top,
+        rgb(10 9 7 / 0.90) 0%,
+        rgb(10 9 7 / 0.78) 42%,
+        rgb(10 9 7 / 0.45) 72%,
+        rgb(10 9 7 / 0.12) 100%
+      );
+    }
   }
   @media (max-width: 860px) {
     .grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: var(--sp-5) var(--sp-3); }

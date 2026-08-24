@@ -40,7 +40,14 @@ const pct = (n: number) => (total === 0 ? 0 : Math.round((n / total) * 100));
   <h2 id="reviews-title">Reviews</h2>
 
   {total === 0 ? (
-    <p class="none">No reviews yet.</p>
+    <div class="none">
+      <p>No reviews yet.</p>
+      <p class="none-note">
+        We ask every buyer their height, the size they took and how it fitted.
+        Those answers appear here, so the next person can judge fit before
+        ordering.
+      </p>
+    </div>
   ) : (
     <>
       <div class="summary">
@@ -112,7 +119,8 @@ const pct = (n: number) => (total === 0 ? 0 : Math.round((n / total) * 100));
 <style>
   .reviews { display: flex; flex-direction: column; gap: var(--sp-5); }
   .reviews h2 { font-size: var(--step-2); }
-  .none { color: var(--ink-3); }
+  .none { display: flex; flex-direction: column; gap: var(--sp-2); color: var(--ink-2); }
+  .none-note { font-size: var(--step--1); color: var(--ink-3); max-width: 52ch; }
 
   .summary {
     display: grid;

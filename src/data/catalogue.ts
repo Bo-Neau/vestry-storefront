@@ -1,4 +1,4 @@
-import type { Product, Review, Size, SizeStock } from "./schema.ts";
+import type { Product, SizeStock } from "./schema.ts";
 
 /* ---------------------------------------------------------------------------
  * Manussa — the collection.
@@ -7,9 +7,12 @@ import type { Product, Review, Size, SizeStock } from "./schema.ts";
  * booklet. The house is a collective, so every piece carries the name of the
  * designer who made it, and hand-painted work credits the artist separately.
  *
- * Prices, stock levels and reviews are PLACEHOLDERS awaiting the client.
- * Everything else — names, designers, collections, materials, imagery — is
- * from the brand's own material.
+ * Names, designers, collections, materials and photography are the brand's
+ * own. PRICES and STOCK are placeholders awaiting the client.
+ *
+ * Reviews are deliberately empty. Writing plausible ones would be inventing
+ * customers, and real reviews arrive from the reviews platform once there are
+ * real buyers — carrying the fit answers the product page is built around.
  * ------------------------------------------------------------------------- */
 
 const usd = (dollars: number) => ({ amount: Math.round(dollars * 100), currency: "USD" as const });
@@ -20,16 +23,6 @@ const stock = (xs: number, s: number, m: number, l: number, xl: number, xxl: num
   { size: "M", inventory: m },   { size: "L", inventory: l },
   { size: "XL", inventory: xl }, { size: "XXL", inventory: xxl },
 ];
-
-let reviewSeq = 0;
-const rev = (
-  rating: 1 | 2 | 3 | 4 | 5, title: string, body: string, author: string,
-  date: string, heightBand: string, sizePurchased: Size,
-  fitFeedback: "small" | "true" | "large",
-): Review => ({
-  id: `r${++reviewSeq}`, rating, title, body, author,
-  verified: true, date, heightBand, sizePurchased, fitFeedback,
-});
 
 const img = (name: string, alt: string, w: number, h: number, view: "front" | "back" | "flat" | "detail") =>
   ({ src: `/photography/${name}.jpg`, alt, width: w, height: h, view });
@@ -70,10 +63,7 @@ export const PRODUCTS: readonly Product[] = [
     ],
     care: ["Specialist dry clean only", "Do not press the painted panel", "Store flat"],
     details: ["Made to order", "Hand-painted in the atelier, Yangon", "Model wears size S"],
-    reviews: [
-      rev(5, "Transforms a plain dress", "Wore it over the column gown and it was the only thing anyone talked about all evening.", "Mireille A.", "2026-07-02", "5'7\"–5'9\"", "S", "true"),
-      rev(4, "Heavier than expected", "It has real weight, which is what makes the shoulder hold. Not something you forget you are wearing.", "Sofia K.", "2026-06-11", "5'4\"–5'6\"", "XS", "true"),
-    ],
+    reviews: [],
   },
 
   {
@@ -108,10 +98,7 @@ export const PRODUCTS: readonly Product[] = [
     ],
     care: ["Dry clean recommended", "Store on a padded hanger", "Do not fold"],
     details: ["Hem cut to your height at fitting", "Model wears size S"],
-    reviews: [
-      rev(5, "Nothing on it, and that is the point", "No trim, no detail. Entirely about the cut, and the cut is flawless.", "Verity A.", "2026-07-28", "5'10\"–6'0\"", "M", "true"),
-      rev(5, "Wear it with the capelet", "Alone it is severe in the best way. With the painted capelet it becomes something else entirely.", "Fatima N.", "2026-05-19", "5'7\"–5'9\"", "M", "true"),
-    ],
+    reviews: [],
   },
 
   {
@@ -146,10 +133,7 @@ export const PRODUCTS: readonly Product[] = [
     ],
     care: ["Specialist dry clean only", "Do not press the painted panel", "Silk marks with water"],
     details: ["Made to order", "Undyed raw silk", "Model wears size S"],
-    reviews: [
-      rev(5, "The silk holds the paint", "Slubbed and completely matte — you can see the weave through the grey. A smooth silk would never do this.", "Anouk V.", "2026-07-09", "5'7\"–5'9\"", "S", "small"),
-      rev(4, "Boned, so size carefully", "There is no give at all. Beautiful line once you have the right size, but try it on.", "Georgia L.", "2026-06-17", "5'4\"–5'6\"", "S", "small"),
-    ],
+    reviews: [],
   },
 
   {
@@ -182,9 +166,7 @@ export const PRODUCTS: readonly Product[] = [
     ],
     care: ["Dry clean only", "Silk marks with water", "Hang to store"],
     details: ["Made to order", "Undyed raw silk", "Model wears size S"],
-    reviews: [
-      rev(5, "Falls like water", "The weight in the hem does something you cannot see in a photograph. It just hangs.", "Iman B.", "2026-07-11", "5'4\"–5'6\"", "S", "true"),
-    ],
+    reviews: [],
   },
 
   {
@@ -219,10 +201,7 @@ export const PRODUCTS: readonly Product[] = [
     ],
     care: ["Specialist dry clean only", "Do not press the beading", "Store on a padded hanger"],
     details: ["Limited edition", "Hand-stitched in the atelier", "Model wears size S"],
-    reviews: [
-      rev(5, "You can see the hand in it", "Up close the stitching resolves into faces. Photographs flatten it completely.", "Camille D.", "2026-07-18", "5'7\"–5'9\"", "S", "small"),
-      rev(4, "Cut close through the shoulder", "I am usually a small and needed the medium to move properly in it.", "Ines R.", "2026-06-24", "5'4\"–5'6\"", "S", "small"),
-    ],
+    reviews: [],
   },
 
   {
@@ -257,10 +236,7 @@ export const PRODUCTS: readonly Product[] = [
     ],
     care: ["Dry clean only", "Cool iron on the reverse"],
     details: ["Ready to wear", "Woven in Myanmar", "Model wears size M"],
-    reviews: [
-      rev(5, "Works for both halves of the day", "Wore it to a client meeting and straight on to dinner. That is exactly what it promises.", "Rania O.", "2026-06-30", "5'4\"–5'6\"", "M", "true"),
-      rev(4, "The piping is the detail", "It looks plain in photographs and then you see the red tracing every seam.", "Delphine C.", "2026-07-25", "5'7\"–5'9\"", "L", "true"),
-    ],
+    reviews: [],
   },
 
   {
@@ -294,9 +270,7 @@ export const PRODUCTS: readonly Product[] = [
     ],
     care: ["Dry clean only", "Do not press the embroidered panel"],
     details: ["Ready to wear", "Hand-embroidered panel", "Model wears size M"],
-    reviews: [
-      rev(5, "Quietly unusual", "Reads as a plain black jacket until someone notices the panel. Exactly what I wanted.", "Thet A.", "2026-07-14", "6'1\" or above", "L", "true"),
-    ],
+    reviews: [],
   },
 
   {
@@ -330,10 +304,7 @@ export const PRODUCTS: readonly Product[] = [
     ],
     care: ["Specialist dry clean only", "Do not press the paintwork", "Hang to store"],
     details: ["Ready to wear", "Hand-painted detail", "Model wears size S"],
-    reviews: [
-      rev(5, "The one you actually wear", "I wanted a limited piece and bought this instead. Same hand-painting, and I can put it on in daylight.", "Juno K.", "2026-07-22", "5'7\"–5'9\"", "M", "true"),
-      rev(4, "White denim, so be careful", "It is what it is. Beautiful, and I would not wear it to eat pasta.", "Emilia G.", "2026-06-26", "5'4\"–5'6\"", "S", "true"),
-    ],
+    reviews: [],
   },
 
   {
@@ -367,9 +338,7 @@ export const PRODUCTS: readonly Product[] = [
     ],
     care: ["Machine wash cold, inside out", "Hang to dry", "Warm iron"],
     details: ["Ready to wear", "Gold-thread piecing", "Model wears size M"],
-    reviews: [
-      rev(5, "The gold thread catches everything", "In daylight it is a denim jacket. Under lights the piecing lights up.", "Nadia F.", "2026-07-05", "5'4\"–5'6\"", "S", "true"),
-    ],
+    reviews: [],
   },
 
   {
@@ -403,10 +372,7 @@ export const PRODUCTS: readonly Product[] = [
     ],
     care: ["Dry clean recommended", "Cool iron on the reverse"],
     details: ["Ready to wear", "Genderless sizing", "Model wears size M"],
-    reviews: [
-      rev(5, "Every panel is different", "Mine has a stripe through the shoulder that the lookbook one does not. That is the appeal.", "Kyaw M.", "2026-07-19", "5'10\"–6'0\"", "L", "large"),
-      rev(4, "Cut generously", "Sized down and it is still easy. Read the fit note.", "Su Lin", "2026-06-08", "5'4\"–5'6\"", "S", "large"),
-    ],
+    reviews: [],
   },
 
   {
@@ -440,10 +406,7 @@ export const PRODUCTS: readonly Product[] = [
     ],
     care: ["Machine wash cold", "Cool iron on the reverse"],
     details: ["Standard line", "Print drawn from temple tilework", "Model wears size S"],
-    reviews: [
-      rev(5, "The everyday one", "Not the piece in the lookbook and the one I have worn most. Goes with everything.", "Marta E.", "2026-07-14", "5'7\"–5'9\"", "M", "true"),
-      rev(4, "Peplum stands away", "Firmer than it looks in the photograph. Not a soft silhouette.", "Priya S.", "2026-06-05", "5'4\"–5'6\"", "XS", "true"),
-    ],
+    reviews: [],
   },
 
   {
@@ -477,10 +440,7 @@ export const PRODUCTS: readonly Product[] = [
     ],
     care: ["Specialist dry clean only", "Do not press the embroidery", "Store on a padded hanger"],
     details: ["Made to order", "Hand-embroidered", "Model wears size S"],
-    reviews: [
-      rev(5, "The embroidery is not printed", "It is worked by hand and you can feel it. Completely different thing.", "Ottilie R.", "2026-07-16", "5'7\"–5'9\"", "S", "small"),
-      rev(4, "Runs small through the bust", "Lace has no give. I would size up.", "Cleo B.", "2026-06-14", "5'4\"–5'6\"", "S", "small"),
-    ],
+    reviews: [],
   },
 
   {
@@ -514,9 +474,7 @@ export const PRODUCTS: readonly Product[] = [
     ],
     care: ["Dry clean only", "Cool iron on the reverse", "Do not iron the buttons"],
     details: ["Made in the atelier", "Carved buttons", "Model wears size S"],
-    reviews: [
-      rev(5, "The buttons alone", "I bought it for the tailoring and fell for the buttons. They catch the light like stone.", "Halima T.", "2026-07-21", "5'4\"–5'6\"", "S", "small"),
-    ],
+    reviews: [],
   },
 ];
 
