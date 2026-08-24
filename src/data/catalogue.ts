@@ -1,17 +1,15 @@
 import type { Product, Review, Size, SizeStock } from "./schema.ts";
 
 /* ---------------------------------------------------------------------------
- * Sample catalogue.
+ * Manussa — the collection.
  *
- * Written from the collection photography: hand-painted pieces where a smoke
- * and ink motif bleeds down from the shoulder, sculptural tailoring in
- * unbleached canvas and raw silk, and a black column gown.
+ * Pieces, designers, collections and photography all come from the brand
+ * booklet. The house is a collective, so every piece carries the name of the
+ * designer who made it, and hand-painted work credits the artist separately.
  *
- * Stock is deliberately in single digits. These are atelier pieces, not
- * stocked basics — which is exactly the case where an honest size filter
- * matters most, because almost everything is one or two units from sold out.
- *
- * Regenerate from spreadsheets with: npm run catalogue:import
+ * Prices, stock levels and reviews are PLACEHOLDERS awaiting the client.
+ * Everything else — names, designers, collections, materials, imagery — is
+ * from the brand's own material.
  * ------------------------------------------------------------------------- */
 
 const usd = (dollars: number) => ({ amount: Math.round(dollars * 100), currency: "USD" as const });
@@ -33,382 +31,491 @@ const rev = (
   verified: true, date, heightBand, sizePurchased, fitFeedback,
 });
 
+const img = (name: string, alt: string, w: number, h: number, view: "front" | "back" | "flat" | "detail") =>
+  ({ src: `/photography/${name}.jpg`, alt, width: w, height: h, view });
+
 /* -------------------------------------------------------------------------- */
 
 export const PRODUCTS: readonly Product[] = [
   {
-    id: "STYLE-OUT-001",
-    handle: "painted-cropped-jacket",
-    title: "Painted Cropped Jacket",
-    category: "Outerwear",
-    shape: "jacket",
-    price: usd(1850),
-    summary: "Cropped cotton twill, hand-painted at the shoulder in smoke and ink.",
-    description:
-      "Cut short and square in a dense unbleached cotton twill, then painted by hand across the yoke so the motif runs down over the chest and fades out. Every piece is painted individually, so no two fall the same way. Three-quarter sleeves with a turned cuff, concealed centre-front zip, and a stand collar cut to sit open.",
-    attributes: {
-      fit: "Sculptural",
-      neckline: "Collared",
-      sleeveLength: "Three-quarter",
-      fabric: "100% cotton twill, hand-painted",
-      fabricWeightGsm: 340,
-      targetGender: "Women",
-      features: ["Hand-painted, no two alike", "Concealed front zip", "Turned cuff", "Stand collar"],
-    },
-    fit: { modelHeightCm: 178, modelSizeWorn: "S", runsTrueToSize: "small" },
-    sizeChartId: "chart-tops",
-    colorways: [
-      { id: "painted-cropped-jacket-unbleached", name: "Unbleached", hex: "#E9E4D7", sizes: stock(1, 2, 2, 1, 0, 0),
-      images: [
-        { src: "/photography/beaded-jacket-front.jpg", alt: "Painted Cropped Jacket, front view", width: 1365, height: 2048, view: "front" },
-        { src: "/photography/beaded-jacket-angle.jpg", alt: "Painted Cropped Jacket, alternate view", width: 1344, height: 2016, view: "back" },
-      ],
-      },
-    ],
-    care: ["Specialist dry clean only", "Do not press the painted panel", "Store on a padded hanger"],
-    details: ["Made to order, 4–6 weeks", "Painted in the atelier", "Model wears size S"],
-    reviews: [
-      rev(5, "The painting is extraordinary", "Photographs do not do the surface justice — there is real depth in the greys, and the motif sits differently on every piece. Mine has more silver through the shoulder than the sample.", "Camille D.", "2026-07-18", "5'7\"–5'9\"", "S", "small"),
-      rev(4, "Take a size up", "Cut very close through the shoulder and upper arm. I am usually a small and needed the medium to move properly in it.", "Ines R.", "2026-06-24", "5'4\"–5'6\"", "S", "small"),
-      rev(5, "Worth the wait", "Six weeks and worth every one. The cropped line works over everything from a column skirt to wide trousers.", "Beatriz N.", "2026-05-30", "5'10\"–6'0\"", "M", "small"),
-    ],
-  },
-
-  {
-    id: "STYLE-OUT-002",
-    handle: "painted-shoulder-capelet",
-    title: "Painted Shoulder Capelet",
+    id: "MNS-HOPE-001",
+    handle: "painted-capelet",
+    title: "Painted Capelet",
+    designer: "Katherine Paing",
+    artist: "Win Min Than",
+    collection: "The Hope Collection",
     category: "Outerwear",
     shape: "cape",
     price: usd(1240),
-    summary: "Structured capelet, painted across both shoulders, cut to sit over a column.",
+    summary: "Structured capelet, hand-painted at the shoulder in smoke and ink.",
     description:
-      "A short structured capelet in the same painted cotton, cut with a firm shoulder line so it holds its shape away from the body. Designed to sit over a narrow column dress without crushing the sleeve. Fastens with a single hook at the throat.",
+      "The signature piece of the Hope Collection. Painted by hand across both shoulders so the motif falls and fades toward the hem, taken from Zaw Win Pe's painting “The Hell”. Cut with a firm shoulder so it holds its shape away from the body and sits over a narrow column without crushing the sleeve. Each is painted individually — no two fall the same way.",
     attributes: {
       fit: "Sculptural",
       neckline: "Open",
       sleeveLength: "Sleeveless",
-      fabric: "100% cotton twill, hand-painted",
+      fabric: "Cotton twill, hand-painted",
       fabricWeightGsm: 340,
       targetGender: "Women",
-      features: ["Hand-painted, no two alike", "Structured shoulder", "Single hook closure"],
+      features: ["Hand-painted by Win Min Than", "No two alike", "Structured shoulder", "Beaded drip detail"],
     },
     fit: { modelHeightCm: 178, modelSizeWorn: "S", runsTrueToSize: "true" },
     sizeChartId: "chart-tops",
     colorways: [
-      { id: "painted-shoulder-capelet-unbleached", name: "Unbleached", hex: "#E9E4D7", sizes: stock(1, 1, 2, 1, 1, 0),
-      images: [
-        { src: "/photography/painted-capelet-cutout.jpg", alt: "Painted Shoulder Capelet, front view", width: 1033, height: 1549, view: "front" },
-        { src: "/photography/capelet-over-gown-cutout.jpg", alt: "Painted Shoulder Capelet, alternate view", width: 620, height: 1453, view: "back" },
-      ],
-      },
+      { id: "painted-capelet-unbleached", name: "Unbleached", hex: "#E9E4D7", sizes: stock(1, 2, 2, 1, 1, 0),
+        images: [
+          img("painted-capelet-cutout", "Painted Capelet, front view", 1033, 1549, "front"),
+          img("capelet-over-gown-cutout", "Painted Capelet worn over the Column Gown", 620, 1453, "back"),
+        ] },
     ],
     care: ["Specialist dry clean only", "Do not press the painted panel", "Store flat"],
-    details: ["Made to order, 4–6 weeks", "Painted in the atelier", "Model wears size S"],
+    details: ["Made to order", "Hand-painted in the atelier, Yangon", "Model wears size S"],
     reviews: [
-      rev(5, "Transforms a plain dress", "Wore it over the black column gown for a gallery opening and it was the only thing anyone talked about.", "Mireille A.", "2026-07-02", "5'7\"–5'9\"", "S", "true"),
-      rev(4, "Heavier than expected", "It has real weight, which is what makes it hold the shoulder — but it is not something you forget you are wearing.", "Sofia K.", "2026-06-11", "5'4\"–5'6\"", "XS", "true"),
+      rev(5, "Transforms a plain dress", "Wore it over the column gown and it was the only thing anyone talked about all evening.", "Mireille A.", "2026-07-02", "5'7\"–5'9\"", "S", "true"),
+      rev(4, "Heavier than expected", "It has real weight, which is what makes the shoulder hold. Not something you forget you are wearing.", "Sofia K.", "2026-06-11", "5'4\"–5'6\"", "XS", "true"),
     ],
   },
 
   {
-    id: "STYLE-TOP-001",
-    handle: "structured-peplum-vest",
-    title: "Structured Peplum Vest",
-    category: "Tops",
-    shape: "top",
-    price: usd(980),
-    summary: "Sleeveless wool crepe with a sharp peplum and sculptural buttons.",
-    description:
-      "Sleeveless and closely fitted through the body, breaking into a short firm peplum at the hip. Cut from a dry wool crepe that holds an edge. The buttons are carved individually in resin and no two are identical — they are the reason the front is otherwise entirely plain.",
-    attributes: {
-      fit: "Fitted",
-      neckline: "Round",
-      sleeveLength: "Sleeveless",
-      fabric: "98% wool crepe, 2% elastane",
-      fabricWeightGsm: 280,
-      targetGender: "Women",
-      features: ["Carved resin buttons", "Structured peplum", "Fully lined", "Boned side seams"],
-    },
-    fit: { modelHeightCm: 175, modelSizeWorn: "S", runsTrueToSize: "small" },
-    sizeChartId: "chart-tops",
-    colorways: [
-      { id: "structured-peplum-vest-chalk", name: "Chalk", hex: "#EDE9E0", sizes: stock(2, 3, 2, 2, 1, 0),
-      images: [
-        { src: "/photography/collection-lineup.jpg", alt: "Structured Peplum Vest, front view", width: 2016, height: 1344, view: "front" },
-      ],
-      },
-      { id: "structured-peplum-vest-ink",   name: "Ink",   hex: "#14130F", sizes: stock(1, 2, 3, 2, 1, 1) },
-    ],
-    care: ["Dry clean only", "Cool iron on the reverse", "Do not iron the buttons"],
-    details: ["Made in the atelier", "Carved resin buttons", "Model wears size S"],
-    reviews: [
-      rev(5, "The buttons alone", "I bought it for the tailoring and fell in love with the buttons. They catch the light like stone.", "Halima T.", "2026-07-21", "5'4\"–5'6\"", "S", "small"),
-      rev(4, "Boned, so size carefully", "The side boning means there is no give at all. Beautiful line once you have the right size, but try it on.", "Renata M.", "2026-06-28", "5'7\"–5'9\"", "M", "small"),
-      rev(5, "Wears far beyond evening", "Under a jacket it reads as tailoring; alone it reads as evening. I have worn it to both in a week.", "Cleo B.", "2026-06-05", "5'10\"–6'0\"", "M", "small"),
-      rev(3, "The peplum is firm", "Lovely piece but the peplum stands away more than the photographs suggest. Not a soft silhouette.", "Priya S.", "2026-05-14", "5'4\"–5'6\"", "XS", "small"),
-    ],
-  },
-
-  {
-    id: "STYLE-TOP-002",
-    handle: "painted-peplum-top",
-    title: "Painted Peplum Top",
-    category: "Tops",
-    shape: "top",
-    price: usd(1480),
-    summary: "Raw silk with a mandarin collar and the motif painted across the bodice.",
-    description:
-      "Raw silk in its undyed state, slubbed and matte, cut close through the bodice with a mandarin collar and a concealed front zip. The painting runs across the chest rather than the shoulder here, so it reads as a panel rather than a fall. Short structured peplum.",
-    attributes: {
-      fit: "Fitted",
-      neckline: "Mandarin",
-      sleeveLength: "Sleeveless",
-      fabric: "100% raw silk, hand-painted",
-      fabricWeightGsm: 220,
-      targetGender: "Women",
-      features: ["Hand-painted, no two alike", "Concealed front zip", "Mandarin collar", "Structured peplum"],
-    },
-    fit: { modelHeightCm: 175, modelSizeWorn: "S", runsTrueToSize: "small" },
-    sizeChartId: "chart-tops",
-    colorways: [
-      { id: "painted-peplum-top-raw-silk", name: "Raw Silk", hex: "#E4DCC8", sizes: stock(1, 2, 2, 1, 0, 0),
-      images: [
-        { src: "/photography/painted-corset-mannequin.jpg", alt: "Painted Peplum Top, front view", width: 896, height: 1344, view: "front" },
-        { src: "/photography/raw-silk-gown-mannequin.jpg", alt: "Painted Peplum Top, alternate view", width: 1366, height: 2048, view: "back" },
-      ],
-      },
-    ],
-    care: ["Specialist dry clean only", "Do not press the painted panel", "Silk marks with water"],
-    details: ["Made to order, 4–6 weeks", "Undyed raw silk", "Model wears size S"],
-    reviews: [
-      rev(5, "The silk is the point", "Slubbed and completely matte — it holds the paint in a way a smooth silk never would. You can see the weave through the grey.", "Anouk V.", "2026-07-09", "5'7\"–5'9\"", "S", "small"),
-      rev(4, "Cut very close", "Fitted in the true sense. I would size up if you want to eat dinner in it.", "Georgia L.", "2026-06-17", "5'4\"–5'6\"", "S", "small"),
-      rev(5, "Sold with the skirt", "Bought the matching fluted skirt and the two together are a complete look. The silk matches exactly.", "Nadia F.", "2026-05-22", "5'4\"–5'6\"", "XS", "small"),
-    ],
-  },
-
-  {
-    id: "STYLE-TOP-003",
-    handle: "silk-mandarin-blouse",
-    title: "Silk Mandarin Blouse",
-    category: "Tops",
-    shape: "top",
-    price: usd(760),
-    summary: "Long-sleeve raw silk blouse, unpainted, cut to layer under the painted pieces.",
-    description:
-      "The quiet piece in the collection. Long sleeves, mandarin collar, no painting — made to sit under the capelet or jacket without competing. Cut slightly looser through the body than the peplum styles so it layers cleanly.",
-    attributes: {
-      fit: "Tailored",
-      neckline: "Mandarin",
-      sleeveLength: "Long",
-      fabric: "100% raw silk",
-      fabricWeightGsm: 180,
-      targetGender: "Women",
-      features: ["Covered buttons", "Mandarin collar", "Cut to layer"],
-    },
-    fit: { modelHeightCm: 175, modelSizeWorn: "M", runsTrueToSize: "true" },
-    sizeChartId: "chart-tops",
-    colorways: [
-      { id: "silk-mandarin-blouse-raw-silk", name: "Raw Silk", hex: "#E4DCC8", sizes: stock(2, 3, 4, 3, 2, 1),
-      images: [
-        { src: "/photography/day-to-night-trio.jpg", alt: "Silk Mandarin Blouse, front view", width: 860, height: 1290, view: "front" },
-        { src: "/photography/mens-jacket-model.jpg", alt: "Silk Mandarin Blouse, alternate view", width: 837, height: 1255, view: "back" },
-      ],
-      },
-      { id: "silk-mandarin-blouse-ink",      name: "Ink",      hex: "#14130F", sizes: stock(1, 2, 3, 2, 1, 0) },
-    ],
-    care: ["Dry clean recommended", "Cool iron on the reverse", "Silk marks with water"],
-    details: ["Made in the atelier", "Undyed raw silk", "Model wears size M"],
-    reviews: [
-      rev(5, "The workhorse", "Not the piece you notice in the lookbook, and the one I have worn most. Goes under everything.", "Marta E.", "2026-07-14", "5'7\"–5'9\"", "M", "true"),
-      rev(4, "Wrinkles, as raw silk does", "No surprise if you know the fabric. Steams out in a minute.", "Yuki H.", "2026-06-20", "5'4\"–5'6\"", "S", "true"),
-    ],
-  },
-
-  {
-    id: "STYLE-SKIRT-001",
-    handle: "fluted-column-skirt",
-    title: "Fluted Column Skirt",
-    category: "Skirts",
-    shape: "skirt",
-    price: usd(890),
-    summary: "Black wool crepe, narrow to the knee then released into a soft flute.",
-    description:
-      "Cut narrow through the hip and thigh, then released below the knee into a fluted hem that moves without adding width. Wool crepe with a dry hand so the line stays clean. Concealed side zip, no waistband — the skirt sits directly on the waist.",
-    attributes: {
-      fit: "Fitted",
-      fabric: "98% wool crepe, 2% elastane",
-      fabricWeightGsm: 280,
-      targetGender: "Women",
-      features: ["Fluted hem", "Concealed side zip", "No waistband", "Fully lined"],
-    },
-    fit: { modelHeightCm: 175, modelSizeWorn: "S", runsTrueToSize: "true" },
-    sizeChartId: "chart-skirts",
-    colorways: [
-      { id: "fluted-column-skirt-ink",   name: "Ink",   hex: "#14130F", sizes: stock(2, 3, 3, 2, 1, 1) },
-      { id: "fluted-column-skirt-chalk", name: "Chalk", hex: "#EDE9E0", sizes: stock(0, 2, 2, 1, 0, 0),
-      images: [
-        { src: "/photography/printed-peplum-model.jpg", alt: "Fluted Column Skirt, front view", width: 1344, height: 2016, view: "front" },
-      ],
-      },
-    ],
-    care: ["Dry clean only", "Cool iron on the reverse", "Hang to store"],
-    details: ["Made in the atelier", "Hem finished by hand", "Model wears size S"],
-    reviews: [
-      rev(5, "The flute is judged perfectly", "Just enough movement below the knee without becoming a full skirt. Very hard to find.", "Delphine C.", "2026-07-25", "5'4\"–5'6\"", "S", "true"),
-      rev(5, "Pairs with the vest", "Bought with the peplum vest and it is a complete suit. The blacks match exactly, which I did not expect.", "Rania O.", "2026-06-30", "5'7\"–5'9\"", "M", "true"),
-      rev(4, "No waistband takes adjusting", "Sits directly on the waist, which is lovely but unforgiving if you are between sizes.", "Elke W.", "2026-06-08", "5'4\"–5'6\"", "XS", "true"),
-    ],
-  },
-
-  {
-    id: "STYLE-SKIRT-002",
-    handle: "raw-silk-fluted-skirt",
-    title: "Raw Silk Fluted Skirt",
-    category: "Skirts",
-    shape: "skirt",
-    price: usd(1150),
-    summary: "Floor-length raw silk, cut to match the painted peplum top.",
-    description:
-      "The same narrow-to-fluted line taken to the floor in undyed raw silk. Cut from the same bolt as the painted peplum top so the two read as one piece. Hem finished by hand and left slightly heavy so it falls straight.",
-    attributes: {
-      fit: "Draped",
-      fabric: "100% raw silk",
-      fabricWeightGsm: 220,
-      targetGender: "Women",
-      features: ["Floor length", "Fluted hem", "Hand-finished hem", "Concealed side zip"],
-    },
-    fit: { modelHeightCm: 175, modelSizeWorn: "S", runsTrueToSize: "true" },
-    sizeChartId: "chart-skirts",
-    colorways: [
-      { id: "raw-silk-fluted-skirt-raw-silk", name: "Raw Silk", hex: "#E4DCC8", sizes: stock(1, 2, 2, 1, 1, 0),
-      images: [
-        { src: "/photography/raw-silk-gown-cutout.jpg", alt: "Raw Silk Fluted Skirt, front view", width: 700, height: 2048, view: "front" },
-        { src: "/photography/raw-silk-gown-mannequin.jpg", alt: "Raw Silk Fluted Skirt, alternate view", width: 1366, height: 2048, view: "back" },
-      ],
-      },
-    ],
-    care: ["Dry clean only", "Silk marks with water", "Hang to store"],
-    details: ["Made to order, 4–6 weeks", "Cut from the same bolt as the peplum top", "Model wears size S"],
-    reviews: [
-      rev(5, "Falls like water", "The weight in the hem does something you cannot see in a photograph. It just hangs.", "Iman B.", "2026-07-11", "5'4\"–5'6\"", "S", "true"),
-      rev(4, "Order early", "Six weeks is real. Worth planning around if you have a date in mind.", "Solene P.", "2026-05-28", "5'7\"–5'9\"", "M", "true"),
-    ],
-  },
-
-  {
-    id: "STYLE-DRESS-001",
+    id: "MNS-HOPE-002",
     handle: "column-gown",
     title: "Column Gown",
+    designer: "Katherine Paing",
+    collection: "The Hope Collection",
     category: "Dresses",
     shape: "gown",
-    price: usd(2380),
-    summary: "Floor-length black crepe, high neck and long sleeves, cut in one clean line.",
+    price: usd(980),
+    summary: "Floor-length black jersey, high neck and long sleeves, cut in one line.",
     description:
-      "Entirely undecorated by intention — this is the ground the painted pieces are worn against. High neck, long fitted sleeves, and a narrow column that skims from shoulder to floor without a seam breaking the line. Cut on a slight bias so it moves with the body rather than against it.",
+      "Deliberately undecorated — this is the ground the painted pieces are worn against. High neck, long fitted sleeves, and a narrow column that skims from shoulder to floor without a seam breaking the line.",
     attributes: {
       fit: "Draped",
       neckline: "High neck",
       sleeveLength: "Long",
-      fabric: "100% silk crepe",
+      fabric: "Stretch jersey",
       fabricWeightGsm: 260,
       targetGender: "Women",
-      features: ["Cut on the bias", "Invisible back zip", "Hand-finished hem", "Cut to wear with a heel"],
+      features: ["Cut to wear with a heel", "Hand-finished hem", "Designed to layer under the capelet"],
     },
-    fit: { modelHeightCm: 180, modelSizeWorn: "S", runsTrueToSize: "true" },
+    fit: { modelHeightCm: 178, modelSizeWorn: "S", runsTrueToSize: "true" },
     sizeChartId: "chart-dresses",
     colorways: [
-      { id: "column-gown-ink", name: "Ink", hex: "#14130F", sizes: stock(1, 2, 2, 2, 1, 0),
-      images: [
-        { src: "/photography/capelet-over-gown-cutout.jpg", alt: "Column Gown, front view", width: 620, height: 1453, view: "front" },
-        { src: "/photography/lace-gown-model.jpg", alt: "Column Gown, alternate view", width: 1271, height: 1906, view: "back" },
-      ],
-      },
+      { id: "column-gown-black", name: "Black", hex: "#14130F", sizes: stock(1, 2, 3, 2, 1, 0),
+        images: [
+          img("capelet-over-gown-cutout", "Column Gown, worn with the Painted Capelet", 620, 1453, "front"),
+          img("lace-gown-model", "Column silhouette, worn", 1271, 1906, "back"),
+        ] },
     ],
-    care: ["Specialist dry clean only", "Store on a padded hanger", "Do not fold"],
-    details: ["Made to order, 6–8 weeks", "Hem cut to your height at fitting", "Model wears size S"],
+    care: ["Dry clean recommended", "Store on a padded hanger", "Do not fold"],
+    details: ["Hem cut to your height at fitting", "Model wears size S"],
     reviews: [
-      rev(5, "The best thing I own", "Nothing on it. No detail, no trim. It is entirely about the cut and it is flawless.", "Verity A.", "2026-07-28", "5'10\"–6'0\"", "M", "true"),
-      rev(5, "Hemmed to me", "They cut the hem at the fitting to the exact heel I said I would wear. That is the difference.", "Ling Z.", "2026-07-04", "5'4\"–5'6\"", "S", "true"),
-      rev(4, "Bias needs care", "It is cut on the bias, so it is unforgiving of a bad bra and it needs hanging properly. Worth the fuss.", "Ottilie R.", "2026-06-14", "5'7\"–5'9\"", "S", "true"),
+      rev(5, "Nothing on it, and that is the point", "No trim, no detail. Entirely about the cut, and the cut is flawless.", "Verity A.", "2026-07-28", "5'10\"–6'0\"", "M", "true"),
       rev(5, "Wear it with the capelet", "Alone it is severe in the best way. With the painted capelet it becomes something else entirely.", "Fatima N.", "2026-05-19", "5'7\"–5'9\"", "M", "true"),
     ],
   },
 
   {
-    id: "STYLE-DRESS-002",
-    handle: "painted-column-gown",
-    title: "Painted Column Gown",
-    category: "Dresses",
-    shape: "gown",
-    price: usd(3200),
-    summary: "The column gown with the motif painted directly onto the bodice.",
+    id: "MNS-HOPE-003",
+    handle: "painted-corset-bodice",
+    title: "Painted Corset Bodice",
+    designer: "Ei Ko Zin Latt",
+    artist: "Win Min Than",
+    collection: "The Hope Collection",
+    category: "Tops",
+    shape: "top",
+    price: usd(890),
+    summary: "Raw silk bodice with a sculptural peplum, painted across the front.",
     description:
-      "The same bias-cut column, painted directly rather than worn under a capelet. The motif begins at the shoulder and falls through the bodice, breaking before the hip so the line below stays uninterrupted. One of a kind by definition — each is painted on the finished garment.",
+      "Undyed raw silk, slubbed and matte, boned through the body and released into a sculptural petal peplum at the hip. The painting runs across the bodice rather than the shoulder, so it reads as a panel. Mandarin collar, concealed front zip.",
     attributes: {
-      fit: "Draped",
-      neckline: "High neck",
-      sleeveLength: "Long",
-      fabric: "100% silk crepe, hand-painted",
-      fabricWeightGsm: 260,
+      fit: "Fitted",
+      neckline: "Mandarin",
+      sleeveLength: "Sleeveless",
+      fabric: "Raw silk, hand-painted",
+      fabricWeightGsm: 220,
       targetGender: "Women",
-      features: ["Painted on the finished garment", "One of a kind", "Cut on the bias", "Hand-finished hem"],
+      features: ["Hand-painted by Win Min Than", "Boned bodice", "Petal peplum", "Concealed zip"],
     },
-    fit: { modelHeightCm: 180, modelSizeWorn: "S", runsTrueToSize: "true" },
-    sizeChartId: "chart-dresses",
+    fit: { modelHeightCm: 175, modelSizeWorn: "S", runsTrueToSize: "small" },
+    sizeChartId: "chart-tops",
     colorways: [
-      { id: "painted-column-gown-ink", name: "Ink", hex: "#14130F", sizes: stock(0, 1, 1, 1, 0, 0),
-      images: [
-        { src: "/photography/patchwork-jacket-model.jpg", alt: "Painted Column Gown, front view", width: 1328, height: 1992, view: "front" },
-        { src: "/photography/blue-denim-pair.jpg", alt: "Painted Column Gown, alternate view", width: 896, height: 1344, view: "back" },
-      ],
-      },
+      { id: "painted-corset-raw-silk", name: "Raw Silk", hex: "#E4DCC8", sizes: stock(1, 2, 2, 1, 0, 0),
+        images: [
+          img("painted-corset-mannequin", "Painted Corset Bodice, front view", 896, 1344, "front"),
+        ] },
     ],
-    care: ["Specialist dry clean only", "Do not press the painted panel", "Store on a padded hanger"],
-    details: ["Made to order, 8–10 weeks", "Painted individually — no two alike", "Model wears size S"],
+    care: ["Specialist dry clean only", "Do not press the painted panel", "Silk marks with water"],
+    details: ["Made to order", "Undyed raw silk", "Model wears size S"],
     reviews: [
-      rev(5, "Genuinely one of a kind", "They sent photographs of mine being painted. It is not the one in the lookbook and that is the whole point.", "Adaeze O.", "2026-07-16", "5'7\"–5'9\"", "S", "true"),
-      rev(5, "Ten weeks, no regrets", "The longest I have ever waited for a garment and the only one I would wait that long for again.", "Constance M.", "2026-06-02", "5'10\"–6'0\"", "M", "true"),
+      rev(5, "The silk holds the paint", "Slubbed and completely matte — you can see the weave through the grey. A smooth silk would never do this.", "Anouk V.", "2026-07-09", "5'7\"–5'9\"", "S", "small"),
+      rev(4, "Boned, so size carefully", "There is no give at all. Beautiful line once you have the right size, but try it on.", "Georgia L.", "2026-06-17", "5'4\"–5'6\"", "S", "small"),
     ],
   },
 
   {
-    id: "STYLE-OUT-003",
-    handle: "painted-overshirt",
-    title: "Painted Overshirt",
+    id: "MNS-HOPE-004",
+    handle: "raw-silk-fluted-skirt",
+    title: "Raw Silk Fluted Skirt",
+    designer: "Ei Ko Zin Latt",
+    collection: "The Hope Collection",
+    category: "Skirts",
+    shape: "skirt",
+    price: usd(760),
+    summary: "Floor-length raw silk, narrow to the knee then released into a flute.",
+    description:
+      "Cut from the same bolt as the painted bodice so the two read as one piece. Narrow through the hip, then released below the knee into a fluted hem that moves without adding width. Hem finished by hand and left slightly heavy so it falls straight.",
+    attributes: {
+      fit: "Draped",
+      fabric: "Raw silk",
+      fabricWeightGsm: 220,
+      targetGender: "Women",
+      features: ["Floor length", "Fluted hem", "Hand-finished hem", "Cut from the same bolt as the bodice"],
+    },
+    fit: { modelHeightCm: 175, modelSizeWorn: "S", runsTrueToSize: "true" },
+    sizeChartId: "chart-skirts",
+    colorways: [
+      { id: "raw-silk-skirt-raw-silk", name: "Raw Silk", hex: "#E4DCC8", sizes: stock(1, 2, 2, 1, 1, 0),
+        images: [
+          img("raw-silk-gown-cutout", "Raw Silk Fluted Skirt with the painted bodice", 700, 2048, "front"),
+          img("raw-silk-gown-mannequin", "Raw silk bodice and skirt on the stand", 1366, 2048, "back"),
+        ] },
+    ],
+    care: ["Dry clean only", "Silk marks with water", "Hang to store"],
+    details: ["Made to order", "Undyed raw silk", "Model wears size S"],
+    reviews: [
+      rev(5, "Falls like water", "The weight in the hem does something you cannot see in a photograph. It just hangs.", "Iman B.", "2026-07-11", "5'4\"–5'6\"", "S", "true"),
+    ],
+  },
+
+  {
+    id: "MNS-LTD-001",
+    handle: "elegant-powerful-jacket",
+    title: "Elegant Powerful Jacket",
+    designer: "Pan Ywal Oo",
+    collection: "Limited Collection",
     category: "Outerwear",
     shape: "jacket",
-    price: usd(1420),
-    summary: "Longer, looser painted cotton — the collection's most wearable piece.",
+    price: usd(2450),
+    summary: "Hand-stitched faces emerging from the painting, with organza sleeves.",
     description:
-      "Cut longer and considerably easier than the cropped jacket, in the same painted cotton twill. Patch pockets, a soft shoulder, and enough room to go over the mandarin blouse. The piece people buy when they want the painting and wear it daily.",
+      "Art meets tailoring. The bodice is worked entirely by hand, the stitches drawing out the faces that emerge from the original painting. Sleeves are built in layered organza and beaded ruffle, weightless against the dense hand-work of the body. A limited piece — each takes weeks at the bench.",
+    attributes: {
+      fit: "Fitted",
+      neckline: "High neck",
+      sleeveLength: "Long",
+      fabric: "Hand-stitched cloth with organza",
+      fabricWeightGsm: 300,
+      targetGender: "Women",
+      features: ["Hand-stitched face line art", "Beaded organza sleeves", "Limited edition", "Weeks of bench work"],
+    },
+    fit: { modelHeightCm: 178, modelSizeWorn: "S", runsTrueToSize: "small" },
+    sizeChartId: "chart-tops",
+    colorways: [
+      { id: "elegant-powerful-black", name: "Black", hex: "#14130F", sizes: stock(0, 1, 1, 1, 0, 0),
+        images: [
+          img("beaded-jacket-front", "Elegant Powerful Jacket, front view", 1365, 2048, "front"),
+          img("beaded-jacket-angle", "Elegant Powerful Jacket, three-quarter view", 1344, 2016, "back"),
+        ] },
+    ],
+    care: ["Specialist dry clean only", "Do not press the beading", "Store on a padded hanger"],
+    details: ["Limited edition", "Hand-stitched in the atelier", "Model wears size S"],
+    reviews: [
+      rev(5, "You can see the hand in it", "Up close the stitching resolves into faces. Photographs flatten it completely.", "Camille D.", "2026-07-18", "5'7\"–5'9\"", "S", "small"),
+      rev(4, "Cut close through the shoulder", "I am usually a small and needed the medium to move properly in it.", "Ines R.", "2026-06-24", "5'4\"–5'6\"", "S", "small"),
+    ],
+  },
+
+  {
+    id: "MNS-CRIM-001",
+    handle: "crimson-drive-jacket",
+    title: "Crimson Drive Jacket",
+    designer: "Katherine Paing",
+    collection: "Crimson Drive",
+    category: "Outerwear",
+    shape: "jacket",
+    price: usd(680),
+    summary: "Traditional textile reworked as a tailored jacket, piped in crimson.",
+    description:
+      "From the ready-to-wear line. Traditional woven textile, worked with tailoring technique into a jacket that moves from a professional meeting to a dinner without changing. The crimson piping traces the seams, taken from the artwork the collection is drawn from.",
+    attributes: {
+      fit: "Tailored",
+      neckline: "Collared",
+      sleeveLength: "Long",
+      fabric: "Traditional woven textile",
+      fabricWeightGsm: 280,
+      targetGender: "Women",
+      features: ["Crimson seam piping", "Traditional textile", "Day to night", "Welt pockets"],
+    },
+    fit: { modelHeightCm: 172, modelSizeWorn: "M", runsTrueToSize: "true" },
+    sizeChartId: "chart-tops",
+    colorways: [
+      { id: "crimson-drive-black", name: "Black", hex: "#14130F", sizes: stock(2, 3, 4, 3, 2, 1),
+        images: [
+          img("day-to-night-trio", "Crimson Drive Jacket, styled three ways", 860, 1290, "front"),
+          img("day-to-night-artwork", "Crimson Drive tailoring against the source artwork", 847, 1271, "back"),
+        ] },
+    ],
+    care: ["Dry clean only", "Cool iron on the reverse"],
+    details: ["Ready to wear", "Woven in Myanmar", "Model wears size M"],
+    reviews: [
+      rev(5, "Works for both halves of the day", "Wore it to a client meeting and straight on to dinner. That is exactly what it promises.", "Rania O.", "2026-06-30", "5'4\"–5'6\"", "M", "true"),
+      rev(4, "The piping is the detail", "It looks plain in photographs and then you see the red tracing every seam.", "Delphine C.", "2026-07-25", "5'7\"–5'9\"", "L", "true"),
+    ],
+  },
+
+  {
+    id: "MNS-CRIM-002",
+    handle: "mens-panelled-jacket",
+    title: "Men's Panelled Jacket",
+    designer: "Sa Thaw Zin Hut",
+    collection: "Crimson Drive",
+    category: "Outerwear",
+    shape: "jacket",
+    price: usd(640),
+    summary: "A modern silhouette fused with Myanmar's ethnic dress.",
+    description:
+      "Mandarin collar and a clean front, broken by a hand-worked panel running the length of the body. The cut is contemporary; the panel and its embroidery are drawn directly from traditional dress.",
+    attributes: {
+      fit: "Tailored",
+      neckline: "Mandarin",
+      sleeveLength: "Long",
+      fabric: "Cotton blend with embroidered panel",
+      fabricWeightGsm: 300,
+      targetGender: "Men",
+      features: ["Hand-embroidered panel", "Mandarin collar", "Concealed placket"],
+    },
+    fit: { modelHeightCm: 183, modelSizeWorn: "M", runsTrueToSize: "true" },
+    sizeChartId: "chart-tops",
+    colorways: [
+      { id: "mens-panelled-black", name: "Black", hex: "#14130F", sizes: stock(1, 3, 4, 3, 2, 1),
+        images: [
+          img("mens-jacket-model", "Men's Panelled Jacket, worn", 837, 1255, "front"),
+        ] },
+    ],
+    care: ["Dry clean only", "Do not press the embroidered panel"],
+    details: ["Ready to wear", "Hand-embroidered panel", "Model wears size M"],
+    reviews: [
+      rev(5, "Quietly unusual", "Reads as a plain black jacket until someone notices the panel. Exactly what I wanted.", "Thet A.", "2026-07-14", "6'1\" or above", "L", "true"),
+    ],
+  },
+
+  {
+    id: "MNS-DENIM-001",
+    handle: "melting-paint-denim-jacket",
+    title: "Melting Paint Denim Jacket",
+    designer: "Katherine Paing",
+    collection: "Contemporary",
+    category: "Outerwear",
+    shape: "jacket",
+    price: usd(720),
+    summary: "White denim with paintwork spilling from open black stitching.",
+    description:
+      "Denim is timeless, art is priceless. The signature detail is melting paintwork spilling from bold, open black stitching, echoing the artwork worked into every piece. Pared back and avant-garde at once — a jacket for daylight that behaves like a limited piece.",
+    attributes: {
+      fit: "Sculptural",
+      neckline: "Collared",
+      sleeveLength: "Long",
+      fabric: "Cotton denim, hand-painted",
+      fabricWeightGsm: 380,
+      targetGender: "Unisex",
+      features: ["Melting paintwork", "Open black stitching", "Sculpted sleeve", "Hand-finished"],
+    },
+    fit: { modelHeightCm: 175, modelSizeWorn: "S", runsTrueToSize: "true" },
+    sizeChartId: "chart-tops",
+    colorways: [
+      { id: "melting-paint-white", name: "Optic White", hex: "#EDEAE1", sizes: stock(1, 2, 3, 2, 1, 0),
+        images: [
+          img("white-denim-pair", "Melting Paint Denim, worn", 1942, 1295, "front"),
+        ] },
+    ],
+    care: ["Specialist dry clean only", "Do not press the paintwork", "Hang to store"],
+    details: ["Ready to wear", "Hand-painted detail", "Model wears size S"],
+    reviews: [
+      rev(5, "The one you actually wear", "I wanted a limited piece and bought this instead. Same hand-painting, and I can put it on in daylight.", "Juno K.", "2026-07-22", "5'7\"–5'9\"", "M", "true"),
+      rev(4, "White denim, so be careful", "It is what it is. Beautiful, and I would not wear it to eat pasta.", "Emilia G.", "2026-06-26", "5'4\"–5'6\"", "S", "true"),
+    ],
+  },
+
+  {
+    id: "MNS-DENIM-002",
+    handle: "indigo-panel-denim-jacket",
+    title: "Indigo Panel Denim Jacket",
+    designer: "Katherine Paing",
+    collection: "Contemporary",
+    category: "Outerwear",
+    shape: "jacket",
+    price: usd(690),
+    summary: "Denim revived through traditional panels, pieced with golden thread.",
+    description:
+      "Each panel of traditional textile is cut and pieced together with golden thread, evoking an ancient, regal richness while staying firmly contemporary. Denim as the modern textile, carrying local pattern rather than replacing it.",
+    attributes: {
+      fit: "Tailored",
+      neckline: "Collared",
+      sleeveLength: "Three-quarter",
+      fabric: "Indigo denim with traditional panels",
+      fabricWeightGsm: 380,
+      targetGender: "Unisex",
+      features: ["Gold-thread piecing", "Traditional textile panels", "Cropped sleeve"],
+    },
+    fit: { modelHeightCm: 172, modelSizeWorn: "M", runsTrueToSize: "true" },
+    sizeChartId: "chart-tops",
+    colorways: [
+      { id: "indigo-panel-indigo", name: "Indigo", hex: "#252F45", sizes: stock(1, 2, 3, 2, 1, 0),
+        images: [
+          img("blue-denim-pair", "Indigo Panel Denim Jacket, worn", 896, 1344, "front"),
+        ] },
+    ],
+    care: ["Machine wash cold, inside out", "Hang to dry", "Warm iron"],
+    details: ["Ready to wear", "Gold-thread piecing", "Model wears size M"],
+    reviews: [
+      rev(5, "The gold thread catches everything", "In daylight it is a denim jacket. Under lights the piecing lights up.", "Nadia F.", "2026-07-05", "5'4\"–5'6\"", "S", "true"),
+    ],
+  },
+
+  {
+    id: "MNS-TRAD-001",
+    handle: "new-traditional-patchwork-jacket",
+    title: "New Traditional Patchwork Jacket",
+    designer: "Katherine Paing",
+    collection: "New Traditional",
+    category: "Outerwear",
+    shape: "jacket",
+    price: usd(750),
+    summary: "Genderless patchwork in traditional weaves — versatile and weatherproof.",
+    description:
+      "Everyday wear built to be versatile, chic and weatherproof. Patterns once reserved separately for men and women are brought into a single language of patchwork. This is traditional dress carried from custom into a modern concept — a genderless piece, cut easy.",
     attributes: {
       fit: "Draped",
       neckline: "Collared",
       sleeveLength: "Long",
-      fabric: "100% cotton twill, hand-painted",
+      fabric: "Pieced traditional weaves",
       fabricWeightGsm: 340,
-      targetGender: "Women",
-      features: ["Hand-painted, no two alike", "Patch pockets", "Soft shoulder", "Cut to layer"],
+      targetGender: "Unisex",
+      features: ["Genderless cut", "Patchwork of traditional weaves", "Weatherproof finish", "Dropped shoulder"],
     },
-    fit: { modelHeightCm: 178, modelSizeWorn: "M", runsTrueToSize: "large" },
+    fit: { modelHeightCm: 172, modelSizeWorn: "M", runsTrueToSize: "large" },
     sizeChartId: "chart-tops",
     colorways: [
-      { id: "painted-overshirt-unbleached", name: "Unbleached", hex: "#E9E4D7", sizes: stock(1, 2, 3, 2, 1, 1),
-      images: [
-        { src: "/photography/white-denim-pair.jpg", alt: "Painted Overshirt, front view", width: 1942, height: 1295, view: "front" },
-        { src: "/photography/day-to-night-artwork.jpg", alt: "Painted Overshirt, alternate view", width: 847, height: 1271, view: "back" },
-      ],
-      },
-      { id: "painted-overshirt-ash",        name: "Ash",        hex: "#B9B4A6", sizes: stock(0, 1, 2, 1, 0, 0) },
+      { id: "new-traditional-indigo", name: "Indigo Patchwork", hex: "#252F45", hexAlt: "#3E4A63", sizes: stock(2, 3, 4, 3, 2, 1),
+        images: [
+          img("patchwork-jacket-model", "New Traditional Patchwork Jacket, worn", 1328, 1992, "front"),
+        ] },
     ],
-    care: ["Specialist dry clean only", "Do not press the painted panel", "Hang to store"],
-    details: ["Made to order, 4–6 weeks", "Painted in the atelier", "Model wears size M"],
+    care: ["Dry clean recommended", "Cool iron on the reverse"],
+    details: ["Ready to wear", "Genderless sizing", "Model wears size M"],
     reviews: [
-      rev(5, "The one you actually wear", "I wanted the cropped jacket and bought this instead. Same painting, and I can put it on to buy coffee.", "Juno K.", "2026-07-22", "5'7\"–5'9\"", "M", "large"),
-      rev(4, "Sizes generously", "Cut easy on purpose. I took a small and it is still roomy over a blouse.", "Emilia G.", "2026-06-26", "5'4\"–5'6\"", "S", "large"),
-      rev(4, "Ash is very subtle", "The ash colourway is much quieter — the painting almost disappears into it. Lovely, but see it first.", "Noor A.", "2026-06-01", "5'10\"–6'0\"", "L", "large"),
+      rev(5, "Every panel is different", "Mine has a stripe through the shoulder that the lookbook one does not. That is the appeal.", "Kyaw M.", "2026-07-19", "5'10\"–6'0\"", "L", "large"),
+      rev(4, "Cut generously", "Sized down and it is still easy. Read the fit note.", "Su Lin", "2026-06-08", "5'4\"–5'6\"", "S", "large"),
+    ],
+  },
+
+  {
+    id: "MNS-RTW-001",
+    handle: "mosaic-peplum-top",
+    title: "Mosaic Peplum Top",
+    designer: "Kay",
+    collection: "Standard Line",
+    category: "Tops",
+    shape: "top",
+    price: usd(390),
+    summary: "A printed mosaic peplum over a clean sleeveless bodice.",
+    description:
+      "From the standard line — the everyday half of the collection. A plain sleeveless bodice broken by a printed peplum in mosaic blues and gold, drawn from temple tilework. Cut to wear with wide trousers or on its own.",
+    attributes: {
+      fit: "Fitted",
+      neckline: "Round",
+      sleeveLength: "Sleeveless",
+      fabric: "Cotton blend with printed panel",
+      fabricWeightGsm: 200,
+      targetGender: "Women",
+      features: ["Printed mosaic peplum", "Clean bodice", "Everyday weight"],
+    },
+    fit: { modelHeightCm: 170, modelSizeWorn: "S", runsTrueToSize: "true" },
+    sizeChartId: "chart-tops",
+    colorways: [
+      { id: "mosaic-peplum-white", name: "White Mosaic", hex: "#EDEAE1", hexAlt: "#3E6EA8", sizes: stock(2, 4, 5, 3, 2, 1),
+        images: [
+          img("printed-peplum-model", "Mosaic Peplum Top with flared trousers", 1344, 2016, "front"),
+        ] },
+    ],
+    care: ["Machine wash cold", "Cool iron on the reverse"],
+    details: ["Standard line", "Print drawn from temple tilework", "Model wears size S"],
+    reviews: [
+      rev(5, "The everyday one", "Not the piece in the lookbook and the one I have worn most. Goes with everything.", "Marta E.", "2026-07-14", "5'7\"–5'9\"", "M", "true"),
+      rev(4, "Peplum stands away", "Firmer than it looks in the photograph. Not a soft silhouette.", "Priya S.", "2026-06-05", "5'4\"–5'6\"", "XS", "true"),
+    ],
+  },
+
+  {
+    id: "MNS-RTW-002",
+    handle: "coral-embroidered-gown",
+    title: "Coral Embroidered Gown",
+    designer: "Sandi",
+    collection: "Standard Line",
+    category: "Dresses",
+    shape: "gown",
+    price: usd(1180),
+    summary: "Ivory lace with coral embroidery branching across the bodice.",
+    description:
+      "A floor-length ivory gown in fine lace, with coral-thread embroidery branching from the waist across the bodice and over one shoulder. Cut close through the body and released below the knee. For the occasions the limited pieces are too severe for.",
+    attributes: {
+      fit: "Fitted",
+      neckline: "Round",
+      sleeveLength: "Sleeveless",
+      fabric: "Lace with hand embroidery",
+      fabricWeightGsm: 180,
+      targetGender: "Women",
+      features: ["Coral-thread embroidery", "Fine lace", "Fluted hem", "Hand-finished"],
+    },
+    fit: { modelHeightCm: 175, modelSizeWorn: "S", runsTrueToSize: "small" },
+    sizeChartId: "chart-dresses",
+    colorways: [
+      { id: "coral-gown-ivory", name: "Ivory", hex: "#F0EBDF", hexAlt: "#C96A5A", sizes: stock(1, 2, 2, 1, 0, 0),
+        images: [
+          img("lace-gown-model", "Coral Embroidered Gown, worn", 1271, 1906, "front"),
+        ] },
+    ],
+    care: ["Specialist dry clean only", "Do not press the embroidery", "Store on a padded hanger"],
+    details: ["Made to order", "Hand-embroidered", "Model wears size S"],
+    reviews: [
+      rev(5, "The embroidery is not printed", "It is worked by hand and you can feel it. Completely different thing.", "Ottilie R.", "2026-07-16", "5'7\"–5'9\"", "S", "small"),
+      rev(4, "Runs small through the bust", "Lace has no give. I would size up.", "Cleo B.", "2026-06-14", "5'4\"–5'6\"", "S", "small"),
+    ],
+  },
+
+  {
+    id: "MNS-HOPE-005",
+    handle: "structured-peplum-vest",
+    title: "Structured Peplum Vest",
+    designer: "Katherine Paing",
+    collection: "The Hope Collection",
+    category: "Tops",
+    shape: "top",
+    price: usd(520),
+    summary: "Sleeveless, sharply fitted, with sculptural buttons carved one by one.",
+    description:
+      "Sleeveless and close through the body, breaking into a short firm peplum at the hip. The buttons are carved individually and no two are identical — they are the reason the front is otherwise entirely plain.",
+    attributes: {
+      fit: "Fitted",
+      neckline: "Round",
+      sleeveLength: "Sleeveless",
+      fabric: "Wool crepe",
+      fabricWeightGsm: 280,
+      targetGender: "Women",
+      features: ["Carved buttons, no two alike", "Structured peplum", "Fully lined"],
+    },
+    fit: { modelHeightCm: 175, modelSizeWorn: "S", runsTrueToSize: "small" },
+    sizeChartId: "chart-tops",
+    colorways: [
+      { id: "peplum-vest-chalk", name: "Chalk", hex: "#EDE9E0", sizes: stock(2, 3, 3, 2, 1, 0),
+        images: [
+          img("collection-lineup", "Structured Peplum Vest, shown with the collection", 2016, 1344, "front"),
+        ] },
+    ],
+    care: ["Dry clean only", "Cool iron on the reverse", "Do not iron the buttons"],
+    details: ["Made in the atelier", "Carved buttons", "Model wears size S"],
+    reviews: [
+      rev(5, "The buttons alone", "I bought it for the tailoring and fell for the buttons. They catch the light like stone.", "Halima T.", "2026-07-21", "5'4\"–5'6\"", "S", "small"),
     ],
   },
 ];

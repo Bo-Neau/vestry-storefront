@@ -126,6 +126,13 @@ const anyInStock = sizeRows.some((r) => r.state !== "out");
         <!-- ZONE 2 — name, price, rating linked to reviews -->
         <header class="p-head">
           <h1>{product.title}</h1>
+          {(product.designer || product.collection) && (
+            <p class="credit">
+              {product.designer && <span>Designer <strong>{product.designer}</strong></span>}
+              {product.designer && product.collection && <span aria-hidden="true"> · </span>}
+              {product.collection && <span>{product.collection}</span>}
+            </p>
+          )}
           <p class="p-price money">
             <span class={off > 0 ? "now" : ""}>{formatMoney(product.price)}</span>
             {product.compareAtPrice && (
@@ -145,6 +152,9 @@ const anyInStock = sizeRows.some((r) => r.state !== "out");
             </p>
           )}
           <p class="p-summary">{product.summary}</p>
+          {product.artist && (
+            <p class="artist-credit">Hand-painted by {product.artist}</p>
+          )}
         </header>
 
         <!-- ZONE 3 — model reference. The single highest-value line here. -->
@@ -391,6 +401,21 @@ const anyInStock = sizeRows.some((r) => r.state !== "out");
   }
   .r-count { color: var(--ink-3); letter-spacing: 0; }
   .p-summary { color: var(--ink-2); }
+  .credit {
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-3);
+  }
+  .credit strong { color: var(--ink-2); font-weight: 500; }
+  /* The painter is credited separately from the designer — for this house
+     they are usually different people, and the booklet names both. */
+  .artist-credit {
+    font-size: var(--step--1);
+    font-style: italic;
+    color: var(--ink-2);
+  }
 
   /* Zone 3 — deliberately prominent */
   .fit-ref {

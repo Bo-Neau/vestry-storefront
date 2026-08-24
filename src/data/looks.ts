@@ -23,25 +23,25 @@ export interface Look {
 
 export const LOOKS: readonly Look[] = [
   {
-    handle: "the-column",
-    title: "The Column",
-    note: "The painted capelet over an undecorated bias column — the collection's clearest idea, worn plainly.",
+    handle: "hope",
+    title: "The Hope Collection",
+    note: "The painted capelet over an undecorated column — the debut collection's clearest idea, worn plainly.",
     heroHandle: "column-gown",
-    pieces: ["column-gown", "painted-shoulder-capelet"],
+    pieces: ["column-gown", "painted-capelet"],
   },
   {
     handle: "raw-silk",
     title: "Raw Silk, Head to Hem",
-    note: "Peplum and skirt cut from the same bolt, so the undyed silk reads as one piece.",
-    heroHandle: "painted-peplum-top",
-    pieces: ["painted-peplum-top", "raw-silk-fluted-skirt"],
+    note: "Bodice and skirt cut from the same bolt, so the undyed silk reads as one piece.",
+    heroHandle: "raw-silk-fluted-skirt",
+    pieces: ["painted-corset-bodice", "raw-silk-fluted-skirt"],
   },
   {
-    handle: "day-tailoring",
-    title: "Day Tailoring",
-    note: "The cropped jacket over sculptural tailoring, with the fluted skirt keeping the line narrow.",
-    heroHandle: "painted-cropped-jacket",
-    pieces: ["painted-cropped-jacket", "structured-peplum-vest", "fluted-column-skirt"],
+    handle: "day-to-night",
+    title: "Day to Night",
+    note: "Traditional textile worked into tailoring that moves from a meeting to a dinner without changing.",
+    heroHandle: "crimson-drive-jacket",
+    pieces: ["crimson-drive-jacket", "structured-peplum-vest", "mens-panelled-jacket"],
   },
 ];
 

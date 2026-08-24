@@ -146,6 +146,18 @@ export interface Product {
   /** STYLE-level id, distinct from any variant SKU. Enables grouping. */
   readonly id: string;
   /**
+   * The designer who made this piece.
+   *
+   * Not decoration for this brand: the booklet credits a named designer on
+   * almost every page, and the house is a collective rather than one hand.
+   * Dropping the credit would misrepresent how the work is made.
+   */
+  readonly designer?: string;
+  /** Collection the piece belongs to — Hope, Crimson Drive, and so on. */
+  readonly collection?: string;
+  /** Credit for hand-painting or hand-work, where a separate artist did it. */
+  readonly artist?: string;
+  /**
    * Raw platform id (e.g. a Shopify product gid).
    *
    * Kept separate from `id` because `id` may be a merchant-authored style

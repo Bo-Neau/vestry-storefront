@@ -14,7 +14,7 @@ const { products } = await loadProducts();
 const siteOrigin = (Astro.site ?? new URL("https://example.com")).origin;
 
 // The hero leads on the piece the collection is built around.
-const heroPiece = products.find((p) => p.handle === "painted-column-gown")
+const heroPiece = products.find((p) => p.handle === "painted-capelet")
   ?? products.find((p) => p.category === "Dresses")
   ?? products[0];
 
@@ -161,7 +161,7 @@ const featured = products.slice(0, 8);
   <section class="shell featured">
     <div class="featured-head">
       <h2>Selected pieces</h2>
-      <a href="/collections/all" class="more">All ten pieces</a>
+      <a href="/collections/all" class="more">The full collection</a>
     </div>
     <ul class="grid">
       {featured.map((product, i) => (
