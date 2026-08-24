@@ -22,7 +22,8 @@ export const GET: APIRoute = async ({ site }) => {
 
   const urls = [
     { loc: `${base}/`, priority: "1.0", freq: "daily" },
-    { loc: `${base}/cart`, priority: "0.1", freq: "never" },
+    // No /cart. robots.txt disallows it and the page sends noindex, so
+    // listing it here made three signals disagree about the same URL.
     ...COLLECTIONS.map((c) => ({
       loc: `${base}/collections/${c}`,
       priority: "0.8",
