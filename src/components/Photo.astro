@@ -36,9 +36,18 @@ const { photo, sizes, priority = false, alt, class: className } = Astro.props;
 const asset = resolvePhoto(photo.src);
 const text = alt ?? photo.alt;
 
-// Widths worth emitting. Capped at the source width by Astro, so listing a
-// width larger than the original costs nothing and produces nothing.
-const WIDTHS = [400, 640, 900, 1200, 1600, 2000];
+/*
+  Widths that match Vercel's own size steps.
+
+  These used to be a round-numbered guess — 400, 900, 1600 — and none of them
+  exist in Vercel's allowed list, so every request was rounded UP to the next
+  one that does. A 375px phone at 2x needs 750; it asked for 900 and was
+  served 1200, which is 2.5x the pixels it can show.
+
+  Vercel's steps are 640 / 750 / 828 / 1080 / 1200 / 1920 / 2048 / 3840.
+  Anything above 1920 is larger than these source files, so it is omitted.
+*/
+const WIDTHS = [640, 750, 828, 1080, 1200, 1920];
 
 /*
   Quality, stated explicitly.
