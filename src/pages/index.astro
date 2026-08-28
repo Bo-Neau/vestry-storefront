@@ -82,7 +82,7 @@ const featured = DESIGNS.filter((d) => d.images.length > 1).slice(0, 4);
           <a href={`/collections/${collection.handle}`}>
             {photo && (
               <div class="issue-media">
-                <Photo photo={photo} sizes="(max-width: 700px) 46vw, 260px" alt="" />
+                <Photo photo={photo} sizes="(max-width: 620px) 92vw, (max-width: 1100px) 45vw, 220px" alt="" />
               </div>
             )}
             <span class="issue-no">{collection.eyebrow}</span>
@@ -108,7 +108,7 @@ const featured = DESIGNS.filter((d) => d.images.length > 1).slice(0, 4);
             <a href={`/pieces/${design.handle}`}>
               {photo && (
                 <div class="feat-media">
-                  <Photo photo={photo} sizes="(max-width: 700px) 84vw, 380px" alt="" />
+                  <Photo photo={photo} sizes="(max-width: 700px) 260px, 380px" alt="" />
                 </div>
               )}
               <span class="feat-title">{design.title}</span>
