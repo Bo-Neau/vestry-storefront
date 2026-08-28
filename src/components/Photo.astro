@@ -40,6 +40,18 @@ const text = alt ?? photo.alt;
 // width larger than the original costs nothing and produces nothing.
 const WIDTHS = [400, 640, 900, 1200, 1600, 2000];
 
+/*
+  Quality, stated explicitly.
+
+  The default emitted q=100, which asks the optimiser to preserve every
+  artefact of the source JPEG and hands back a file the same size as the
+  original — 464KB for a hero that had already been resized to 1200px. At 78
+  the same frame is a fraction of that and the difference is not visible on a
+  photograph of cloth. Worth revisiting only if the client objects to how a
+  specific painted piece reproduces.
+*/
+const QUALITY = 78;
+
 // The fallback branch below renders a plain <img> when a filename does not
 // resolve. It stays renderable so a bad path shows one broken picture rather
 // than failing the page; tests/photographs.test.mjs turns that case into a
@@ -51,6 +63,7 @@ const WIDTHS = [400, 640, 900, 1200, 1600, 2000];
     src={asset}
     widths={WIDTHS}
     sizes={sizes}
+    quality={QUALITY}
     formats={["avif", "webp"]}
     fallbackFormat="jpg"
     alt={text}
