@@ -1,0 +1,83 @@
+---
+/**
+ * A photograph.
+ *
+ * Uses Astro's build-time image pipeline rather than a CDN. The previous
+ * version asked a CDN provider whether it could transform the URL, got "no"
+ * for every local file, and correctly fell back to a bare <img> — which meant
+ * the front page shipped 4.6MB of full-size originals to a phone.
+ *
+ * Now the source is an imported asset, so the same photograph is emitted at
+ * several widths in AVIF and WebP, and the browser picks.
+ *
+ *  - `width`/`height` come from the file itself, so space is always reserved
+ *    and the page cannot reflow as images arrive.
+ *  - `sizes` describes the SLOT, not the file. Without it browsers assume
+ *    100vw and fetch the widest variant for a thumbnail.
+ *  - `priority` marks the LCP candidate. At most one per page.
+ */
+import { Picture } from "astro:assets";
+import type { Photograph } from "../data/journal.ts";
+import { resolvePhoto } from "../lib/images/local.ts";
+
+interface Props {
+  photo: Photograph;
+  /** CSS sizes attribute. Describe the slot the image occupies. */
+  sizes: string;
+  /** True only for the LCP candidate — at most one per page. */
+  priority?: boolean;
+  /** Overrides the photograph's own alt, for decorative or repeated use. */
+  alt?: string;
+  class?: string;
+}
+
+const { photo, sizes, priority = false, alt, class: className } = Astro.props;
+
+const asset = resolvePhoto(photo.src);
+const text = alt ?? photo.alt;
+
+// Widths worth emitting. Capped at the source width by Astro, so listing a
+// width larger than the original costs nothing and produces nothing.
+const WIDTHS = [400, 640, 900, 1200, 1600, 2000];
+
+// The fallback branch below renders a plain <img> when a filename does not
+// resolve. It stays renderable so a bad path shows one broken picture rather
+// than failing the page; tests/photographs.test.mjs turns that case into a
+// build failure, which is where it belongs.
+---
+
+{asset ? (
+  <Picture
+    src={asset}
+    widths={WIDTHS}
+    sizes={sizes}
+    formats={["avif", "webp"]}
+    fallbackFormat="jpg"
+    alt={text}
+    class={className}
+    loading={priority ? "eager" : "lazy"}
+    fetchpriority={priority ? "high" : "auto"}
+    decoding={priority ? "sync" : "async"}
+  />
+) : (
+  <img
+    class={className}
+    src={photo.src}
+    width={photo.width}
+    height={photo.height}
+    alt={text}
+    loading={priority ? "eager" : "lazy"}
+  />
+)}
+
+<style>
+  /*
+    These reach the fallback <img> only.
+
+    Astro's <Picture> renders its own elements, which do not carry this
+    component's scope attribute, so a scoped rule here cannot touch them. Any
+    page that needs to size a photograph puts it in a wrapper div and styles
+    `:global(img)` through that — see .hero-media, .issue-media, .plate-media.
+  */
+  img { display: block; width: 100%; height: auto; }
+</style>

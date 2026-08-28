@@ -1,45 +1,46 @@
 import type { APIRoute } from "astro";
-import { loadProducts } from "../data/source.ts";
-import { LOOKS } from "../data/looks.ts";
+import { DESIGNS } from "../data/designs.ts";
+import { COLLECTIONS } from "../data/collections.ts";
+import { CREDITED } from "../data/people.ts";
 
 /**
- * Sitemap, generated from live data.
+ * Sitemap, generated from the journal's own data.
  *
- * Only canonical URLs: one entry per style, one per collection. No filtered
- * views and no colourway variants — those are combinatorially infinite and
- * canonicalised elsewhere, so listing them would invite exactly the crawl
- * waste the canonical tags exist to prevent.
+ * Only canonical URLs. Nothing here is disallowed in robots.txt — the two
+ * files are cross-checked by a test, after the deployed sitemap was once
+ * caught advertising a path robots blocked.
+ *
+ * No `lastmod`. The journal deliberately carries no dates, and a lastmod
+ * stamped with today's build date on content that has not changed is a lie
+ * told to a crawler every time the site deploys.
  */
-const COLLECTIONS = ["all", "outerwear", "tops", "skirts", "dresses"];
-
 const escape = (s: string): string =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-export const GET: APIRoute = async ({ site }) => {
+export const GET: APIRoute = ({ site }) => {
   const base = (site ?? new URL("https://example.com")).origin;
-  const { products } = await loadProducts();
-  const today = new Date().toISOString().slice(0, 10);
 
   const urls = [
-    { loc: `${base}/`, priority: "1.0", freq: "daily" },
-    // No /cart. robots.txt disallows it and the page sends noindex, so
-    // listing it here made three signals disagree about the same URL.
+    { loc: `${base}/`, priority: "1.0", freq: "monthly" },
+    { loc: `${base}/collections`, priority: "0.9", freq: "monthly" },
+    { loc: `${base}/designers`, priority: "0.8", freq: "monthly" },
+    { loc: `${base}/atelier`, priority: "0.7", freq: "yearly" },
     ...COLLECTIONS.map((c) => ({
-      loc: `${base}/collections/${c}`,
-      priority: "0.8",
-      freq: "daily",
-    })),
-    ...products.map((p) => ({
-      loc: `${base}/products/${p.handle}`,
+      loc: `${base}/collections/${c.handle}`,
       priority: "0.9",
-      freq: "weekly",
-    })),
-    // Look pages are real landing pages — styled outfits are how people
-    // search for clothes ("what do I wear this with"), so they belong here.
-    ...LOOKS.map((l) => ({
-      loc: `${base}/looks/${l.handle}`,
-      priority: "0.7",
       freq: "monthly",
+    })),
+    // The pieces are the substance of the site, so they rank alongside the
+    // collections rather than below them.
+    ...DESIGNS.map((d) => ({
+      loc: `${base}/pieces/${d.handle}`,
+      priority: "0.9",
+      freq: "yearly",
+    })),
+    ...CREDITED.map((p) => ({
+      loc: `${base}/designers/${p.slug}`,
+      priority: "0.7",
+      freq: "yearly",
     })),
   ];
 
@@ -49,7 +50,6 @@ ${urls
   .map(
     (u) => `  <url>
     <loc>${escape(u.loc)}</loc>
-    <lastmod>${today}</lastmod>
     <changefreq>${u.freq}</changefreq>
     <priority>${u.priority}</priority>
   </url>`,

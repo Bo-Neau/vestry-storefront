@@ -46,7 +46,11 @@ test("no sitemap URL is disallowed by robots.txt", async () => {
   );
 
   assert.ok(locs.length > 5, "sitemap should not be empty");
-  assert.ok(disallowed.length > 0, "robots should have Disallow rules");
+  // No assertion that Disallow rules exist. The journal has none to make —
+  // the cart and the faceted filter URLs that needed blocking went with the
+  // shop. What matters is that nothing listed is also blocked, which holds
+  // vacuously at zero rules and stops holding the moment one is added.
+  assert.match(robots, /^User-agent: \*$/m, "robots must address crawlers");
 
   const conflicts = [];
   for (const loc of locs) {

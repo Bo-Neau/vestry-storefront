@@ -1,0 +1,200 @@
+---
+/**
+ * The atelier.
+ *
+ * Short on purpose. Everything on this page is either verifiable from the
+ * booklet or plainly attributed as description — no founding date, no
+ * invented history, no numbers. When the client sends her own account of the
+ * house, this is the page it replaces.
+ */
+import Base from "../layouts/Base.astro";
+import Photo from "../components/Photo.astro";
+import JsonLd from "../components/JsonLd.astro";
+import { CREDITED, workBy } from "../data/people.ts";
+import { COLLECTIONS } from "../data/collections.ts";
+import { DESIGNS } from "../data/designs.ts";
+import { BRAND, pageTitle } from "../config/brand.ts";
+import { organisationSchema, breadcrumbSchema } from "../lib/seo/structured-data.ts";
+
+const site = Astro.site ?? new URL("https://example.com");
+
+const atelier = {
+  src: "/photography/atelier-group.jpg",
+  alt: "The Manussa collection shown together",
+  width: 2000,
+  height: 1333,
+  view: "front" as const,
+};
+
+const painted = DESIGNS.filter((d) => d.artist).length;
+
+const trail = [
+  { name: BRAND.name, url: site.href },
+  { name: "Atelier", url: new URL("/atelier", site).href },
+];
+---
+
+<Base
+  title={pageTitle("Atelier")}
+  description={`${BRAND.legalName} — a collective of designers and painters working in Yangon.`}
+  ogImage={atelier.src}
+>
+  <JsonLd data={organisationSchema(site.href, BRAND.name)} />
+  <JsonLd data={breadcrumbSchema(trail)} />
+
+  <div class="shell head">
+    <p class="label">The house</p>
+    <h1>Atelier</h1>
+    <p class="standfirst">{BRAND.tagline}</p>
+  </div>
+
+  <div class="plate">
+    <Photo photo={atelier} sizes="(max-width: 1000px) 100vw, 1000px" priority alt="" />
+  </div>
+
+  <div class="shell prose">
+    <p>
+      {BRAND.legalName} works in Yangon. The house is a collective &mdash;
+      {CREDITED.length} people are credited across the collections, and every
+      piece names the designer who cut it.
+    </p>
+    <p>
+      {painted} of the {DESIGNS.length} pieces are hand-painted, and the
+      painting is a separate credit from the design. The motifs are taken from
+      painting rather than from print, which is why no two painted garments
+      fall the same way.
+    </p>
+    <p>
+      The cloth runs from raw silk and wool crepe to heavy cotton denim and
+      traditional Myanmar weaves, sometimes in the same jacket.
+    </p>
+
+    <dl class="facts">
+      <div>
+        <dt>Collections</dt>
+        <dd>{COLLECTIONS.length}</dd>
+      </div>
+      <div>
+        <dt>Pieces documented</dt>
+        <dd>{DESIGNS.length}</dd>
+      </div>
+      <div>
+        <dt>People credited</dt>
+        <dd>{CREDITED.length}</dd>
+      </div>
+      <div>
+        <dt>Hand-painted</dt>
+        <dd>{painted}</dd>
+      </div>
+    </dl>
+
+    <section aria-labelledby="who-h" class="who">
+      <h2 id="who-h" class="label">Who works here</h2>
+      <ul>
+        {CREDITED.map((p) => (
+          <li>
+            <a href={`/designers/${p.slug}`}>{p.name}</a>
+            <span class="w">
+              {p.role ? p.role : `${workBy(p).length} ${workBy(p).length === 1 ? "piece" : "pieces"}`}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <p class="note">
+      The pieces shown here are documented as they appear in the collection
+      booklet. They are not currently offered for sale.
+    </p>
+  </div>
+</Base>
+
+<style>
+  .head {
+    padding-block: var(--sp-7) var(--sp-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+  }
+  .head h1 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(2.4rem, 7vw, 3.8rem);
+    line-height: 1.0;
+    letter-spacing: -0.028em;
+  }
+  .standfirst {
+    font-family: var(--display);
+    font-size: var(--step-2);
+    color: var(--ink-2);
+  }
+
+  .plate { max-width: 1000px; margin: 0 auto; width: 100%; }
+
+  .prose {
+    padding-block: var(--sp-7);
+    max-width: 680px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-5);
+  }
+  .prose p { font-size: var(--step-1); line-height: 1.62; max-width: 62ch; }
+
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: var(--sp-4);
+    margin: 0;
+    padding-block: var(--sp-5);
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+  .facts div { display: flex; flex-direction: column; gap: 4px; }
+  .facts dt {
+    font-family: var(--mono);
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-3);
+  }
+  .facts dd {
+    margin: 0;
+    font-family: var(--display);
+    font-size: var(--step-3);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .who ul {
+    list-style: none;
+    padding: 0;
+    margin: var(--sp-3) 0 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .who li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--sp-4);
+    padding-block: var(--sp-3);
+    border-bottom: 1px solid var(--rule);
+    min-height: 44px;
+  }
+  .who a { font-size: var(--step-1); text-underline-offset: 3px; }
+  .who .w {
+    font-family: var(--mono);
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-3);
+    white-space: nowrap;
+  }
+
+  .note {
+    font-size: var(--step--1) !important;
+    color: var(--ink-3);
+    border-top: 1px solid var(--rule);
+    padding-top: var(--sp-4);
+  }
+</style>

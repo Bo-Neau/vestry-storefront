@@ -90,7 +90,16 @@ export default defineConfig({
    * static files only, and cart, filters and stock would all break.
    */
   output: "server",
-  adapter: onVercel ? vercel() : node({ mode: "standalone" }),
+  /*
+    On Vercel, hand image resizing to Vercel's own image optimisation rather
+    than transforming in a serverless function on every request. Astro emits
+    the originals and Vercel serves AVIF/WebP variants from its CDN, cached
+    between visitors. Locally the node adapter uses Astro's built-in sharp
+    endpoint, which is fine for one developer.
+  */
+  adapter: onVercel
+    ? vercel({ imageService: true })
+    : node({ mode: "standalone" }),
 
   // No UI framework, no client runtime. Fashion sits at the worst Core Web
   // Vitals pass rate in retail; the cheapest way to win is to ship no JS.

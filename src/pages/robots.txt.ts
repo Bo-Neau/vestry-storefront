@@ -33,24 +33,11 @@ export const GET: APIRoute = ({ site }) => {
 User-agent: *
 Allow: /
 
-# Cart and its mutation endpoints — nothing to index, and crawling them
-# would have a bot adding items to carts.
-Disallow: /cart
-Disallow: /cart/
-
-# Faceted filter combinations. Infinite, near-duplicate, and a crawl trap.
-Disallow: /*?*size=
-Disallow: /*?*fit=
-Disallow: /*?*color=
-Disallow: /*?*neckline=
-Disallow: /*?*sleeve=
-Disallow: /*?*gender=
-Disallow: /*?*category=
-
-# Post-action states. Real pages, but not canonical entry points.
-Disallow: /*?*added=
-Disallow: /*?*error=
-Disallow: /*?*removed=
+# Nothing is disallowed. The cart, the checkout endpoints and the faceted
+# filter URLs that needed blocking all went with the shop, and the journal has
+# no query parameters at all — every page is a distinct, canonical URL. A
+# Disallow rule for a path that no longer exists is just a stale instruction
+# a crawler has to read.
 
 Sitemap: ${base}/sitemap.xml
 `;

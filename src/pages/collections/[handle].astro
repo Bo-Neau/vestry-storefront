@@ -1,253 +1,236 @@
 ---
+/**
+ * One collection.
+ *
+ * A contents page for an issue: the standfirst, then every piece with its
+ * designer credited under it. No filtering, no sorting — thirteen pieces
+ * across six collections does not need faceting, and adding it would make a
+ * small body of work feel like a warehouse.
+ */
 import Base from "../../layouts/Base.astro";
-import FilterPanel from "../../components/FilterPanel.astro";
-import ProductCard from "../../components/ProductCard.astro";
+import Photo from "../../components/Photo.astro";
 import JsonLd from "../../components/JsonLd.astro";
+import { collectionByHandle, designsIn, COLLECTIONS } from "../../data/collections.ts";
+import { leadImage } from "../../data/journal.ts";
+import { designerByName } from "../../data/people.ts";
+import { BRAND, pageTitle } from "../../config/brand.ts";
 import { collectionSchema, breadcrumbSchema } from "../../lib/seo/structured-data.ts";
-import { pageTitle } from "../../config/brand.ts";
-import { loadProducts } from "../../data/source.ts";
-import { filtersFromParams, countActive } from "../../lib/facets.ts";
-import { queryCatalogue } from "../../lib/search/index.ts";
-import type { Category } from "../../data/schema.ts";
 
-const COLLECTIONS: Record<string, { title: string; category?: Category; blurb: string }> = {
-  "all":       { title: "The Collection", blurb: "Hand-painted, hand-stitched and hand-woven. Each piece credited to its designer." },
-  "outerwear": { title: "Outerwear", category: "Outerwear", blurb: "Painted capes, hand-stitched jackets, denim and patchwork." },
-  "tops":      { title: "Tops",      category: "Tops",      blurb: "Sculptural bodices in raw silk and wool crepe." },
-  "skirts":    { title: "Skirts",    category: "Skirts",    blurb: "Narrow to the knee, then released into a flute." },
-  "dresses":   { title: "Dresses",   category: "Dresses",   blurb: "Columns and floor-length gowns, plain and embroidered." },
-};
+const collection = collectionByHandle(Astro.params.handle ?? "");
+if (!collection) return Astro.rewrite("/404");
 
-const { handle } = Astro.params;
-const collection = handle ? COLLECTIONS[handle] : undefined;
+const site = Astro.site ?? new URL("https://example.com");
+const url = new URL(`/collections/${collection.handle}`, site).href;
 
-if (!collection) {
-  Astro.response.status = 404;
-  return Astro.rewrite("/404");
-}
+const designs = designsIn(collection);
+const lead = designs.find((d) => d.handle === collection.lead) ?? designs[0];
+const leadPhoto = lead ? leadImage(lead) : undefined;
 
-const basePath = `/collections/${handle}`;
+// Where this issue sits in the run, so the reader can move through them.
+const index = COLLECTIONS.findIndex((c) => c.handle === collection.handle);
+const previous = index > 0 ? COLLECTIONS[index - 1] : undefined;
+const next = index < COLLECTIONS.length - 1 ? COLLECTIONS[index + 1] : undefined;
 
-const { products, source, reviewProvider, warning } = await loadProducts();
-const filters = filtersFromParams(Astro.url.searchParams);
-
-// Filtering and facet counts come from the search seam: Typesense when
-// configured, the in-memory reference otherwise. Identical semantics either
-// way — verified by `npm run search:doctor`.
-const { products: results, facets, backend, warning: searchWarning } =
-  await queryCatalogue({
-    all: products,
-    filters,
-    category: collection.category,
-  });
-
-const active = countActive(filters);
-
-const siteOrigin = (Astro.site ?? new URL("https://example.com")).origin;
-const collectionUrl = `${siteOrigin}${basePath}`;
-// A filtered view is one of infinitely many near-duplicates of this
-// collection. Canonicalise to the unfiltered page and keep it out of the index.
-const isFiltered = active > 0;
-const jsonLdCollection = collectionSchema(
-  collection.title, collection.blurb, collectionUrl, results, siteOrigin,
-);
-const jsonLdCrumbs = breadcrumbSchema([
-  { name: "Home", url: `${siteOrigin}/` },
-  { name: collection.title, url: collectionUrl },
-]);
+const trail = [
+  { name: BRAND.name, url: site.href },
+  { name: "Collections", url: new URL("/collections", site).href },
+  { name: collection.title, url },
+];
 ---
 
 <Base
   title={pageTitle(collection.title)}
-  description={collection.blurb}
-  canonical={collectionUrl}
-  noindex={isFiltered}
+  description={collection.standfirst}
+  ogImage={leadPhoto?.src}
 >
-  <Fragment slot="head">
-    <JsonLd data={jsonLdCollection} />
-    <JsonLd data={jsonLdCrumbs} />
-  </Fragment>
-  <div class="shell">
-    <header class="col-head">
-      <nav aria-label="Breadcrumb" class="crumbs">
-        <a href="/">Home</a> <span aria-hidden="true">/</span> <span>{collection.title}</span>
-      </nav>
+  <JsonLd data={collectionSchema(collection.title, collection.standfirst, url, site.href, designs)} />
+  <JsonLd data={breadcrumbSchema(trail)} />
+
+  <header class="issue-head">
+    <div class="shell head-inner">
+      <p class="label"><a href="/collections">Collections</a> <span aria-hidden="true">·</span> {collection.eyebrow}</p>
       <h1>{collection.title}</h1>
-      <p class="blurb">{collection.blurb}</p>
-      {import.meta.env.DEV && (
-        <p class="src-note">
-          Data source: <strong>{source}</strong>
-          {" · reviews: "}<strong>{reviewProvider}</strong>
-          {" · search: "}<strong>{backend}</strong>
-          {warning && <span class="src-warn"> — {warning}</span>}
-          {searchWarning && <span class="src-warn"> — {searchWarning}</span>}
-        </p>
-      )}
-    </header>
-
-    <div class="col-layout">
-      <!-- On mobile the panel collapses into a native <details>, which needs
-          no JS and stays keyboard operable. -->
-      <details class="filter-shell">
-        <summary class="filter-toggle">
-          Filter &amp; sort
-          {active > 0 && <span class="badge">{active}</span>}
-        </summary>
-        <FilterPanel
-          facets={facets}
-          filters={filters}
-          basePath={basePath}
-          resultCount={results.length}
-        />
-      </details>
-
-      <div class="results">
-        {results.length === 0 ? (
-          <div class="empty">
-            <h2>Nothing matches those filters</h2>
-            <p>
-              That combination has no styles in stock. Try removing a size or
-              colour — those narrow the results fastest.
-            </p>
-            <a href={basePath} class="empty-clear">Clear all filters</a>
-          </div>
-        ) : (
-          <ul class="grid">
-            {results.map((product, i) => (
-              <li>
-                <ProductCard product={product} loading={i < 4 ? "eager" : "lazy"} />
-              </li>
-            ))}
-          </ul>
-        )}
+      <p class="standfirst">{collection.standfirst}</p>
+      <div class="intro">
+        {collection.description.map((para) => <p>{para}</p>)}
       </div>
     </div>
-  </div>
+  </header>
+
+  <ul class="plates">
+    {designs.map((design, i) => {
+      const photo = leadImage(design);
+      const designer = designerByName(design.designer);
+      return (
+        <li class="plate">
+          <a href={`/pieces/${design.handle}`} class="plate-link">
+            {photo && (
+              <div class="plate-media">
+                <Photo
+                  photo={photo}
+                  sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 460px"
+                  priority={i === 0}
+                  alt=""
+                />
+              </div>
+            )}
+            <div class="plate-body">
+              <h2>{design.title}</h2>
+              <p class="plate-sum">{design.summary}</p>
+            </div>
+          </a>
+          <p class="plate-credit">
+            {designer
+              ? <a href={`/designers/${designer.slug}`}>{design.designer}</a>
+              : design.designer}
+            {design.artist && (
+              <>
+                <span aria-hidden="true"> · </span>
+                <span class="painted">painted by {design.artist}</span>
+              </>
+            )}
+          </p>
+        </li>
+      );
+    })}
+  </ul>
+
+  <nav class="issue-nav shell" aria-label="Other collections">
+    {previous ? (
+      <a href={`/collections/${previous.handle}`} class="prev">
+        <span class="dir">Previous</span>
+        <span class="name">{previous.title}</span>
+      </a>
+    ) : <span></span>}
+    {next && (
+      <a href={`/collections/${next.handle}`} class="next">
+        <span class="dir">Next</span>
+        <span class="name">{next.title}</span>
+      </a>
+    )}
+  </nav>
 </Base>
 
 <style>
-  .col-head {
+  .issue-head { border-bottom: 1px solid var(--rule); }
+  .head-inner {
     padding-block: var(--sp-7) var(--sp-6);
     display: flex;
     flex-direction: column;
     gap: var(--sp-3);
+    max-width: 760px;
   }
-  .crumbs { font-size: var(--step--1); color: var(--ink-3); display: flex; gap: var(--sp-2); }
-  .crumbs a { color: var(--ink-2); display: inline-block; padding-block: var(--sp-2); }
-  h1 { font-size: var(--step-4); }
-  .blurb { color: var(--ink-2); max-width: 52ch; }
-  /* Dev only: makes a Shopify fallback obvious instead of invisible. */
-  .src-note {
-    font-family: var(--mono);
-    font-size: 0.6875rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--ink-3);
-    border: 1px dashed var(--rule-2);
-    padding: var(--sp-2) var(--sp-3);
-    align-self: flex-start;
-    max-width: 70ch;
-    text-transform: none;
+  .head-inner .label a {
+    color: inherit;
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
   }
-  .src-warn { color: var(--sale); }
-
-  .col-layout {
-    display: grid;
-    grid-template-columns: 208px minmax(0, 1fr);
-    gap: var(--sp-7);
-    align-items: start;
+  .head-inner .label a:hover { color: var(--ink); }
+  .head-inner h1 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(2.4rem, 7vw, 3.8rem);
+    line-height: 1.0;
+    letter-spacing: -0.028em;
   }
-
-  /*
-    The panel is a <details> that starts CLOSED, so on a phone the shopper
-    sees product straight after the heading instead of a screenful of facets.
-
-    On desktop there is a sidebar to put it in, so the summary is hidden and
-    the content force-shown regardless of open state. The element stays a
-    real <details> throughout, so it needs no JavaScript and stays keyboard
-    operable on mobile.
-  */
-  .filter-shell { position: sticky; top: 88px; }
-  .filter-shell > summary { display: none; }
-  /*
-    Two mechanisms hide a closed <details>, depending on the engine:
-      - older: display:none on non-summary children
-      - newer: content-visibility:hidden on the ::details-content pseudo
-    Desktop overrides both, so the panel renders as a plain sidebar while the
-    element stays a real <details> for mobile.
-  */
-  .filter-shell > :global(.filters) { display: flex !important; }
-  .filter-shell::details-content {
-    content-visibility: visible;
-    block-size: auto;
+  .standfirst {
+    font-family: var(--display);
+    font-size: var(--step-2);
+    line-height: 1.3;
+    color: var(--ink-2);
+    max-width: 32ch;
   }
-
-  .filter-toggle {
-    display: none;
-    font-family: var(--mono);
-    font-size: 0.6875rem;
-    text-transform: uppercase;
-    letter-spacing: 0.09em;
-    cursor: pointer;
-    padding: var(--sp-3) 0;
-    border-bottom: 1px solid var(--rule);
-    margin-bottom: var(--sp-4);
-  }
-  .badge {
-    display: inline-block;
-    background: var(--ink);
-    color: var(--paper);
-    border-radius: 8px;
-    padding: 1px 6px;
-    margin-left: var(--sp-2);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .grid {
-    list-style: none;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(216px, 1fr));
-    gap: var(--sp-6) var(--sp-5);
-  }
-
-  .empty {
+  .intro {
     display: flex;
     flex-direction: column;
     gap: var(--sp-3);
-    align-items: flex-start;
-    padding: var(--sp-7) 0;
-    max-width: 46ch;
-  }
-  .empty h2 { font-size: var(--step-2); }
-  .empty p { color: var(--ink-2); }
-  .empty-clear {
     margin-top: var(--sp-2);
-    border: 1px solid var(--ink);
-    padding: var(--sp-3) var(--sp-5);
+  }
+  .intro p { font-size: var(--step-0); line-height: 1.6; color: var(--ink-2); max-width: 62ch; }
+
+  /*
+    Two columns of large plates. The credit sits OUTSIDE the link, because a
+    designer's name should go to the designer, not to the piece — nesting one
+    anchor inside another is invalid and the browser resolves it by dropping
+    the inner one.
+  */
+  .plates {
+    list-style: none;
+    margin: 0 auto;
+    padding: var(--sp-7) var(--sp-4);
+    max-width: 1100px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--sp-7) var(--sp-5);
+  }
+  .plate { display: flex; flex-direction: column; gap: var(--sp-2); }
+  .plate-link { display: flex; flex-direction: column; gap: var(--sp-3); text-decoration: none; }
+  .plate-media { overflow: hidden; }
+  .plate-media :global(img) {
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    transition: transform 400ms ease;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .plate-media :global(img) { transition: none; }
+  }
+  @media (hover: hover) {
+    .plate-link:hover .plate-media :global(img) { transform: scale(1.03); }
+    .plate-link:hover h2 { text-decoration: underline; text-underline-offset: 4px; }
+  }
+  .plate-body { display: flex; flex-direction: column; gap: var(--sp-2); }
+  .plate-body h2 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: var(--step-2);
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+  }
+  .plate-sum { font-size: var(--step-0); color: var(--ink-2); max-width: 40ch; }
+  .plate-credit {
     font-family: var(--mono);
     font-size: 0.6875rem;
     text-transform: uppercase;
-    letter-spacing: 0.09em;
+    letter-spacing: 0.1em;
+    color: var(--ink-3);
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    min-height: 24px;
   }
-  .empty-clear:hover { background: var(--ink); color: var(--paper); text-decoration: none; }
+  .plate-credit a {
+    color: var(--ink-2);
+    text-underline-offset: 3px;
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+  }
+  .plate-credit a:hover { color: var(--ink); }
 
-  @media (max-width: 860px) {
-    .col-layout { grid-template-columns: minmax(0, 1fr); gap: var(--sp-4); }
-    .filter-shell { position: static; }
-    /* Restore normal <details> behaviour: summary visible, content hidden
-       until the shopper opens it. */
-    .filter-shell > summary { display: block; }
-    .filter-shell:not([open]) > :global(.filters) { display: none !important; }
-    .filter-shell:not([open])::details-content {
-      content-visibility: hidden;
-      block-size: 0;
-    }
-    .filter-toggle {
-      display: block;
-      min-height: 44px;
-      display: flex;
-      align-items: center;
-    }
-    .grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: var(--sp-5) var(--sp-3); }
+  .issue-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--sp-5);
+    padding-block: var(--sp-6);
+    border-top: 1px solid var(--rule);
   }
+  .issue-nav a {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-decoration: none;
+    min-height: 44px;
+    justify-content: center;
+  }
+  .issue-nav .next { text-align: right; }
+  .dir {
+    font-family: var(--mono);
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-3);
+  }
+  .name { font-family: var(--display); font-size: var(--step-1); }
+  .issue-nav a:hover .name { text-decoration: underline; text-underline-offset: 4px; }
 </style>

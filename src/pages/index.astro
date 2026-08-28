@@ -1,139 +1,118 @@
 ---
+/**
+ * The front of the journal.
+ *
+ * Not a shop window and not a feed. The order is: what the house is, the
+ * collections as issues, the pieces, the people who made them. Nothing on
+ * this page carries a date, so nothing on it can go stale — which is the
+ * whole reason for building it as a publication rather than a blog.
+ */
 import Base from "../layouts/Base.astro";
-import ProductCard from "../components/ProductCard.astro";
-import ProductImage from "../components/ProductImage.astro";
+import Photo from "../components/Photo.astro";
 import JsonLd from "../components/JsonLd.astro";
+import { COLLECTIONS, designsIn } from "../data/collections.ts";
+import { DESIGNS, designByHandle } from "../data/designs.ts";
+import { CREDITED, workBy } from "../data/people.ts";
+import { leadImage } from "../data/journal.ts";
+import { BRAND, pageTitle } from "../config/brand.ts";
 import { organisationSchema, websiteSchema } from "../lib/seo/structured-data.ts";
-import { BRAND, COMMERCE, COPY } from "../config/brand.ts";
-import { loadProducts } from "../data/source.ts";
-import { LOOKS, piecesFor, lookTotal } from "../data/looks.ts";
-import { formatMoney } from "../lib/money.ts";
 
-const { products } = await loadProducts();
-const siteOrigin = (Astro.site ?? new URL("https://example.com")).origin;
+const site = Astro.site ?? new URL("https://example.com");
 
-const looks = LOOKS.map((look) => {
-  const pieces = piecesFor(look, products);
-  return { look, pieces, hero: pieces.find((p) => p.handle === look.heroHandle) ?? pieces[0] };
-}).filter((l) => l.pieces.length > 0);
+const hero = {
+  src: "/photography/collection-lineup.jpg",
+  alt: "Pieces from the Hope Collection shown together in the atelier",
+  width: 2000,
+  height: 1333,
+  view: "front" as const,
+};
 
-const CATEGORIES = [
-  { title: "Outerwear", href: "/collections/outerwear", note: "Painted, stitched and pieced", lead: "painted-capelet" },
-  { title: "Tops",      href: "/collections/tops",      note: "Sculptural bodices",           lead: "painted-corset-bodice" },
-  { title: "Skirts",    href: "/collections/skirts",    note: "Narrow, then fluted",           lead: "raw-silk-fluted-skirt" },
-  { title: "Dresses",   href: "/collections/dresses",   note: "Columns and gowns",             lead: "coral-embroidered-gown" },
-];
+const issues = COLLECTIONS.map((collection) => {
+  const lead = designByHandle(collection.lead);
+  return { collection, photo: lead ? leadImage(lead) : undefined, count: designsIn(collection).length };
+});
 
-/** Named piece first; fall back to anything in the category if it moves. */
-const categoryLead = (c: { title: string; lead: string }) =>
-  products.find((p) => p.handle === c.lead)
-  ?? products.find((p) => p.category === c.title)
-  ?? products[0];
-
-const featured = products.slice(0, 8);
+// The pieces that carry more than one photograph — they have the most to
+// look at, which is the only thing worth optimising for on an editorial front.
+const featured = DESIGNS.filter((d) => d.images.length > 1).slice(0, 4);
 ---
 
-<Base title={`${BRAND.name} — ${BRAND.tagline}`} description={BRAND.description}>
-  <Fragment slot="head">
-    <JsonLd data={organisationSchema(siteOrigin, BRAND.name)} />
-    <JsonLd data={websiteSchema(siteOrigin, BRAND.name)} />
-  </Fragment>
+<Base
+  title={pageTitle(BRAND.tagline)}
+  description={BRAND.intro}
+  ogImage={hero.src}
+>
+  <JsonLd data={organisationSchema(site.href, BRAND.name)} />
+  <JsonLd data={websiteSchema(site.href, BRAND.name)} />
 
-  <!--
-    Full-bleed opening, the way the booklet opens: the collection on its
-    stands, with the brand's own line over it. The image is the LCP element,
-    so it loads eagerly at high priority and nothing else competes with it.
-  -->
   <section class="hero" aria-labelledby="hero-title">
-    <img
-      class="hero-img"
-      src="/photography/collection-lineup.jpg"
-      width="2016" height="1344"
-      alt="The Manussa collection shown on stands against carved wood"
-      fetchpriority="high"
-      decoding="sync"
-    />
+    <div class="hero-media">
+      <Photo photo={hero} sizes="100vw" priority alt="" />
+    </div>
     <div class="hero-scrim" aria-hidden="true"></div>
-    <div class="hero-copy">
-      {BRAND.eyebrow && <p class="label">{BRAND.eyebrow}</p>}
+    <div class="hero-copy shell">
+      <p class="hero-eyebrow">{BRAND.legalName} <span aria-hidden="true">·</span> Yangon</p>
       <h1 id="hero-title">{BRAND.tagline}</h1>
       <p class="hero-lede">{BRAND.intro}</p>
-      <div class="hero-actions">
-        <a href="/collections/all" class="btn">View the collection</a>
-        {looks[0] && (
-          <a href={`/looks/${looks[0].look.handle}`} class="btn ghost">
-            {looks[0].look.title}
-          </a>
-        )}
-      </div>
+      <a href="/collections" class="hero-cta">Read the collections</a>
     </div>
   </section>
 
-  <!-- Shop the look: outfit merchandising, which answers "what do I wear
-       this with" rather than "here are more products". -->
-  <section class="shell looks" aria-labelledby="looks-title">
-    <div class="sec-head">
-      <p class="label">Styled together</p>
-      <h2 id="looks-title">Shop the look</h2>
-    </div>
+  <section class="shell statement" aria-labelledby="statement-h">
+    <h2 id="statement-h">
+      Every piece is credited to the person who made it.
+    </h2>
+    <p>
+      Manussa is a collective, not a single hand. Seven people are named across
+      six collections &mdash; the designers who cut the cloth, and the painter
+      who works on it afterwards. The credits are the point, so they are on
+      every page rather than buried in an about section.
+    </p>
+    <a href="/designers" class="statement-link">Meet the designers</a>
+  </section>
 
-    <ul class="look-list">
-      {looks.map(({ look, pieces, hero }) => (
-        <li class="look">
-          <a href={`/looks/${look.handle}`} class="look-media" tabindex="-1" aria-hidden="true">
-            {hero && (
-              <ProductImage
-                colorway={hero.colorways[0]!}
-                shape={hero.shape}
-                view="front"
-                alt=""
-                sizes="(max-width: 860px) 92vw, (max-width: 1320px) 44vw, 420px"
-              />
+  <section class="issues-sec" aria-labelledby="issues-h">
+    <div class="shell sec-head">
+      <p class="label">The collections</p>
+      <h2 id="issues-h">Six bodies of work</h2>
+    </div>
+    <ul class="issues">
+      {issues.map(({ collection, photo, count }) => (
+        <li>
+          <a href={`/collections/${collection.handle}`}>
+            {photo && (
+              <div class="issue-media">
+                <Photo photo={photo} sizes="(max-width: 700px) 46vw, 260px" alt="" />
+              </div>
             )}
+            <span class="issue-no">{collection.eyebrow}</span>
+            <span class="issue-title">{collection.title}</span>
+            <span class="issue-stand">{collection.standfirst}</span>
+            <span class="issue-count">{count} {count === 1 ? "piece" : "pieces"}</span>
           </a>
-          <div class="look-body">
-            <h3><a href={`/looks/${look.handle}`}>{look.title}</a></h3>
-            <p class="look-note">{look.note}</p>
-            <p class="look-meta">
-              {pieces.map((p) => p.title).join(" · ")}
-            </p>
-            <p class="look-price money">
-              {formatMoney({ amount: lookTotal(pieces), currency: "USD" })} together
-            </p>
-            <a href={`/looks/${look.handle}`} class="btn small">Shop this look</a>
-          </div>
         </li>
       ))}
     </ul>
   </section>
 
-  <!-- Category entries, as images rather than a text menu. -->
-  <section class="shell cats" aria-labelledby="cats-title">
-    <div class="sec-head">
-      <p class="label">By category</p>
-      <h2 id="cats-title">The collection</h2>
+  <section class="featured-sec" aria-labelledby="featured-h">
+    <div class="shell sec-head">
+      <p class="label">Selected</p>
+      <h2 id="featured-h">Pieces photographed from more than one side</h2>
     </div>
-    <ul class="cat-list">
-      {CATEGORIES.map((c) => {
-        const lead = categoryLead(c);
+    <ul class="featured">
+      {featured.map((design) => {
+        const photo = leadImage(design);
         return (
-          <li class="cat">
-            <a href={c.href}>
-              <span class="cat-media" aria-hidden="true">
-                {lead && (
-                  <ProductImage
-                    colorway={lead.colorways[0]!}
-                    shape={lead.shape}
-                    view="front"
-                    alt=""
-                    sizes="(max-width: 860px) 46vw, (max-width: 1320px) 24vw, 300px"
-                  />
-                )}
-              </span>
-              <span class="cat-text">
-                <span class="cat-title">{c.title}</span>
-                <span class="cat-note">{c.note}</span>
-              </span>
+          <li>
+            <a href={`/pieces/${design.handle}`}>
+              {photo && (
+                <div class="feat-media">
+                  <Photo photo={photo} sizes="(max-width: 700px) 84vw, 380px" alt="" />
+                </div>
+              )}
+              <span class="feat-title">{design.title}</span>
+              <span class="feat-meta">{design.designer}</span>
             </a>
           </li>
         );
@@ -141,287 +120,250 @@ const featured = products.slice(0, 8);
     </ul>
   </section>
 
-  <section class="atelier" aria-label="The atelier">
-    <img
-      src="/photography/atelier-group.jpg"
-      width="1218" height="812"
-      alt="The Manussa team wearing pieces from the collection"
-      loading="lazy" decoding="async"
-    />
-    <p class="atelier-note">
-      Founded by an art collector, a designer and a maker raised in an artistic
-      family — bound by one purpose: to craft contemporary pieces that honour
-      traditional textiles and hand-worked embroidery.
-    </p>
-  </section>
-
-  <section class="shell trust">
-    <div class="trust-item">
-      <h2>Measured, not guessed</h2>
-      <p>Garment measurements laid flat for every size, with instructions for taking your own.</p>
-    </div>
-    <div class="trust-item">
-      <h2>Fit data in every review</h2>
-      <p>Reviewers tell you their height and the size they bought. We publish the critical ones too.</p>
-    </div>
-    <div class="trust-item">
-      <h2>{COPY.returnsShort}</h2>
-      <p>{COMMERCE.exchangesSupported ? "Exchanges are one step. If the size is wrong, swapping it should be easy." : "Most pieces are cut to order, so please check the measurements before ordering."}</p>
-    </div>
-  </section>
-
-  <section class="shell featured">
-    <div class="featured-head">
-      <h2>Selected pieces</h2>
-      <a href="/collections/all" class="more">The full collection</a>
-    </div>
-    <ul class="grid">
-      {featured.map((product, i) => (
-        <li><ProductCard product={product} loading={i < 4 ? "eager" : "lazy"} /></li>
+  <section class="shell people-sec" aria-labelledby="people-h">
+    <p class="label">The house</p>
+    <h2 id="people-h">Seven names</h2>
+    <ul class="names">
+      {CREDITED.map((p) => (
+        <li>
+          <a href={`/designers/${p.slug}`}>
+            <span class="n">{p.name}</span>
+            <span class="c">{workBy(p).length} {workBy(p).length === 1 ? "piece" : "pieces"}</span>
+          </a>
+        </li>
       ))}
     </ul>
   </section>
 </Base>
 
 <style>
-  /* ---------- hero ---------- */
+  /* ---------------- hero ---------------- */
   .hero {
     position: relative;
-    min-height: min(82vh, 760px);
+    min-height: min(84vh, 780px);
     display: flex;
     align-items: flex-end;
     overflow: hidden;
     /*
-      The colour the photograph is laid over, and what shows if it fails to
-      load. The hero copy on top is always white, so this has to stay dark in
-      every theme — var(--ink) inverts to near-white in dark mode.
+      The colour the photograph lies on, and what shows if it fails to load.
+      A fixed literal, not var(--ink) — the copy over it is always white, and
+      --ink inverts to near-white in dark mode.
     */
     background: #14130F;
   }
-  .hero-img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center 42%;
-  }
   /*
-    The photograph is dark and busy at the base, so type needs a ground to sit
-    on. A gradient rather than a flat wash keeps the garments readable at the
-    top while the copy stays legible at the bottom.
+    A wrapper, not a class on the image.
+
+    Astro's <Picture> forwards `class` to the inner <img>, not to the <picture>
+    element — so positioning the class absolutely put `inset: 0` on an image
+    that still had `height: auto`, and the hero photograph rendered 250px tall
+    inside a 633px hero. Styling through a wrapper works wherever the class
+    happens to land.
   */
+  .hero-media { position: absolute; inset: 0; }
+  .hero-media :global(picture) { display: block; width: 100%; height: 100%; }
+  .hero-media :global(img) { width: 100%; height: 100%; object-fit: cover; }
+
   /*
-    Two layers, not one. The vertical gradient alone had to be crushingly dark
-    to beat the pale gown the headline crosses; adding a left-side wash means
-    the copy column can be dark while the right of the frame — the globe, the
-    black jacket — keeps its depth. Measured against the actual pixels of
-    collection-lineup.jpg: worst-case behind the headline is 11.8:1.
+    Two layers. The vertical gradient alone had to be crushingly dark to beat
+    the pale garments the headline crosses; a left-side wash lets the copy
+    column go dark while the right of the frame keeps its depth.
   */
   .hero-scrim {
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(
-        to right,
-        rgb(10 9 7 / 0.80) 0%,
-        rgb(10 9 7 / 0.40) 46%,
-        rgb(10 9 7 / 0) 78%
-      ),
-      linear-gradient(
-        to top,
-        rgb(10 9 7 / 0.94) 0%,
-        rgb(10 9 7 / 0.82) 36%,
-        rgb(10 9 7 / 0.46) 66%,
-        rgb(10 9 7 / 0.14) 100%
-      );
+      linear-gradient(to right, rgb(10 9 7 / 0.80) 0%, rgb(10 9 7 / 0.40) 46%, rgb(10 9 7 / 0) 78%),
+      linear-gradient(to top, rgb(10 9 7 / 0.94) 0%, rgb(10 9 7 / 0.82) 36%, rgb(10 9 7 / 0.46) 66%, rgb(10 9 7 / 0.14) 100%);
   }
   .hero-copy {
     position: relative;
     display: flex;
     flex-direction: column;
     gap: var(--sp-4);
-    padding: var(--sp-8) var(--sp-6);
-    max-width: 58ch;
-    width: 100%;
-    margin: 0 auto;
-    max-width: var(--maxw);
+    padding-block: var(--sp-7);
+    max-width: 720px;
   }
-  /* Fixed light values, not tokens: this type always sits on a dark
-     photograph, whichever theme the visitor is in. */
-  .hero-copy .label { color: #FFFFFF; }
-  .hero-copy h1 {
-    font-size: var(--step-4);
-    line-height: 1.02;
+  /* Opaque, not translucent. White at 72% cannot reach contrast over a
+     photograph however dark the scrim gets. */
+  .hero-eyebrow {
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
     color: #FFFFFF;
-    max-width: 14ch;
-    letter-spacing: 0.01em;
+  }
+  .hero h1 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(2.6rem, 9vw, 5rem);
+    line-height: 0.98;
+    letter-spacing: -0.03em;
+    color: #FFFFFF;
   }
   .hero-lede {
     font-size: var(--step-1);
-    color: #FFFFFF;
     line-height: 1.5;
-    max-width: 46ch;
-  }
-  .hero-actions { display: flex; gap: var(--sp-3); flex-wrap: wrap; margin-top: var(--sp-2); }
-  /*
-    Fixed literals on both sides, not tokens.
-
-    This button sits on a photograph that is dark in every theme, so its
-    surface never flips — but var(--ink) does. In dark mode that resolved to
-    near-white text on a white button. A colour pinned to a fixed surface has
-    to be pinned too.
-  */
-  .hero .btn {
-    background: #FFFFFF;
-    color: #14130F;
-  }
-  .hero .btn:hover { background: rgb(255 255 255 / 0.9); opacity: 1; }
-  .hero .btn.ghost {
-    background: transparent;
     color: #FFFFFF;
-    border-color: rgb(255 255 255 / 0.5);
+    max-width: 48ch;
   }
-  .hero .btn.ghost:hover { border-color: #FFFFFF; }
-
-  .btn {
+  .hero-cta {
+    align-self: flex-start;
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: #FFFFFF;
+    border: 1px solid rgb(255 255 255 / 0.55);
+    padding: 0 var(--sp-5);
+    min-height: 48px;
     display: inline-flex;
     align-items: center;
-    min-height: 48px;
-    background: var(--ink);
-    color: var(--paper);
-    padding: 0 var(--sp-5);
+    text-decoration: none;
+  }
+  .hero-cta:hover { border-color: #FFFFFF; background: rgb(255 255 255 / 0.08); }
+
+  /* ---------------- statement ---------------- */
+  .statement {
+    padding-block: var(--sp-7);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-4);
+    max-width: 720px;
+  }
+  .statement h2 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(1.8rem, 4.6vw, 2.8rem);
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  .statement p { font-size: var(--step-1); line-height: 1.6; color: var(--ink-2); max-width: 60ch; }
+  .statement-link, .sec-head + * { /* keeps the cascade explicit */ }
+  .statement-link {
+    align-self: flex-start;
     font-family: var(--mono);
     font-size: 0.6875rem;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
   }
-  .btn:hover { text-decoration: none; opacity: 0.88; }
-  .btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--rule-2); }
-  .btn.ghost:hover { border-color: var(--ink); opacity: 1; }
-  .btn.small { min-height: 44px; align-self: flex-start; }
 
-  .sec-head { display: flex; flex-direction: column; gap: var(--sp-2); margin-bottom: var(--sp-5); }
-  .sec-head h2 { font-size: var(--step-3); letter-spacing: -0.02em; }
+  /* ---------------- shared section heads ---------------- */
+  .sec-head { display: flex; flex-direction: column; gap: var(--sp-2); padding-bottom: var(--sp-5); }
+  .sec-head h2 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(1.6rem, 4vw, 2.3rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
 
-  /* ---------- looks ---------- */
-  .looks { padding-block: var(--sp-8) var(--sp-7); }
-  .look-list {
+  /* ---------------- issues ---------------- */
+  .issues-sec { padding-block: var(--sp-6) var(--sp-7); border-top: 1px solid var(--rule); }
+  .issues {
     list-style: none;
+    margin: 0 auto;
+    padding: 0 var(--sp-4);
+    max-width: 1200px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: var(--sp-6) var(--sp-5);
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--sp-6) var(--sp-4);
   }
-  .look { display: flex; flex-direction: column; gap: var(--sp-4); }
-  .look-media { display: block; background: var(--paper-3); overflow: hidden; }
-  .look-media :global(.garment) { transition: transform .6s ease; }
-  .look:hover .look-media :global(.garment) { transform: scale(1.03); }
-  .look-body { display: flex; flex-direction: column; gap: var(--sp-2); }
-  .look-body h3 { font-size: var(--step-2); letter-spacing: -0.018em; }
-  .look-note { font-size: var(--step--1); color: var(--ink-2); max-width: 40ch; }
-  .look-meta {
+  .issues a { display: flex; flex-direction: column; gap: var(--sp-2); text-decoration: none; }
+  .issue-media { overflow: hidden; margin-bottom: var(--sp-1); }
+  .issue-media :global(img) { aspect-ratio: 4 / 5; object-fit: cover; }
+  .issue-no {
     font-family: var(--mono);
-    font-size: 0.6875rem;
+    font-size: 0.625rem;
     text-transform: uppercase;
-    letter-spacing: 0.07em;
+    letter-spacing: 0.12em;
     color: var(--ink-3);
   }
-  .look-price { font-size: var(--step-0); margin-top: var(--sp-1); }
-
-  /* ---------- categories ---------- */
-  .cats { padding-block: var(--sp-7); border-top: 1px solid var(--rule); }
-  .cat-list {
-    list-style: none;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--sp-4);
-  }
-  .cat a { display: flex; flex-direction: column; gap: var(--sp-3); }
-  .cat a:hover { text-decoration: none; }
-  .cat-media { display: block; background: var(--paper-3); overflow: hidden; }
-  .cat-media :global(.garment) { transition: transform .5s ease; }
-  .cat a:hover .cat-media :global(.garment) { transform: scale(1.03); }
-  .cat-text { display: flex; flex-direction: column; gap: 2px; }
-  .cat-title {
+  .issue-title { font-family: var(--display); font-size: var(--step-1); line-height: 1.15; }
+  .issues a:hover .issue-title { text-decoration: underline; text-underline-offset: 3px; }
+  .issue-stand { font-size: var(--step--1); color: var(--ink-2); }
+  .issue-count {
     font-family: var(--mono);
-    font-size: 0.75rem;
+    font-size: 0.625rem;
     text-transform: uppercase;
-    letter-spacing: 0.11em;
-  }
-  .cat-note { font-size: var(--step--1); color: var(--ink-3); }
-
-  /* ---------- atelier ---------- */
-  .atelier {
-    display: grid;
-    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
-    gap: var(--sp-6);
-    align-items: center;
-    max-width: var(--maxw);
-    margin: 0 auto;
-    padding: var(--sp-7) var(--sp-5);
-  }
-  .atelier img { width: 100%; height: auto; }
-  .atelier-note {
-    font-family: var(--display);
-    font-size: var(--step-2);
-    line-height: 1.35;
-    color: var(--ink-2);
-    max-width: 32ch;
-  }
-  @media (max-width: 860px) {
-    .atelier { grid-template-columns: minmax(0, 1fr); gap: var(--sp-4); padding-inline: var(--sp-4); }
-    .atelier-note { font-size: var(--step-1); max-width: none; }
+    letter-spacing: 0.1em;
+    color: var(--ink-3);
   }
 
-  /* ---------- trust ---------- */
-  .trust {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: var(--sp-5);
-    padding-block: var(--sp-6);
-    border-top: 1px solid var(--rule);
-    border-bottom: 1px solid var(--rule);
-  }
-  .trust-item { display: flex; flex-direction: column; gap: var(--sp-2); }
-  .trust-item h2 { font-size: var(--step-0); }
-  .trust-item p { font-size: var(--step--1); color: var(--ink-2); }
-
-  /* ---------- featured ---------- */
-  .featured { padding-block: var(--sp-7) 0; }
-  .featured-head {
-    display: flex; align-items: baseline; justify-content: space-between;
-    gap: var(--sp-4); margin-bottom: var(--sp-5);
-  }
-  .featured-head h2 { font-size: var(--step-2); }
-  .more {
-    font-size: var(--step--1);
-    color: var(--ink-2);
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-  }
-  .grid {
+  /* ---------------- featured ---------------- */
+  .featured-sec { padding-block: var(--sp-6) var(--sp-7); border-top: 1px solid var(--rule); }
+  .featured {
     list-style: none;
+    margin: 0;
+    padding: 0 var(--sp-4);
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(216px, 1fr));
-    gap: var(--sp-6) var(--sp-5);
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(260px, 380px);
+    gap: var(--sp-4);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+  .featured::-webkit-scrollbar { display: none; }
+  .featured li { scroll-snap-align: start; }
+  .featured a { display: flex; flex-direction: column; gap: var(--sp-2); text-decoration: none; }
+  .feat-media { overflow: hidden; }
+  .feat-media :global(img) { aspect-ratio: 4 / 5; object-fit: cover; }
+  .feat-title { font-family: var(--display); font-size: var(--step-1); }
+  .featured a:hover .feat-title { text-decoration: underline; text-underline-offset: 3px; }
+  .feat-meta {
+    font-family: var(--mono);
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-3);
   }
 
-  @media (max-width: 900px) {
-    .hero { min-height: min(74vh, 620px); }
-    .hero-copy { padding: var(--sp-7) var(--sp-4) var(--sp-6); }
-    .hero-copy h1 { max-width: 100%; }
-    /*
-      On a narrow screen the copy is taller and reaches further up the frame,
-      into the pale mannequins. The desktop gradient runs out before it gets
-      there, so carry the dark further and hold it longer.
-    */
-    /*
-      Narrow viewports crop the photograph to its centre, putting the pale
-      gown directly behind the eyebrow, and the copy runs full width so the
-      side wash has nothing to fade toward. One deeper vertical layer instead.
-      Lightest set that clears AA on every line: eyebrow lands at 5.1:1.
-    */
+  /* ---------------- people ---------------- */
+  .people-sec {
+    padding-block: var(--sp-6) var(--sp-7);
+    border-top: 1px solid var(--rule);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
+  .people-sec h2 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(1.6rem, 4vw, 2.3rem);
+    letter-spacing: -0.02em;
+    padding-bottom: var(--sp-4);
+  }
+  .names { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+  .names li { border-top: 1px solid var(--rule); }
+  .names li:last-child { border-bottom: 1px solid var(--rule); }
+  .names a {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--sp-4);
+    padding-block: var(--sp-3);
+    min-height: 48px;
+    text-decoration: none;
+  }
+  .names .n { font-family: var(--display); font-size: var(--step-2); }
+  .names a:hover .n { text-decoration: underline; text-underline-offset: 4px; }
+  .names .c {
+    font-family: var(--mono);
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-3);
+    white-space: nowrap;
+  }
+
+  @media (max-width: 700px) {
+    .hero { min-height: min(78vh, 640px); }
     .hero-scrim {
       background: linear-gradient(
         to top,
@@ -431,16 +373,5 @@ const featured = products.slice(0, 8);
         rgb(10 9 7 / 0.16) 100%
       );
     }
-  }
-  @media (max-width: 860px) {
-    .grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: var(--sp-5) var(--sp-3); }
-    .cat-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .look-media :global(.garment),
-    .cat-media :global(.garment) { transition: none; }
-    .look:hover .look-media :global(.garment),
-    .cat a:hover .cat-media :global(.garment) { transform: none; }
   }
 </style>

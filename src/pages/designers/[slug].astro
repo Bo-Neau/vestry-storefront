@@ -1,0 +1,247 @@
+---
+/**
+ * One designer.
+ *
+ * Built to work without a biography, because I do not have one and will not
+ * invent one for a real person. The work carries the page: what they cut,
+ * what they painted, which collections they appear in. When the client sends
+ * a paragraph it drops in above the work and the page gets better.
+ */
+import Base from "../../layouts/Base.astro";
+import Photo from "../../components/Photo.astro";
+import JsonLd from "../../components/JsonLd.astro";
+import { designerBySlug, designedBy, paintedBy, CREDITED } from "../../data/people.ts";
+import { leadImage } from "../../data/journal.ts";
+import { collectionOf } from "../../data/collections.ts";
+import { BRAND, pageTitle } from "../../config/brand.ts";
+import { designerSchema, breadcrumbSchema } from "../../lib/seo/structured-data.ts";
+
+const designer = designerBySlug(Astro.params.slug ?? "");
+if (!designer) return Astro.rewrite("/404");
+
+const site = Astro.site ?? new URL("https://example.com");
+const url = new URL(`/designers/${designer.slug}`, site).href;
+
+const cut = designedBy(designer);
+const painted = paintedBy(designer);
+if (cut.length === 0 && painted.length === 0) return Astro.rewrite("/404");
+
+// Collections this person appears in — a truer summary of their range than a
+// count of pieces, and it links somewhere useful.
+const collections = [...new Set([...cut, ...painted].map((d) => d.collection))]
+  .map((title) => collectionOf(title))
+  .filter((c) => c !== undefined);
+
+const lead = leadImage(cut[0] ?? painted[0]!);
+
+const others = CREDITED.filter((p) => p.slug !== designer.slug);
+
+const trail = [
+  { name: BRAND.name, url: site.href },
+  { name: "Designers", url: new URL("/designers", site).href },
+  { name: designer.name, url },
+];
+
+const description = designer.bio
+  ?? `${designer.name} — ${cut.length > 0 ? `${cut.length} ${cut.length === 1 ? "piece" : "pieces"} for ${BRAND.name}` : `painter for ${BRAND.name}`}.`;
+---
+
+<Base
+  title={pageTitle(designer.name)}
+  description={description}
+  ogImage={lead?.src}
+>
+  <JsonLd data={designerSchema(designer, url, BRAND.name)} />
+  <JsonLd data={breadcrumbSchema(trail)} />
+
+  <header class="shell person-head">
+    <p class="label"><a href="/designers">Designers</a></p>
+    <h1>{designer.name}</h1>
+    {designer.role && <p class="role">{designer.role}</p>}
+
+    {designer.bio
+      ? <p class="bio">{designer.bio}</p>
+      : (
+        <p class="bio quiet">
+          {cut.length > 0 && painted.length > 0
+            ? `Cuts and paints for ${BRAND.name}.`
+            : cut.length > 0
+              ? `Designs for ${BRAND.name}.`
+              : `Paints for ${BRAND.name}.`}
+        </p>
+      )}
+
+    {collections.length > 0 && (
+      <p class="in">
+        Appears in{" "}
+        {collections.map((c, i) => (
+          <>
+            {i > 0 && <span aria-hidden="true">, </span>}
+            <a href={`/collections/${c!.handle}`}>{c!.title}</a>
+          </>
+        ))}
+      </p>
+    )}
+  </header>
+
+  {cut.length > 0 && (
+    <section class="work" aria-labelledby="cut-h">
+      <div class="shell"><h2 id="cut-h" class="work-h">Designed</h2></div>
+      <ul class="grid">
+        {cut.map((design, i) => {
+          const photo = leadImage(design);
+          return (
+            <li>
+              <a href={`/pieces/${design.handle}`}>
+                {photo && (
+                  <div class="media">
+                    <Photo photo={photo} sizes="(max-width: 700px) 46vw, 300px" priority={i === 0} alt="" />
+                  </div>
+                )}
+                <span class="t">{design.title}</span>
+                <span class="m">{design.collection}</span>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  )}
+
+  {painted.length > 0 && (
+    <section class="work" aria-labelledby="painted-h">
+      <div class="shell">
+        <h2 id="painted-h" class="work-h">Painted</h2>
+        <p class="work-note">
+          Painted by hand, on garments cut by another designer in the house.
+        </p>
+      </div>
+      <ul class="grid">
+        {painted.map((design) => {
+          const photo = leadImage(design);
+          return (
+            <li>
+              <a href={`/pieces/${design.handle}`}>
+                {photo && (
+                  <div class="media">
+                    <Photo photo={photo} sizes="(max-width: 700px) 46vw, 300px" alt="" />
+                  </div>
+                )}
+                <span class="t">{design.title}</span>
+                <span class="m">Designed by {design.designer}</span>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  )}
+
+  {others.length > 0 && (
+    <nav class="shell also" aria-label="Other designers">
+      <p class="label">Also in the house</p>
+      <ul>
+        {others.map((p) => (
+          <li><a href={`/designers/${p.slug}`}>{p.name}</a></li>
+        ))}
+      </ul>
+    </nav>
+  )}
+</Base>
+
+<style>
+  .person-head {
+    padding-block: var(--sp-7) var(--sp-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    max-width: 720px;
+  }
+  .person-head .label a {
+    color: inherit;
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+  }
+  .person-head .label a:hover { color: var(--ink); }
+  .person-head h1 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(2.4rem, 7vw, 3.8rem);
+    line-height: 1.0;
+    letter-spacing: -0.028em;
+  }
+  .role {
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-3);
+  }
+  .bio { font-size: var(--step-1); line-height: 1.55; color: var(--ink-2); max-width: 58ch; }
+  /* A one-line stand-in until a real biography exists. Quiet on purpose —
+     it should not look like a paragraph that was written. */
+  .bio.quiet { color: var(--ink-3); font-size: var(--step-0); }
+  .in { font-size: var(--step-0); color: var(--ink-2); }
+  .in a { text-underline-offset: 3px; }
+
+  .work { padding-block: var(--sp-5) var(--sp-6); }
+  .work-h {
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-3);
+    font-weight: 500;
+    padding-bottom: var(--sp-3);
+    border-bottom: 1px solid var(--rule);
+  }
+  .work-note { font-size: var(--step--1); color: var(--ink-3); padding-top: var(--sp-3); max-width: 50ch; }
+
+  .grid {
+    list-style: none;
+    margin: var(--sp-5) auto 0;
+    padding: 0 var(--sp-4);
+    max-width: 1100px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--sp-6) var(--sp-4);
+  }
+  .grid a { display: flex; flex-direction: column; gap: var(--sp-2); text-decoration: none; }
+  .media { overflow: hidden; }
+  .media :global(img) { aspect-ratio: 4 / 5; object-fit: cover; }
+  .grid a:hover .t { text-decoration: underline; text-underline-offset: 3px; }
+  .t { font-size: var(--step-0); }
+  .m {
+    font-family: var(--mono);
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-3);
+  }
+
+  .also {
+    padding-block: var(--sp-6);
+    border-top: 1px solid var(--rule);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+  }
+  .also ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2) var(--sp-5);
+  }
+  .also a {
+    font-family: var(--display);
+    font-size: var(--step-1);
+    text-decoration: none;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .also a:hover { text-decoration: underline; text-underline-offset: 4px; }
+</style>

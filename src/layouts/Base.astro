@@ -1,11 +1,8 @@
 ---
 import "../styles/base.css";
-import { readCart } from "../lib/cart/index.ts";
-import { BRAND, COPY } from "../config/brand.ts";
+import { BRAND } from "../config/brand.ts";
 import { isIndexable } from "../config/env.ts";
-
-// Read on every page so the bag count is never stale after an add.
-const cart = await readCart(Astro.cookies);
+import { COLLECTIONS } from "../data/collections.ts";
 
 interface Props {
   title: string;
@@ -19,7 +16,7 @@ interface Props {
   noindex?: boolean | undefined;
   /** Absolute URL of the social preview image. */
   ogImage?: string | undefined;
-  ogType?: "website" | "product" | undefined;
+  ogType?: "website" | "article" | undefined;
 }
 const {
   title, description, canonical, noindex = false,
@@ -76,22 +73,13 @@ const blockIndexing = noindex || !isIndexable();
           <span>{BRAND.name}</span>
         </a>
 
-        <nav aria-label="Shop">
+        <nav aria-label="Sections" class="sections">
           <ul class="nav">
-            <li><a href="/collections/outerwear">Outerwear</a></li>
-            <li><a href="/collections/tops">Tops</a></li>
-            <li><a href="/collections/skirts">Skirts</a></li>
-            <li><a href="/collections/dresses">Dresses</a></li>
-            <li><a href="/collections/all">All</a></li>
+            <li><a href="/collections">Collections</a></li>
+            <li><a href="/designers">Designers</a></li>
+            <li><a href="/atelier">Atelier</a></li>
           </ul>
         </nav>
-
-        <a href="/cart" class="bag" aria-label={`Your bag, ${cart.itemCount} item${cart.itemCount === 1 ? "" : "s"}`}>
-          Bag
-          {cart.itemCount > 0 && <span class="bag-count">{cart.itemCount}</span>}
-        </a>
-
-        <p class="ship-note">{COPY.shippingBanner}</p>
       </div>
     </header>
 
@@ -102,23 +90,24 @@ const blockIndexing = noindex || !isIndexable();
     <footer class="site-foot">
       <div class="shell foot-inner">
         <div class="foot-col">
-          <p class="label">Help</p>
+          <p class="label">Collections</p>
           <ul>
-            <li><a href="/collections/all">Shipping &amp; returns</a></li>
-            <li><a href="/collections/all">Size &amp; fit</a></li>
-            <li><a href="/collections/all">Contact</a></li>
+            {COLLECTIONS.slice(0, 3).map((c) => (
+              <li><a href={`/collections/${c.handle}`}>{c.title}</a></li>
+            ))}
           </ul>
         </div>
         <div class="foot-col">
-          <p class="label">About</p>
+          <p class="label">The house</p>
           <ul>
-            <li><a href="/collections/all">Our materials</a></li>
-            <li><a href="/collections/all">Where we make</a></li>
+            <li><a href="/designers">Designers</a></li>
+            <li><a href="/atelier">Atelier</a></li>
+            <li><a href="/collections">All collections</a></li>
           </ul>
         </div>
         <p class="foot-note">
-          Demonstration storefront. Product imagery is generated placeholder
-          artwork; reviews and inventory are sample data.
+          {BRAND.legalName} &middot; Yangon. Pieces are shown as documented in
+          the collection booklet and are not currently offered for sale.
         </p>
       </div>
     </footer>
@@ -172,60 +161,22 @@ const blockIndexing = noindex || !isIndexable();
         min-height: 44px;
       }
       .nav a:hover { color: var(--ink); }
-      .bag {
-        margin-left: auto;
-        display: inline-flex;
-        align-items: center;
-        gap: var(--sp-2);
-        font-family: var(--mono);
-        font-size: 0.6875rem;
-        text-transform: uppercase;
-        letter-spacing: 0.09em;
-        color: var(--ink);
-        min-height: 44px;
-        /* Widen the tap area past the short word "Bag". */
-        padding-inline: var(--sp-2);
-        margin-inline: calc(-1 * var(--sp-2));
-      }
-      .bag-count {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 18px;
-        height: 18px;
-        padding: 0 5px;
-        border-radius: 9px;
-        background: var(--ink);
-        color: var(--paper);
-        font-size: 0.6875rem;
-        font-variant-numeric: tabular-nums;
-      }
-      .ship-note {
-        font-family: var(--mono);
-        font-size: 0.6875rem;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: var(--ink-3);
-      }
       @media (max-width: 860px) {
         /*
-          Mobile header: two rows, not four.
+          Mobile header: two rows.
 
-          Row 1  brand ................................ bag
-          Row 2  nav, one scrollable line
-          Row 3  shipping terms, thin
+          Row 1  brand
+          Row 2  sections, one scrollable line
 
-          The previous version wrapped into three or four stacked rows and ate
-          ~300px before any product was visible — on a phone that is most of
-          the first screen spent on chrome.
+          Losing the bag freed the top-right corner, so the brand now has the
+          whole first row and the nav gets a full line to scroll in.
         */
         .head-inner {
           display: grid;
-          grid-template-columns: auto auto;
+          grid-template-columns: minmax(0, 1fr);
           grid-template-areas:
-            "brand bag"
-            "nav   nav"
-            "ship  ship";
+            "brand"
+            "nav";
           gap: var(--sp-2) var(--sp-3);
           align-items: center;
           min-height: 0;
@@ -236,7 +187,6 @@ const blockIndexing = noindex || !isIndexable();
           font-size: var(--step-0);
           letter-spacing: 0.16em;
         }
-        .bag { grid-area: bag; justify-self: end; margin-left: 0; }
         nav { grid-area: nav; min-width: 0; }
         .nav {
           gap: var(--sp-4);
@@ -250,13 +200,6 @@ const blockIndexing = noindex || !isIndexable();
         }
         .nav::-webkit-scrollbar { display: none; }
         .nav a { white-space: nowrap; }
-        .ship-note {
-          grid-area: ship;
-          margin-left: 0;
-          font-size: 0.6875rem;
-          border-top: 1px solid var(--rule);
-          padding-top: var(--sp-2);
-        }
       }
 
       .site-foot {
