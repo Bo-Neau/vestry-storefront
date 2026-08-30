@@ -1,0 +1,79 @@
+# ---------------------------------------------------------------------------
+# Manussa — Apache configuration for cPanel hosting (GoDaddy and similar).
+#
+# Upload this alongside the site, in the same folder as index.html. It is a
+# hidden file: in cPanel File Manager turn on Settings → "Show Hidden Files
+# (dotfiles)" or you will not see it after uploading.
+#
+# Every block is wrapped in <IfModule>. If the host has not enabled a module
+# the block is skipped rather than throwing a 500, so this file is safe to
+# upload as-is without knowing what is switched on.
+# ---------------------------------------------------------------------------
+
+# --- HTTPS, once the certificate is issued -----------------------------------
+# Commented out deliberately. Turn it on AFTER the SSL certificate is active —
+# forcing HTTPS before the certificate exists makes the site unreachable.
+#
+# <IfModule mod_rewrite.c>
+#   RewriteEngine On
+#   RewriteCond %{HTTPS} !=on
+#   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+# </IfModule>
+
+# --- The custom 404 ----------------------------------------------------------
+ErrorDocument 404 /404.html
+
+# --- MIME types --------------------------------------------------------------
+# AVIF is newer than the mime.types file on a lot of shared hosting. Without
+# this the browser is handed the image as a download of unknown type and every
+# photograph on the page silently falls back to JPEG — the site still works,
+# it just ships several times more bytes than it needs to.
+<IfModule mod_mime.c>
+  AddType image/avif                       .avif
+  AddType image/webp                       .webp
+  AddType font/woff2                       .woff2
+  AddType application/xml                  .xml
+  AddType text/plain                       .txt
+</IfModule>
+
+# --- Compression -------------------------------------------------------------
+# Text only. Images and fonts are already compressed; running them through
+# gzip spends CPU to make them very slightly larger.
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml
+  AddOutputFilterByType DEFLATE application/javascript application/xml
+  AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# --- Caching -----------------------------------------------------------------
+# Everything in /_assets/ carries a content hash in its filename, so a changed
+# file is a different URL and can be cached forever. HTML cannot: it is the
+# document that points at those hashes, so it has to be revalidated or a
+# visitor keeps seeing the old page after an update.
+<IfModule mod_headers.c>
+  <FilesMatch "\.(css|js|avif|webp|jpg|jpeg|png|svg|woff2)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "\.(html|xml|txt)$">
+    Header set Cache-Control "public, max-age=0, must-revalidate"
+  </FilesMatch>
+
+  # --- Security headers ------------------------------------------------------
+  # The page already carries a Content-Security-Policy as a <meta> tag, which
+  # is the only mechanism a static host guarantees. These four have no meta
+  # equivalent at all, so this is the first host where they can be set.
+  #
+  # frame-ancestors is the important one: it is what stops the page being
+  # embedded in someone else's site, and it can ONLY be a header.
+  Header always set X-Frame-Options "DENY"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+
+  # HSTS — only once HTTPS is confirmed working. It tells browsers to refuse
+  # plain HTTP for two years, and that instruction cannot be taken back early.
+  # Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains"
+</IfModule>
+
+# --- Directory listings ------------------------------------------------------
+Options -Indexes
