@@ -52,9 +52,23 @@ embedded in someone else's site, and it can only be set as a header.
 
 ## What the site ships
 
-No JavaScript. The mobile menu is a `<details>` element and the smooth
-scrolling is CSS, so there is nothing to execute and nothing to break on a
-slow connection. `script-src 'none'` in the policy is not aspirational.
+**One script**, about 4KB: the eased scrolling in `src/scripts/scroll.ts`.
+Momentum scrolling cannot be expressed in CSS, so this is the only thing on
+the site that executes. Everything else stays declarative — the mobile menu is
+a `<details>`, and every parallax layer and reveal is a CSS scroll timeline.
+
+The policy is `script-src 'self'` with no `'unsafe-inline'` and no
+`'unsafe-eval'`, so only that bundled file can run and an injected inline
+script still cannot.
+
+One thing to know if you change the build: **Astro inlines small scripts by
+default, and an inlined module is blocked by this policy.** The site would
+still render and the scrolling would silently stop working. `astro.config.mjs`
+sets `assetsInlineLimit: 0` to prevent that; if you ever see the scrolling
+stop easing on the deployed site and not locally, check there first.
+
+The script disables itself entirely under `prefers-reduced-motion`, and on
+touch devices where the OS already does it better.
 
 Fonts are self-hosted — Cormorant Garamond and Jost, latin and latin-ext only,
 184KB total. Nothing is requested from a third party, which also keeps the

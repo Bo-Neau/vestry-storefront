@@ -32,20 +32,29 @@ const ogUrl = og ? new URL(og.src, site).href : undefined;
   Content policy as a meta tag.
 
   A header is the right place for this, but GitHub Pages cannot set one. Meta
-  carries everything except frame-ancestors, which has no meta equivalent — a
+  carries everything except frame-ancestors, which has no meta form — a
   header-capable host should add `X-Frame-Options: DENY` and the rest; see
   docs/deploy.md.
 
-  script-src is 'none': the site ships no JavaScript, so nothing legitimate
-  needs to run, and anything injected has no way to execute.
+  script-src is 'self' rather than 'none' because the site carries one script:
+  the eased scrolling in src/scripts/scroll.ts. There is no 'unsafe-inline'
+  and no 'unsafe-eval', so only the bundled file can run and an injected
+  inline script still cannot.
+
+  The dev branch exists because Vite serves stylesheets as JS modules and
+  talks to the browser over a websocket. Under the production policy both are
+  blocked, which does not break the built site but does break every tool used
+  to check it — including, for a long time, the screenshots in this project.
 */
+const DEV = import.meta.env.DEV;
+
 const CSP = [
   "default-src 'self'",
-  "script-src 'none'",
+  "script-src 'self'" + (DEV ? " 'unsafe-inline'" : ""),
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data:",
   "font-src 'self'",
-  "connect-src 'none'",
+  DEV ? "connect-src 'self' ws: wss:" : "connect-src 'none'",
   "form-action 'none'",
   "base-uri 'self'",
   "object-src 'none'",
@@ -94,6 +103,10 @@ const CSP = [
   <body>
     <a class="skip" href="#main">Skip to content</a>
 
+    <!-- How far through the page you are. A scroll-driven animation on the
+         document timeline, so it costs nothing and needs no script. -->
+    <div class="progress" aria-hidden="true"><span></span></div>
+
     <!--
       Announcement bar. The dates are the reason this site exists right now, so
       they sit above everything, on ink, before the visitor scrolls anywhere.
@@ -120,10 +133,40 @@ const CSP = [
     </main>
 
     <slot name="footer" />
+
+    <script>
+      import "../scripts/scroll.ts";
+    </script>
   </body>
 </html>
 
 <style>
+  /* The reading-progress line. Fixed above everything, drawn in the brand
+     gold, scaled by the document scroll timeline. */
+  .progress {
+    position: fixed;
+    inset: 0 0 auto 0;
+    height: 2px;
+    z-index: 60;
+    pointer-events: none;
+  }
+  .progress span {
+    display: block;
+    height: 100%;
+    background: var(--gold);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: scroll()) {
+      .progress span {
+        animation: progress-grow linear both;
+        animation-timeline: scroll(root block);
+      }
+      @keyframes progress-grow { to { transform: scaleX(1); } }
+    }
+  }
+
   .announce {
     position: relative;
     z-index: 40;

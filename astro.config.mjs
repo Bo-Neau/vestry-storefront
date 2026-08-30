@@ -83,4 +83,19 @@ export default defineConfig({
     service: { entrypoint: "astro/assets/services/sharp" },
   },
   devToolbar: { enabled: false },
+
+  /*
+    Emit the script as a file rather than inlining it.
+
+    Astro inlines small hoisted scripts by default. That is usually a win —
+    one fewer request — but this site's policy is `script-src 'self'` with no
+    'unsafe-inline', so an inlined module is blocked by the very policy meant
+    to protect it, and the eased scrolling silently does not run. A file is
+    also cacheable across visits, which the inline version never is.
+  */
+  vite: {
+    build: {
+      assetsInlineLimit: 0,
+    },
+  },
 });

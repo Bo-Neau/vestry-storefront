@@ -89,10 +89,10 @@ const event = {
       </a>
 
       <nav class="nav" aria-label="Sections">
-        <ul>{NAV.map((i) => <li><a href={i.href}>{i.label}</a></li>)}</ul>
+        <ul>{NAV.map((i) => <li><a class="link-draw" href={i.href}>{i.label}</a></li>)}</ul>
       </nav>
 
-      <a class="head-mail" href={`mailto:${BRAND.email}`}>Contact</a>
+      <a class="head-mail link-draw" href={`mailto:${BRAND.email}`}>Contact</a>
 
       <details class="menu">
         <summary aria-label="Menu"><span class="menu-rule" aria-hidden="true"></span>Menu</summary>
@@ -185,7 +185,7 @@ const event = {
                 </div>
               </div>
               {c.detail && (
-                <figure class="coll-inset">
+                <figure class="coll-inset parallax-counter">
                   <Photo src={c.detail} alt={c.detailAlt ?? ""}
                          sizes="(max-width: 980px) 44vw, 210px" />
                 </figure>
@@ -296,7 +296,7 @@ const event = {
 
       <nav class="foot-col" aria-label="Explore">
         <p class="foot-label">Explore</p>
-        <ul>{FOOTER.explore.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+        <ul>{FOOTER.explore.map((l) => <li><a class="link-draw" href={l.href}>{l.label}</a></li>)}</ul>
       </nav>
 
       <div class="foot-col">
@@ -827,5 +827,45 @@ const event = {
 
   @media (max-width: 860px) {
     .foot-inner { grid-template-columns: minmax(0, 1fr); gap: var(--sp-6); }
+  }
+
+  /* ============================ interaction ============================= */
+  /*
+    Photographs lift on hover — a slow, small scale with a touch of light,
+    so a plate feels like something you could pick up. 900ms is deliberate:
+    a fast hover on a large image reads as a twitch.
+  */
+  @media (hover: hover) and (pointer: fine) {
+    .plate-frame:hover :global(img),
+    .coll-frame:hover :global(img) {
+      transform: scale(1.025);
+      filter: brightness(1.06);
+    }
+
+    /* The gold rule above each founder extends to full width. It starts
+       short so there is somewhere to go. */
+    .founder-rule {
+      transform: scaleX(0.34);
+      transform-origin: left;
+      transition: transform 620ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
+    .founder:hover .founder-rule,
+    .founder:focus-within .founder-rule { transform: scaleX(1); }
+
+    /* The stand figures brighten together, so the block reads as one
+       answer to "where do I find you". */
+    .stand:hover dd { color: var(--cream); }
+    .stand dd { transition: color 420ms ease; }
+
+    .coll-inset { transition: outline-color 500ms ease; }
+    .coll-visual:hover .coll-inset { outline-color: var(--hair-firm); }
+
+    .art-plate .plate-frame { transition: outline-color 500ms ease; }
+    .art-plate:hover .plate-frame { outline-color: var(--gold); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* The rule still shows, it just does not travel. */
+    .founder-rule { transform: none; transition: none; }
   }
 </style>

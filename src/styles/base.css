@@ -110,11 +110,13 @@ a:hover { text-decoration: underline; text-underline-offset: 0.3em; text-decorat
 /* ---------------------------------------------------------------
    Motion
 
-   All of it is CSS scroll-driven animation — no JavaScript anywhere on
-   this site. Where the browser does not support scroll timelines the
-   rules never apply, and every element sits at its natural position
-   fully visible. That is the whole fallback: no movement, nothing
-   hidden, nothing to fix.
+   Every effect below is CSS scroll-driven animation. The site's one
+   script does eased scrolling and nothing else; it drives the real
+   scroll position, so all of this keeps working with it or without it.
+
+   Where the browser does not support scroll timelines the rules never
+   apply and every element sits at its natural position, fully visible.
+   That is the whole fallback: no movement, nothing hidden.
 
    `@supports (animation-timeline: view())` gates the reveals, because a
    reveal that starts at opacity 0 would strand content if the timeline
@@ -126,16 +128,22 @@ a:hover { text-decoration: underline; text-underline-offset: 0.3em; text-decorat
 
     /* --- parallax ------------------------------------------------- */
     /*
-      A layer that travels more slowly than the page it sits in. The
-      element is oversized by its wrapper and shifted across the whole
-      time it is in view, so it never exposes an edge.
+      Four speeds, which is what makes it read as depth rather than as one
+      thing sliding. Each layer's wrapper is oversized by at least its own
+      travel, so no edge is ever exposed.
     */
-    @keyframes drift-slow  { from { transform: translate3d(0, -8%, 0);  } to { transform: translate3d(0, 8%, 0);  } }
-    @keyframes drift-mid   { from { transform: translate3d(0, -14%, 0); } to { transform: translate3d(0, 14%, 0); } }
-    @keyframes drift-fall  { from { transform: translate3d(0, -34%, 0); } to { transform: translate3d(0, 26%, 0); } }
+    @keyframes drift-slow    { from { transform: translate3d(0, -10%, 0); } to { transform: translate3d(0, 10%, 0);  } }
+    @keyframes drift-mid     { from { transform: translate3d(0, -18%, 0); } to { transform: translate3d(0, 18%, 0);  } }
+    /* Against the grain. Put this on something in front of a drifting layer
+       and the two separate — the cheapest real depth cue there is. */
+    @keyframes drift-counter { from { transform: translate3d(0, 14%, 0);  } to { transform: translate3d(0, -14%, 0); } }
+    /* The drip falls further and faster than anything else, which is the
+       whole point of it. */
+    @keyframes drift-fall    { from { transform: translate3d(0, -38%, 0); } to { transform: translate3d(0, 30%, 0);  } }
 
     .parallax-slow,
     .parallax-mid,
+    .parallax-counter,
     .parallax-fall {
       animation-timeline: view();
       animation-range: cover 0% cover 100%;
@@ -143,11 +151,10 @@ a:hover { text-decoration: underline; text-underline-offset: 0.3em; text-decorat
       animation-timing-function: linear;
       will-change: transform;
     }
-    .parallax-slow { animation-name: drift-slow; }
-    .parallax-mid  { animation-name: drift-mid; }
-    /* The drip falls further and faster than anything else, which is the
-       point of it. */
-    .parallax-fall { animation-name: drift-fall; }
+    .parallax-slow    { animation-name: drift-slow; }
+    .parallax-mid     { animation-name: drift-mid; }
+    .parallax-counter { animation-name: drift-counter; }
+    .parallax-fall    { animation-name: drift-fall; }
 
     /* --- reveals -------------------------------------------------- */
     @keyframes rise {
@@ -194,4 +201,54 @@ a:hover { text-decoration: underline; text-underline-offset: 0.3em; text-decorat
     .stagger > *:nth-child(4) { animation-range: entry 17% cover 34%; }
     .stagger > *:nth-child(5) { animation-range: entry 21% cover 38%; }
   }
+}
+
+/* ---------------------------------------------------------------
+   Interaction
+
+   One vocabulary for the whole page: photographs lift very slightly
+   and lighten, rules extend, links draw an underline in gold. Small
+   and consistent beats varied — a page where every element has its
+   own idea of what hovering means reads as unfinished.
+
+   Every transition here is transform or opacity, both of which the
+   compositor handles without laying the page out again.
+   --------------------------------------------------------------- */
+
+@media (hover: hover) and (pointer: fine) {
+  /* Photographs inside a mounted plate. */
+  .plate-frame :global(img),
+  .coll-frame :global(img),
+  .plate-frame img,
+  .coll-frame img {
+    transition: transform 900ms cubic-bezier(0.22, 0.61, 0.36, 1),
+                filter 900ms ease;
+  }
+
+  /* The gold underline that draws under a text link. */
+  .link-draw {
+    position: relative;
+    text-decoration: none;
+  }
+  .link-draw::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: -0.28em;
+    height: 1px;
+    background: var(--gold);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  .link-draw:hover, .link-draw:focus-visible { text-decoration: none; }
+  .link-draw:hover::after,
+  .link-draw:focus-visible::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Keep the affordance, drop the movement. */
+  .link-draw::after { transition: none; }
 }
