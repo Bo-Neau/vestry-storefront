@@ -69,7 +69,7 @@ steadier:
 THE DOMAIN BAKED INTO THIS BUILD
 --------------------------------
 
-This build is for:   https://manussa.com
+This build is for:   https://manussamyanmar.com
 
 Four things in a static site have to be absolute and cannot follow DNS: the
 canonical tag, the Open Graph URL that link previews use, the sitemap, and
@@ -78,7 +78,7 @@ name the wrong one, which only matters to search engines and link previews.
 
 Only four files carry it. Everything else is identical whatever the domain.
 
-  Going on auracoreofficial.com instead?
+  Going on a different domain?
      Extract alt-domain-auracoreofficial.zip and copy its four files over
      the top of the ones in public_html. Nothing else changes.
 
