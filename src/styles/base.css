@@ -161,11 +161,17 @@ a:hover { text-decoration: underline; text-underline-offset: 0.3em; text-decorat
     /* The drip falls further and faster than anything else, which is the
        whole point of it. */
     @keyframes drift-fall    { from { transform: translate3d(0, -38%, 0); } to { transform: translate3d(0, 30%, 0);  } }
+    /* The hero drifts least, and not for taste. Its layer has to stay shallow
+       so the frame can sit high in it and show the top of the photograph, and
+       a shallow layer cannot afford much travel — both overhangs have to
+       clear the drift or an edge shows at one end of the range. */
+    @keyframes drift-hero    { from { transform: translate3d(0, -4%, 0);  } to { transform: translate3d(0, 4%, 0);   } }
 
     .parallax-slow,
     .parallax-mid,
     .parallax-counter,
-    .parallax-fall {
+    .parallax-fall,
+    .parallax-hero {
       animation-timeline: view();
       animation-range: cover 0% cover 100%;
       animation-fill-mode: both;
@@ -201,6 +207,7 @@ a:hover { text-decoration: underline; text-underline-offset: 0.3em; text-decorat
     .parallax-mid     { animation-name: drift-mid; }
     .parallax-counter { animation-name: drift-counter; }
     .parallax-fall    { animation-name: drift-fall; }
+    .parallax-hero    { animation-name: drift-hero; }
 
     /* --- reveals -------------------------------------------------- */
     @keyframes rise {

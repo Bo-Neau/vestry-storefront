@@ -107,7 +107,7 @@ const event = {
   <!-- ============================== hero ============================== -->
   <section class="hero" id="top" aria-labelledby="hero-h">
     <div class="hero-frame">
-      <div class="hero-media parallax-slow">
+      <div class="hero-media parallax-hero">
         <Photo src={HERO.image} alt="" sizes="100vw" priority />
       </div>
     </div>
@@ -281,7 +281,8 @@ const event = {
           <figure class={n === 1 ? "art-plate art-plate-low" : "art-plate"}>
             <div class="plate-frame">
               <div class="parallax-mid">
-                <Photo src={img.src} alt={img.alt} sizes="(max-width: 980px) 88vw, 360px" />
+                <Photo src={img.src} alt={img.alt}
+                       sizes="(max-width: 980px) 88vw, (max-width: 1400px) 42vw, 580px" />
               </div>
             </div>
           </figure>
@@ -487,9 +488,29 @@ const event = {
     comparing each frame's box with its image's. At -15% the layer is 130%,
     the travel 13% and the overhang 15%.
   */
-  .hero-media { position: absolute; inset: -15% 0; }
+  /*
+    Asymmetric, so the frame sits HIGH in its layer.
+
+    The photograph is 3:2 and the layer is 1440x1015 — wider in ratio than
+    the layer, so `object-fit: cover` crops it sideways and the whole height
+    is drawn. That means `object-position` has no vertical say at all here:
+    what decides which band of the photograph you see is where the frame
+    sits inside the taller layer, and at a symmetric -15% it sat dead
+    centre, hiding 129px at the top. That is what took the tops of their
+    heads off.
+
+    Both overhangs still have to exceed the drift or an edge shows at one
+    end of the travel, which is why the hero has a drift of its own: 4% of a
+    120% layer is 4.8% of the frame, against 6% of clearance above and 14%
+    below. 129px hidden at the top becomes 51px.
+  */
+  .hero-media { position: absolute; inset: -6% 0 -14% 0; }
   .hero-media :global(picture), .hero-media :global(img) { width: 100%; height: 100%; }
-  .hero-media :global(img) { object-fit: cover; object-position: 50% 40%; }
+  /* 15%, not 40%. This is inert at most widths — the layer is wider in ratio
+     than the photograph, so there is nothing to choose vertically — but on a
+     very wide screen the layer turns taller than 3:2 and this is what stops
+     the crop taking the heads instead of the road. */
+  .hero-media :global(img) { object-fit: cover; object-position: 50% 15%; }
 
   .hero-veil {
     position: absolute;
@@ -852,16 +873,35 @@ const event = {
   }
   .art-names li { font-family: var(--display); font-size: var(--step-3); color: var(--cream); }
 
-  .art-plates { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-5); align-items: start; }
+  /*
+    Stacked, not side by side.
+
+    Two plates sharing half the page gave each of them 280px — smaller than
+    a phone shows them, and dwarfed by the heading opposite. Side by side is
+    what made them small; there is no amount of tuning inside that layout
+    that fixes it, because the column is 584px and two of anything in it are
+    280px each. Stacking gives the first plate the whole column and the
+    second three quarters of it, and the pair still reads as hung rather
+    than tiled because the second is offset and overlaps upward.
+  */
+  .art-plates { display: flex; flex-direction: column; gap: var(--sp-4); }
   .art-plate { margin: 0; }
-  /* Drop the second plate so the pair reads as hung rather than tiled. */
-  .art-plate-low { margin-top: var(--sp-8); }
+  /*
+    Hung, not overlapped. The manifesto pair can overlap because the lower
+    plate is a narrow portrait against a wide one — the shapes separate on
+    their own. These two are both 3:2 and both dark, so a plate pulled up
+    over the other just merged with it: the mount I put behind it was
+    `--ink-deep`, which is the section's own background, so it did nothing
+    at all. A real gap and a right-hand indent read as a pair without
+    either photograph having to survive being cut into.
+  */
+  .art-plate-low { width: 80%; margin-left: auto; }
 
   @media (max-width: 980px) {
     .art { padding-block: var(--sp-8); }
     .art-grid { grid-template-columns: minmax(0, 1fr); gap: var(--sp-6); }
     .art h2 { font-size: var(--step-4); }
-    .art-plate-low { margin-top: 0; }
+    .art-plate-low { width: 84%; }
   }
 
   /* ================================ house =============================== */
