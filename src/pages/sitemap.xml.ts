@@ -1,4 +1,5 @@
 import type { APIRoute } from "astro";
+import { publicRoot } from "../lib/site-url.ts";
 
 /**
  * Sitemap.
@@ -12,12 +13,14 @@ import type { APIRoute } from "astro";
  * to be false most of the time.
  */
 export const GET: APIRoute = ({ site }) => {
-  const base = (site ?? new URL("https://manussa.example")).origin;
+  // publicRoot, not site.origin. On a project site the origin is the account
+  // root, and this told crawlers the site lived there.
+  const home = publicRoot(site).href;
   return new Response(
     `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>${base}/</loc>
+    <loc>${home}</loc>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>

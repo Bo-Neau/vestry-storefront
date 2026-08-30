@@ -24,6 +24,7 @@ import Base from "../layouts/Base.astro";
 import Photo from "../components/Photo.astro";
 import Drip from "../components/Drip.astro";
 import JsonLd from "../components/JsonLd.astro";
+import { publicRoot } from "../lib/site-url.ts";
 import { Image } from "astro:assets";
 import lockupLight from "../assets/brand/lockup-light.png";
 import monogramLight from "../assets/brand/monogram-light.png";
@@ -32,7 +33,9 @@ import {
   ART, TECHNIQUES, HOUSE, VISIT, SOCIAL, FOOTER,
 } from "../data/site.ts";
 
-const site = Astro.site ?? new URL("https://manussa.example");
+/* The home page's public address, base path included — Astro.site is the
+   origin alone, which on a project site is the account root. */
+const home = publicRoot(Astro.site).href;
 
 /* The painting, or the material where there is none. Derived from the credits
    rather than authored separately, so the label can never disagree with the
@@ -48,7 +51,7 @@ const organisation = {
   "@type": "Organization",
   name: BRAND.name,
   description: BRAND.description,
-  url: site.href,
+  url: home,
   parentOrganization: { "@type": "Organization", name: BRAND.parent },
   address: { "@type": "PostalAddress", addressLocality: "Yangon", addressCountry: "MM" },
   email: BRAND.email,
@@ -68,7 +71,7 @@ const event = {
     name: `${TEXWORLD.event} — ${TEXWORLD.hall}, ${TEXWORLD.booth}`,
     address: { "@type": "PostalAddress", addressLocality: "Paris", addressCountry: "FR" },
   },
-  organizer: { "@type": "Organization", name: BRAND.name, url: site.href },
+  organizer: { "@type": "Organization", name: BRAND.name, url: home },
 };
 ---
 

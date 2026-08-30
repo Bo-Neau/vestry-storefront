@@ -29,6 +29,14 @@ paid GitHub plan. That is the only reason.
 project site is served from `/<repo>/` rather than the domain root. Every
 absolute path in the built HTML carries that prefix.
 
+### One thing the github.io address cannot do
+
+Crawlers read `robots.txt` only from a domain ROOT. A project site serves it
+at `/<repo>/robots.txt`, so on the github.io address it is written correctly
+and read by nobody — `bo-neau.github.io/robots.txt` belongs to the account,
+not to this repository. The sitemap is unaffected; it is found through the
+canonical tag or submitted directly. A custom domain fixes it outright.
+
 ### Moving to a custom domain
 
 1. Settings → Pages → Custom domain, and add the DNS records it asks for
