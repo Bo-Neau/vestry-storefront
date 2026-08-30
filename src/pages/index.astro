@@ -277,6 +277,12 @@ const event = {
         <p class="art-body">{ART.body}</p>
         <ul class="art-names">
           {ART.names.map((n) => <li>{n}</li>)}
+          <li>
+            {ART.team.label}
+            <span class="art-team">
+              {ART.team.members.map((m) => <span>{m}</span>)}
+            </span>
+          </li>
         </ul>
       </div>
       <div class="art-plates">
@@ -875,6 +881,39 @@ const event = {
     border-top: 1px solid var(--hair);
   }
   .art-names li { font-family: var(--display); font-size: var(--step-3); color: var(--cream); }
+  /*
+    The designers, set as a credit rather than as six more names at display
+    size — that would have doubled the height of the column and given the
+    house's own team more weight on the page than the two artists the
+    section is about. Same vocabulary as the collection credits: body face,
+    tracked, --ash. Middots rather than a list, so it wraps as a line of
+    type instead of stacking.
+  */
+  .art-team {
+    /*
+      A wrapping flex row, not a joined string. As one string it broke
+      wherever the line ran out — "SA THAW / ZIN HTUT" split a person's name
+      across two lines, which is the sort of thing that reads as carelessness
+      about the people being credited. Each name is its own item and cannot
+      break inside itself; only the row wraps.
+    */
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 0.55em;
+    row-gap: 0.45em;
+    margin-top: var(--sp-3);
+    font-family: var(--body);
+    font-size: var(--step--2);
+    line-height: 1.6;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ash);
+    max-width: 38ch;
+  }
+  .art-team span { white-space: nowrap; }
+  /* --ash, the same as the names. --ash-dim is 4.28:1 and the token file
+     says it is for hairlines and never for a glyph. */
+  .art-team span:not(:last-child)::after { content: "·"; padding-left: 0.55em; }
 
   /*
     Stacked, not side by side.

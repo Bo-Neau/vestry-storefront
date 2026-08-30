@@ -240,7 +240,24 @@ export const ART = {
     "translated, stitch by stitch, into cloth. From the molten surface of “The " +
     "Hell” to the red currents of “Red Strings” and the tangled figures of " +
     "“Hidden Layers,” each painting brings its own emotion into the wardrobe.",
-  names: ["Zaw Win Pe", "Win Min Than", "and the Manussa design team"],
+  /*
+    The two collaborating artists, named at full size. The house's own
+    designers are a group credit under the third line rather than six more
+    entries in the same list — they are the team the collaboration happened
+    WITH, not further collaborators.
+  */
+  names: ["Zaw Win Pe", "Win Min Than"],
+  team: {
+    label: "and the Manussa design team",
+    members: [
+      "Katherine Paing",
+      "Pan Ywal Oo",
+      "Ei Ko Zin Latt",
+      "Kay",
+      "Sa Thaw Zin Htut",
+      "Sandi Zaw Lwin",
+    ],
+  },
   /*
     The brief asks for the two paintings side by side here — "The Hell" and
     "Hidden Layers". Those files are not in the supplied photography, so the
@@ -300,7 +317,7 @@ export const HOUSE = {
     },
     {
       name: "Khin Seinn Nyet Thu",
-      role: "Art Lover / Operations Director",
+      role: "Operations Director",
       body: "From a hospitality background, she leads operations and the high-end customer journey.",
     },
   ],
