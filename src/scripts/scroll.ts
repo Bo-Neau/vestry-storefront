@@ -96,6 +96,22 @@ function onWheel(event: WheelEvent): void {
   // Leave anything with its own scroller alone.
   if ((event.target as Element | null)?.closest?.("[data-native-scroll]")) return;
 
+  /*
+    Sideways intent belongs to whatever is under the pointer.
+
+    The collection rails scroll horizontally. This handler used to
+    preventDefault every wheel event and fold deltaY into the vertical
+    ease, which meant a two-finger swipe across a rail — deltaX large,
+    deltaY near zero — was cancelled and then applied as nothing. The rail
+    simply would not move on a trackpad.
+
+    Shift+wheel is the mouse spelling of the same gesture; browsers disagree
+    about whether it arrives as deltaX or as deltaY with the modifier set,
+    so both forms are handed back.
+  */
+  if (event.shiftKey) return;
+  if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
+
   event.preventDefault();
   target = clamp(target + wheelPixels(event.deltaY, event.deltaMode, window.innerHeight));
   start();

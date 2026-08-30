@@ -29,7 +29,7 @@ import lockupLight from "../assets/brand/lockup-light.png";
 import monogramLight from "../assets/brand/monogram-light.png";
 import {
   BRAND, TEXWORLD, NAV, HERO, MANIFESTO, COLLECTIONS,
-  ART, TECHNIQUES, HOUSE, VISIT, SOCIAL, FOOTER, LOOKBOOK,
+  ART, TECHNIQUES, HOUSE, VISIT, SOCIAL, FOOTER,
 } from "../data/site.ts";
 
 const site = Astro.site ?? new URL("https://manussa.example");
@@ -209,12 +209,6 @@ const event = {
                          sizes="(max-width: 980px) 92vw, 560px" />
                 </div>
               </div>
-              {c.detail && (
-                <figure class="coll-inset parallax-counter">
-                  <Photo src={c.detail} alt={c.detailAlt ?? ""}
-                         sizes="(max-width: 980px) 44vw, 210px" />
-                </figure>
-              )}
             </div>
           </div>
 
@@ -228,50 +222,45 @@ const event = {
             </ul>
           </div>
         </div>
+
+        <!--
+          The rail. Every other frame from this collection's shoot, running
+          sideways off the right edge of the screen.
+
+          It is focusable and labelled because a scroll container that only
+          answers to a mouse is unreachable by keyboard — WCAG 2.1.1. The
+          `data-rail` hook is read by the eased-scrolling script, which hands
+          horizontal gestures back to the browser instead of swallowing them
+          into the vertical ease.
+        -->
+        <div class="coll-railing">
+          <ul
+            class="coll-rail"
+            data-rail
+            data-count={c.gallery.length}
+            tabindex="0"
+            role="group"
+            aria-label={`${c.name} — ${c.gallery.length} more frames`}
+          >
+            {c.gallery.map((plate) => (
+              <li class={plate.wide ? "rail-cell rail-wide" : "rail-cell"}>
+                <div class="rail-frame">
+                  <div class="rail-drift">
+                    <Photo
+                      src={plate.src}
+                      alt={plate.alt}
+                      sizes={plate.wide
+                        ? "(max-width: 700px) 78vw, (max-width: 1200px) 52vw, 720px"
+                        : "(max-width: 700px) 52vw, (max-width: 1200px) 30vw, 400px"}
+                    />
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
       </article>
     ))}
-  </section>
-
-  <!-- ============================ lookbook ============================ -->
-  <!--
-    Every frame from the shoot. The sections above show twelve of the
-    twenty-seven; a buyer standing at the stand wants to see the range, and
-    the rest were sitting in the repository unused.
-
-    `grid-auto-flow: dense` lets the wide frames span two columns without
-    leaving holes where a portrait would not fit. It reorders visually but
-    not in the DOM, which is fine here — the reading order is the collection
-    order either way, and nothing in a gallery depends on sequence.
-  -->
-  <section class="look" id="lookbook" aria-labelledby="look-h">
-    <div class="shell look-head">
-      <p class="label">The lookbook</p>
-      <h2 id="look-h">Every frame</h2>
-      <span class="rule draw" aria-hidden="true"></span>
-      <p class="look-intro">
-        The 2026 collections as photographed &mdash; on the body, on the stand,
-        and together.
-      </p>
-    </div>
-
-    <ul class="look-grid">
-      {LOOKBOOK.map((plate) => (
-        <li class={plate.wide ? "look-cell look-wide" : "look-cell"}>
-          <figure>
-            <div class="look-frame">
-              <Photo
-                src={plate.src}
-                alt={plate.alt}
-                sizes={plate.wide
-                  ? "(max-width: 700px) 94vw, (max-width: 1200px) 62vw, 700px"
-                  : "(max-width: 700px) 94vw, (max-width: 1200px) 31vw, 350px"}
-              />
-            </div>
-            <figcaption>{plate.collection}</figcaption>
-          </figure>
-        </li>
-      ))}
-    </ul>
   </section>
 
   <!-- ============================== art =============================== -->
@@ -304,10 +293,20 @@ const event = {
   <!-- ============================= house ============================== -->
   <section class="house" id="house" aria-labelledby="house-h">
     <div class="shell house-inner">
-      <div class="house-head">
-        <p class="label">The House</p>
-        <h2 id="house-h">{HOUSE.heading}</h2>
-        <p class="house-intro">{HOUSE.intro}</p>
+      <div class="house-top">
+        <div class="house-head">
+          <p class="label">The House</p>
+          <h2 id="house-h">{HOUSE.heading}</h2>
+          <p class="house-intro">{HOUSE.intro}</p>
+        </div>
+        <figure class="house-plate rise">
+          <div class="plate-frame">
+            <div class="parallax-mid">
+              <Photo src={HOUSE.image} alt={HOUSE.imageAlt}
+                     sizes="(max-width: 980px) 66vw, 420px" />
+            </div>
+          </div>
+        </figure>
       </div>
 
       <ul class="founders stagger">
@@ -476,7 +475,19 @@ const event = {
     its travel.
   */
   .hero-frame { position: absolute; inset: 0; overflow: hidden; }
-  .hero-media { position: absolute; inset: -12% 0; }
+  /*
+    -15%, not -12%.
+
+    The percentages resolve against different things and that is the whole
+    difficulty: the inset is a share of the FRAME's height, the translate a
+    share of the LAYER's. At -12% the layer stands 124% of the frame, so a
+    10% drift travels 12.4% of the frame against 12% of overhang — short by
+    0.4%, which on a 900px hero is a 3.4px band of bare ground at the end of
+    the range. Measured by sweeping the document in 140px steps and
+    comparing each frame's box with its image's. At -15% the layer is 130%,
+    the travel 13% and the overhang 15%.
+  */
+  .hero-media { position: absolute; inset: -15% 0; }
   .hero-media :global(picture), .hero-media :global(img) { width: 100%; height: 100%; }
   .hero-media :global(img) { object-fit: cover; object-position: 50% 40%; }
 
@@ -684,18 +695,77 @@ const event = {
   .coll-sticky { position: sticky; top: 100px; }
   .coll-frame { aspect-ratio: 4 / 5; }
 
-  .coll-inset {
-    width: 46%;
-    margin-top: calc(-1 * var(--sp-8));
-    margin-left: auto;
-    position: relative;
-    z-index: 2;
-    padding: 6px;
-    background: var(--ink);
-    outline: 1px solid var(--hair);
-    outline-offset: -1px;
+  /* ------------------------------- the rail ------------------------------
+     The rest of the collection's shoot, running sideways.
+
+     It is deliberately NOT inside .shell. The row starts on the shell's left
+     edge and runs off the right of the screen, because a rail that ends
+     tidily inside a container looks finished — there is nothing to say more
+     is over there. The padding below reproduces the shell's own left edge:
+     half the leftover gutter, plus the shell's inline padding. Where the
+     window is narrower than the shell the gutter clamps to zero and this
+     resolves to the padding alone, which is exactly what .shell does.
+
+     `overflow-y: clip`, not `hidden`. Both hide the vertical overflow, but
+     `hidden` would make this a scroll container in the BLOCK axis too — and
+     every reveal and parallax on this page reads the nearest block-axis
+     scroller. `clip` cuts without creating one, so the rail scrolls
+     sideways and the page's vertical timelines never notice it exists.
+     --------------------------------------------------------------------- */
+  .coll-railing { margin-top: var(--sp-7); }
+
+  .coll-rail {
+    --rail-edge: calc(max(0px, (100% - var(--shell)) / 2) + var(--sp-5));
+
+    display: flex;
+    gap: var(--sp-3);
+    overflow-x: auto;
+    overflow-y: clip;
+    padding-inline: var(--rail-edge);
+    /* Snap gently. `mandatory` fights a trackpad flick across seven frames;
+       `proximity` only tidies up where the gesture was already close. */
+    scroll-snap-type: x proximity;
+    scroll-padding-inline-start: var(--rail-edge);
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--hair-firm) transparent;
+
+    /* One band height per rail; the ratio turns a landscape frame into a
+       WIDER card rather than a shorter one, so the row keeps one horizon. */
+    --rail-h: clamp(300px, 32vw, 460px);
   }
-  .coll[data-side="right"] .coll-inset { margin-left: 0; margin-right: auto; }
+  .coll-rail:focus-visible { outline-offset: -4px; }
+
+  @media (min-width: 900px) {
+    .coll-rail { --rail-edge: calc(max(0px, (100% - var(--shell)) / 2) + var(--sp-7)); }
+  }
+
+  .rail-cell {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+
+  /*
+    A single band height with the ratio doing the rest, so a landscape frame
+    becomes a WIDER card rather than a shorter one. That is the difference
+    between a rail and a grid: the row keeps one horizon and the eye reads
+    along it.
+  */
+  .rail-frame { height: var(--rail-h); aspect-ratio: 4 / 5; }
+  .rail-wide .rail-frame { aspect-ratio: 3 / 2; }
+
+  /*
+    Two frames, drawn larger.
+
+    Crimson Drive and Inner Faces were shot three times each, so their rails
+    hold two. At the common height that left a third of the row as bare ink
+    to the right of the second photograph — the same emptiness the manifesto
+    had, in a new place. Growing the cells to fill would have cropped a
+    standing figure to a letterbox; growing the ROW keeps every ratio and
+    closes the gap from 556px to 164px. Where a collection has more, the
+    rail runs off the screen and there is no gap to close.
+  */
+  .coll-rail[data-count="2"] { --rail-h: clamp(300px, 48vw, 620px); }
 
   .coll-text { display: flex; flex-direction: column; gap: var(--sp-4); padding-top: var(--sp-4); }
   /*
@@ -746,64 +816,8 @@ const event = {
     .coll-sticky { position: static; }
     .coll[data-side="right"] .coll-visual,
     .coll[data-side="right"] .coll-text { order: initial; }
-    .coll-inset { width: 54%; margin-top: calc(-1 * var(--sp-6)); }
     .coll-text { padding-top: 0; }
-  }
-
-  /* =============================== lookbook ============================= */
-  .look { background: var(--ink); padding-block: var(--sp-8) var(--sp-9); }
-  .look-head {
-    display: flex;
-    flex-direction: column;
-    gap: var(--sp-4);
-    align-items: flex-start;
-    padding-bottom: var(--sp-7);
-  }
-  .look-head h2 { font-size: var(--step-5); color: var(--cream); }
-  .look-intro { font-size: var(--step-1); color: var(--ash); max-width: 46ch; }
-
-  .look-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    grid-auto-flow: dense;
-    gap: var(--sp-4);
-    width: min(1600px, 94vw);
-    margin-inline: auto;
-  }
-  .look-cell { min-width: 0; }
-  /* A landscape frame earns two columns; a portrait would leave a hole. */
-  .look-wide { grid-column: span 2; }
-
-  .look-cell figure { margin: 0; display: flex; flex-direction: column; gap: var(--sp-2); }
-
-  /*
-    A fixed ratio per cell, so the grid holds its rhythm whatever each file's
-    own proportions are. Portrait cells are 4:5, wide cells 3:2 — which is
-    what the landscape frames were shot at, so they crop almost not at all.
-  */
-  .look-frame :global(img) { aspect-ratio: 4 / 5; object-fit: cover; }
-  .look-wide .look-frame :global(img) { aspect-ratio: 3 / 2; }
-
-  .look-cell figcaption {
-    font-size: var(--step--2);
-    text-transform: uppercase;
-    letter-spacing: var(--track-label);
-    /* --ash, not --ash-dim. The token file says --ash-dim is for hairlines
-       and never for type, and it is right: 4.28:1 on ink, under the 4.5 that
-       small text needs. This is the same colour at 6.7:1. */
-    color: var(--ash);
-  }
-
-  @media (max-width: 1200px) {
-    .look-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  }
-  @media (max-width: 700px) {
-    .look { padding-block: var(--sp-7) var(--sp-8); }
-    .look-head { padding-bottom: var(--sp-6); }
-    .look-head h2 { font-size: var(--step-4); }
-    .look-grid { grid-template-columns: minmax(0, 1fr); gap: var(--sp-5); }
-    /* One column: spanning two would be a no-op that breaks the flow. */
-    .look-wide { grid-column: auto; }
+    .coll-railing { margin-top: var(--sp-6); }
   }
 
   /* ================================= art ================================ */
@@ -853,7 +867,15 @@ const event = {
   /* ================================ house =============================== */
   .house { padding-block: var(--sp-9); background: var(--ink); }
   .house-inner { display: flex; flex-direction: column; gap: var(--sp-8); }
+  .house-top {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.6fr);
+    gap: var(--sp-9);
+    align-items: start;
+  }
   .house-head { display: flex; flex-direction: column; gap: var(--sp-4); }
+  .house-plate { margin: 0; }
+  .house-plate .plate-frame { aspect-ratio: 2 / 3; }
   .house h2 { font-size: var(--step-5); max-width: 16ch; color: var(--cream); }
   .house-intro { font-size: var(--step-1); color: var(--ash); max-width: var(--measure); }
 
@@ -872,13 +894,16 @@ const event = {
   @media (max-width: 980px) {
     .house { padding-block: var(--sp-8); }
     .house h2 { font-size: var(--step-4); }
+    .house-top { grid-template-columns: minmax(0, 1fr); gap: var(--sp-6); }
+    .house-plate { width: 66%; margin-left: auto; }
     .founders { gap: var(--sp-6); }
   }
 
   /* ================================ visit =============================== */
   .visit { position: relative; overflow: hidden; background: var(--ink-deep); }
   .visit-frame { position: absolute; inset: 0; overflow: hidden; }
-  .visit-media { position: absolute; inset: -12% 0; }
+  /* -15% against a 10% drift, for the reason set out on .hero-media. */
+  .visit-media { position: absolute; inset: -15% 0; }
   .visit-media :global(picture), .visit-media :global(img) { width: 100%; height: 100%; }
   .visit-media :global(img) { object-fit: cover; object-position: 50% 28%; }
   .visit-veil {
@@ -1015,5 +1040,25 @@ const event = {
   @media (prefers-reduced-motion: reduce) {
     /* The rule still shows, it just does not travel. */
     .founder-rule { transform: none; transition: none; }
+  }
+  /* ---------------------------------------------------------------
+     Last, deliberately.
+
+     Same correction as the frames in base.css, for the five
+     section-level clips that hold a drifting layer: `overflow:
+     hidden` makes each of them a scroll container, and a `view()`
+     timeline inside one is then bound to something that never
+     scrolls. See the long note in base.css for what that looked
+     like when measured.
+
+     It sits at the foot of the sheet because it has to outrank the
+     `overflow: hidden` in each section's own rule, and every one of
+     those is a single class — the same specificity. Written higher
+     up it lost the cascade to them and only the hero was corrected;
+     the art drip and the Texworld photograph stayed frozen, which is
+     how the placement was found.
+     --------------------------------------------------------------- */
+  @supports (overflow: clip) {
+    .hero, .hero-frame, .art, .visit, .visit-frame { overflow: clip; }
   }
 </style>

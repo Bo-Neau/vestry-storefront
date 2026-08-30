@@ -21,7 +21,8 @@
     "search:doctor": "node --env-file-if-exists=.env --experimental-strip-types scripts/search-doctor.mjs",
     "search:keys": "node --env-file-if-exists=.env scripts/search-keys.mjs",
     "shopify:mock": "node --experimental-strip-types scripts/mock-shopify.mjs",
-    "catalogue:import": "node --experimental-strip-types scripts/catalogue-import.mjs"
+    "catalogue:import": "node --experimental-strip-types scripts/catalogue-import.mjs",
+    "verify": "astro check && astro build && npm test"
   },
   "dependencies": {
     "@astrojs/node": "^11.1.4",

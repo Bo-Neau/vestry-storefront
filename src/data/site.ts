@@ -73,6 +73,20 @@ export const MANIFESTO = {
     "Three looks from The Hope Collection photographed in front of the paintings that inspired them",
 } as const;
 
+/**
+ * One frame in a collection's rail.
+ *
+ * `wide` marks a landscape shot. In a sideways rail that means a wider card
+ * rather than a taller one, so a group shot gets the room it was composed
+ * for and a single figure does not. It is set here rather than read from the
+ * file because it is a decision about composition, not about pixels.
+ */
+export interface Plate {
+  readonly src: string;
+  readonly alt: string;
+  readonly wide?: boolean;
+}
+
 export interface Collection {
   readonly no: string;
   readonly handle: string;
@@ -80,11 +94,17 @@ export interface Collection {
   readonly tagline: string;
   readonly credit: readonly string[];
   readonly body: string;
+  /** The key frame. It pins beside the text while the text passes it. */
   readonly image: string;
   readonly imageAlt: string;
-  /** A second frame, where the shoot gives the collection one worth showing. */
-  readonly detail?: string;
-  readonly detailAlt?: string;
+  /**
+   * Every other frame from this collection's shoot, in the rail beneath.
+   *
+   * The shoot produced twenty-seven photographs and the page used to show
+   * twelve, with the rest piled into one gallery at the foot of the site.
+   * They belong to the collections they were shot for; this is where they go.
+   */
+  readonly gallery: readonly Plate[];
 }
 
 export const COLLECTIONS: readonly Collection[] = [
@@ -106,9 +126,13 @@ export const COLLECTIONS: readonly Collection[] = [
     image: "hope-capelet-column",
     imageAlt:
       "A hand-painted capelet over a black column gown from The Hope Collection",
-    detail: "hope-capelet-detail",
-    detailAlt:
-      "Detail of the hand-painted drip motif and beading across the shoulder of the capelet",
+    gallery: [
+      { src: "hope-capelet-detail", alt: "Detail of the hand-painted drip motif and beading across the shoulder of the capelet" },
+      { src: "hope-corset-worn", alt: "The painted corset bodice from The Hope Collection, worn" },
+      { src: "hope-corset-mannequin", alt: "The painted corset bodice on the stand, showing the petal peplum" },
+      { src: "hope-column-gown", alt: "The column gown on the stand, hand-finished at the hem" },
+      { src: "manifesto-paintings", alt: "Three looks from The Hope Collection in front of the paintings they came from", wide: true },
+    ],
   },
   {
     no: "02",
@@ -127,8 +151,11 @@ export const COLLECTIONS: readonly Collection[] = [
     image: "traditional-three",
     imageAlt:
       "Three models in blue patchwork jackets from New Traditional, in a room with an antique globe",
-    detail: "traditional-jacket",
-    detailAlt: "A blue patchwork jacket from New Traditional, worn open",
+    gallery: [
+      { src: "traditional-jacket", alt: "A blue patchwork jacket from New Traditional, worn open" },
+      { src: "traditional-three-alt", alt: "New Traditional photographed from the front, three looks together", wide: true },
+      { src: "traditional-seated", alt: "A patchwork coat and scarf from New Traditional, seated", wide: true },
+    ],
   },
   {
     no: "03",
@@ -146,8 +173,10 @@ export const COLLECTIONS: readonly Collection[] = [
     image: "crimson-painting",
     imageAlt:
       "Models in black and red from Crimson Drive, standing before the red-line painting",
-    detail: "crimson-three",
-    detailAlt: "Three looks from Crimson Drive in black with crimson detailing",
+    gallery: [
+      { src: "crimson-three", alt: "Three looks from Crimson Drive in black with crimson detailing" },
+      { src: "crimson-mens", alt: "The men's look from Crimson Drive, with a crimson panel" },
+    ],
   },
   {
     no: "04",
@@ -167,9 +196,15 @@ export const COLLECTIONS: readonly Collection[] = [
     image: "essence-pool-table",
     imageAlt:
       "Two models in indigo denim from Myanmar's Essence, at a pool table",
-    detail: "essence-coat-car",
-    detailAlt:
-      "A white denim coat from Myanmar's Essence, worn beside a vintage car",
+    gallery: [
+      { src: "essence-coat-car", alt: "A white denim coat from Myanmar's Essence, worn beside a vintage car" },
+      { src: "essence-peplum-steps", alt: "The printed peplum with white trousers, on the steps" },
+      { src: "essence-peplum-room", alt: "The printed peplum from Myanmar's Essence, photographed indoors" },
+      { src: "hero-denim-car", alt: "White denim from Myanmar's Essence beside a vintage car at night", wide: true },
+      { src: "essence-pair-car", alt: "Two white denim looks from Myanmar's Essence at the car", wide: true },
+      { src: "essence-jacket-car", alt: "The white denim jacket, showing the melting paintwork at the shoulder", wide: true },
+      { src: "essence-coat-open", alt: "The white denim coat from Myanmar's Essence, worn open", wide: true },
+    ],
   },
   {
     no: "05",
@@ -188,8 +223,10 @@ export const COLLECTIONS: readonly Collection[] = [
     image: "inner-faces-front",
     imageAlt:
       "The Inner Faces jacket, front — stitched face line art at the chest with layered sleeves",
-    detail: "inner-faces-back",
-    detailAlt: "The Inner Faces jacket from behind, showing the layered sleeve construction",
+    gallery: [
+      { src: "inner-faces-angle", alt: "The Inner Faces jacket from the side, showing the layered sleeve" },
+      { src: "inner-faces-back", alt: "The Inner Faces jacket from behind, showing the layered sleeve construction" },
+    ],
   },
 ];
 
@@ -237,6 +274,19 @@ export const HOUSE = {
     supplied, so the cards are set as type rather than leaving three empty
     frames — adding a portrait later improves a card instead of filling a hole.
   */
+  /*
+    The lace gown.
+
+    It is the one photograph in the shoot that is not from a 2026 collection —
+    cream lace with coral thread-work and beading, none of the five houses'
+    motifs — so it has no rail to sit in. It goes here, where what is being
+    shown is the hand rather than the season. If it does belong to a
+    collection, move it into that collection's `gallery` and this section
+    goes back to type alone.
+  */
+  image: "lace-gown",
+  imageAlt:
+    "A cream lace gown with coral thread-work and beading worked across the bodice",
   founders: [
     {
       name: "Chit Su Mon",
@@ -255,67 +305,6 @@ export const HOUSE = {
     },
   ],
 } as const;
-
-/* ---------------------------------------------------------------
-   The lookbook.
-
-   Every photograph from the shoot, in the order the collections run.
-   The page proper shows twelve; a buyer at a stand wants to see the
-   whole range, and the other fifteen were sitting unused.
-
-   `wide` marks a landscape frame that should span two columns. It is
-   set here rather than derived from the file, because the decision is
-   about composition — a group shot earns the width, a single figure
-   photographed wide does not always.
-   --------------------------------------------------------------- */
-
-export interface Plate {
-  readonly src: string;
-  readonly alt: string;
-  readonly collection: string;
-  readonly wide?: boolean;
-}
-
-export const LOOKBOOK: readonly Plate[] = [
-  // The Hope Collection — painted cloth, on the stand and on the body.
-  { src: "hope-capelet-column", alt: "The painted capelet worn over a black column gown", collection: "The Hope Collection" },
-  { src: "hope-capelet-detail", alt: "Detail of the hand-painted drip motif and beading across the shoulder", collection: "The Hope Collection" },
-  { src: "hope-corset-worn", alt: "The painted corset bodice, worn", collection: "The Hope Collection" },
-  { src: "hope-corset-mannequin", alt: "The painted corset bodice on the stand, showing the petal peplum", collection: "The Hope Collection" },
-  { src: "hope-column-gown", alt: "The column gown on the stand, hand-finished at the hem", collection: "The Hope Collection" },
-  { src: "manifesto-paintings", alt: "Three looks from The Hope Collection in front of the paintings they came from", collection: "The Hope Collection", wide: true },
-
-  // New Traditional — patchwork, shot around the globe.
-  { src: "traditional-three", alt: "Three patchwork looks from New Traditional", collection: "New Traditional", wide: true },
-  { src: "traditional-three-alt", alt: "New Traditional, photographed from the front", collection: "New Traditional", wide: true },
-  { src: "traditional-jacket", alt: "A blue patchwork jacket from New Traditional, worn open", collection: "New Traditional" },
-  { src: "traditional-seated", alt: "A patchwork coat and scarf from New Traditional, seated", collection: "New Traditional", wide: true },
-
-  // Crimson Drive — black and red.
-  { src: "crimson-painting", alt: "Crimson Drive photographed against the red-line painting", collection: "Crimson Drive" },
-  { src: "crimson-three", alt: "Three looks from Crimson Drive in black with crimson detailing", collection: "Crimson Drive" },
-  { src: "crimson-mens", alt: "The men's look from Crimson Drive, with a crimson panel", collection: "Crimson Drive" },
-
-  // Myanmar's Essence — denim, at the car and the pool table.
-  { src: "hero-denim-car", alt: "White denim from Myanmar's Essence, beside a vintage car", collection: "Myanmar's Essence", wide: true },
-  { src: "essence-pair-car", alt: "Two white denim looks from Myanmar's Essence at the car", collection: "Myanmar's Essence", wide: true },
-  { src: "essence-jacket-car", alt: "The white denim jacket, showing the melting paintwork at the shoulder", collection: "Myanmar's Essence", wide: true },
-  { src: "essence-coat-open", alt: "The white denim coat, worn open", collection: "Myanmar's Essence", wide: true },
-  { src: "essence-coat-car", alt: "The white denim coat in full, beside the car", collection: "Myanmar's Essence" },
-  { src: "essence-pool-table", alt: "Two indigo denim looks from Myanmar's Essence at a pool table", collection: "Myanmar's Essence" },
-  { src: "essence-peplum-steps", alt: "The printed peplum with white trousers, on the steps", collection: "Myanmar's Essence" },
-  { src: "essence-peplum-room", alt: "The printed peplum, photographed indoors", collection: "Myanmar's Essence" },
-
-  // Inner Faces — the limited edition, front, side and back.
-  { src: "inner-faces-front", alt: "The Inner Faces jacket, front, with stitched face line art at the chest", collection: "Inner Faces" },
-  { src: "inner-faces-angle", alt: "The Inner Faces jacket from the side, showing the layered sleeve", collection: "Inner Faces" },
-  { src: "inner-faces-back", alt: "The Inner Faces jacket from behind", collection: "Inner Faces" },
-
-  // The house together.
-  { src: "lace-gown", alt: "A lace gown embroidered in coral thread", collection: "The house" },
-  { src: "lineup", alt: "The 2026 collections shown together on the stand", collection: "The house", wide: true },
-  { src: "lineup-alt", alt: "The 2026 collections, a second view", collection: "The house", wide: true },
-];
 
 export const VISIT = {
   eyebrow: "Find Us",

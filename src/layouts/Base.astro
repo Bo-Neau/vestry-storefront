@@ -160,9 +160,16 @@ const CSP = [
   @media (prefers-reduced-motion: no-preference) {
     @supports (animation-timeline: scroll()) {
       .progress span {
-        animation: progress-grow linear both;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
         animation-timeline: scroll(root block);
       }
+      /* The name stays in a rule of its own. Together with the line above it
+         the minifier folds both into `animation: linear both progress-grow
+         scroll(root)`, which no browser accepts — the whole declaration is
+         dropped and the line never grows. Same trap as the reveals; see the
+         note in base.css. tests/built-css.test.mjs fails if it returns. */
+      .progress span { animation-name: progress-grow; }
       @keyframes progress-grow { to { transform: scaleX(1); } }
     }
   }

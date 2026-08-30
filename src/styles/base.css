@@ -139,9 +139,22 @@ a:hover { text-decoration: underline; text-underline-offset: 0.3em; text-decorat
       Four speeds, which is what makes it read as depth rather than as one
       thing sliding. Each layer's wrapper is oversized by at least its own
       travel, so no edge is ever exposed.
+
+      `slow` and `mid` were the same ±10% — three speeds wearing four
+      names. It went unnoticed because none of them moved: the frames were
+      `overflow: hidden`, so every timeline was frozen and two identical
+      curves looked no different from two distinct ones. With the clipping
+      corrected they are 6% and 12%, so a plate set behind another actually
+      falls behind it.
+
+      The overhang carries all of them. The frames stand 136% of their box,
+      so 12% of the layer is 16.3% of the frame against 18% of clearance;
+      the hero and Texworld layers stand 130% and drift 6%, which is 7.8%
+      against 15%. Verified by sweeping the document and comparing every
+      frame's box against its image's.
     */
-    @keyframes drift-slow    { from { transform: translate3d(0, -10%, 0); } to { transform: translate3d(0, 10%, 0);  } }
-    @keyframes drift-mid     { from { transform: translate3d(0, -10%, 0); } to { transform: translate3d(0, 10%, 0);  } }
+    @keyframes drift-slow    { from { transform: translate3d(0, -6%, 0);  } to { transform: translate3d(0, 6%, 0);   } }
+    @keyframes drift-mid     { from { transform: translate3d(0, -12%, 0); } to { transform: translate3d(0, 12%, 0);  } }
     /* Against the grain. Put this on something in front of a drifting layer
        and the two separate — the cheapest real depth cue there is. */
     @keyframes drift-counter { from { transform: translate3d(0, 10%, 0);  } to { transform: translate3d(0, -10%, 0); } }
@@ -167,6 +180,23 @@ a:hover { text-decoration: underline; text-underline-offset: 0.3em; text-decorat
         nothing and had a real price.
       */
     }
+    /*
+      The rail's own axis. This measures against the rail rather than the
+      page, so these photographs drift as the rail is dragged, not as the
+      document is scrolled. Same idea as the vertical parallax, turned
+      ninety degrees — and each card is at a different point in its own
+      range, which is what separates parallax from a slide.
+    */
+    @keyframes drift-across { from { transform: translate3d(-6%, 0, 0); } to { transform: translate3d(6%, 0, 0); } }
+    .rail-drift {
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      /* `x`, the physical axis, not `inline`. Both parse; only this one was
+         verified to advance against a horizontally scrolling container. */
+      animation-timeline: view(x);
+      animation-range: cover 0% cover 100%;
+    }
+
     .parallax-slow    { animation-name: drift-slow; }
     .parallax-mid     { animation-name: drift-mid; }
     .parallax-counter { animation-name: drift-counter; }
@@ -201,16 +231,47 @@ a:hover { text-decoration: underline; text-underline-offset: 0.3em; text-decorat
 
     .draw {
       transform-origin: left;
-      animation: draw linear both;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
       animation-timeline: view();
       animation-range: entry 10% cover 22%;
     }
 
     /* Staggering, so a group arrives as a sequence rather than a block. */
     .stagger > * {
-      animation: rise cubic-bezier(0.22, 0.61, 0.36, 1) both;
+      animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+      animation-fill-mode: both;
       animation-timeline: view();
     }
+
+    /* ---------------------------------------------------------------
+       Names, apart from timelines. This separation is load-bearing.
+
+       These three rules used the `animation` shorthand with the
+       timeline set beside it. The CSS minifier, seeing a name and
+       other longhands in one rule, folded them back into a single
+       shorthand and wrote the timeline INTO it:
+
+           animation: linear both draw view();
+
+       No browser accepts a timeline inside the shorthand — it was
+       taken back out of the spec — so the whole declaration was
+       invalid and dropped. In the dev server, where nothing is
+       minified, all three animated correctly; in the built site the
+       rule under every heading never drew, the founder cards never
+       staggered, and the rail photographs never drifted. Measured, not
+       guessed: `animation-name` computed to `none` in the built page.
+
+       A rule holding ONLY `animation-name` cannot be folded into a
+       shorthand, because doing so would reset the other longhands.
+       That is why the names live down here on their own, and why
+       `.rise` and `.fade` — already written this way — never broke.
+
+       tests/built-css.test.mjs fails the build if this comes back.
+       --------------------------------------------------------------- */
+    .draw        { animation-name: draw; }
+    .stagger > * { animation-name: rise; }
+    .rail-drift  { animation-name: drift-across; }
     .stagger > *:nth-child(1) { animation-range: entry 5%  cover 22%; }
     .stagger > *:nth-child(2) { animation-range: entry 9%  cover 26%; }
     .stagger > *:nth-child(3) { animation-range: entry 13% cover 30%; }
@@ -238,7 +299,7 @@ a:hover { text-decoration: underline; text-underline-offset: 0.3em; text-decorat
      transition never applied at all. */
   .plate-frame img,
   .coll-frame img,
-  .look-frame img {
+  .rail-frame img {
     /* Transform only. `filter: brightness()` was in here too and it is the
        one property on this page the compositor cannot handle — repainting a
        2400px photograph on every hover frame, while the scroll animation is
@@ -295,12 +356,51 @@ a:hover { text-decoration: underline; text-underline-offset: 0.3em; text-decorat
 
 .plate-frame,
 .coll-frame,
-.look-frame {
+.rail-frame {
   position: relative;
   overflow: hidden;
   background: var(--ink-lift);
   outline: 1px solid var(--hair);
   outline-offset: -1px;
+}
+
+/* ---------------------------------------------------------------
+   `overflow: clip`, everywhere a scroll-driven layer is clipped.
+
+   This is the single most important line on the page, and it was
+   wrong until it was measured.
+
+   `overflow: hidden` makes an element a scroll container. A
+   `view()` timeline binds to its subject's NEAREST ancestor scroll
+   container — so every drifting layer inside a clipping frame was
+   bound to the frame itself, which never scrolls. The timelines
+   resolved, reported `running`, and sat frozen: 49.99% at the top of
+   the document and 49.99% at the bottom. Every photograph on this
+   page held a fixed offset and called it parallax.
+
+   Measured, not inferred. Sampling one collection frame at five
+   scroll positions 350px apart returned the same transform each
+   time; the drip, inside `.art`, sat at 90.55% throughout. `.rise`,
+   whose subjects sit in normal flow under nothing clipped, swept
+   -16% to 100% exactly as intended — which is what proved the
+   difference was the frames and not the timelines.
+
+   `clip` cuts the overflow without creating a scroll container, so
+   the nearest one is the document again. It is the same correction
+   already made on `body` for the sideways axis, applied to the
+   sixteen frames that needed it too.
+
+   Behind `@supports` because Safari only learned `clip` in 16. There
+   it stays `hidden` and the layers stay still — which is precisely
+   what every browser was doing before, so nothing regresses and
+   nothing is stranded.
+   --------------------------------------------------------------- */
+@supports (overflow: clip) {
+  .plate-frame,
+  .coll-frame,
+  .rail-frame {
+    overflow: clip;
+  }
 }
 
 /*
@@ -333,9 +433,32 @@ a:hover { text-decoration: underline; text-underline-offset: 0.3em; text-decorat
 .plate-frame > div picture,
 .plate-frame > div img,
 .coll-frame > div picture,
-.coll-frame > div img {
+.coll-frame > div img,
+.rail-frame > div picture,
+.rail-frame > div img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/*
+  The rail's layer drifts SIDEWAYS, so its overhang is on the other axis —
+  and both numbers resolve against width, which is what makes them
+  comparable. The layer is 120% of the frame; a 6% translate of the layer is
+  7.2% of the frame, against 10% of overhang on either side.
+
+  It is IN FLOW rather than absolutely positioned, and that is load-bearing
+  rather than a style preference. Written the other way — `position:
+  absolute; inset: 0 -10%` — the drift did not run: the ViewTimeline
+  resolved, reported `running`, and sat frozen at 49.99% however far the
+  rail was scrolled. An absolutely positioned subject does not track its
+  scroller's inline axis. Measured on the same element with everything else
+  unchanged: in flow it sweeps 78% → 146% → 243% across the rail's range;
+  positioned, it never moves off 49.99%.
+*/
+.rail-frame > div {
+  width: 120%;
+  height: 100%;
+  margin-left: -10%;
 }
