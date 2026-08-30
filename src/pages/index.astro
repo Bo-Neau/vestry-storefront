@@ -29,7 +29,7 @@ import lockupLight from "../assets/brand/lockup-light.png";
 import monogramLight from "../assets/brand/monogram-light.png";
 import {
   BRAND, TEXWORLD, NAV, HERO, MANIFESTO, COLLECTIONS,
-  ART, TECHNIQUES, HOUSE, VISIT, SOCIAL, FOOTER,
+  ART, TECHNIQUES, HOUSE, VISIT, SOCIAL, FOOTER, LOOKBOOK,
 } from "../data/site.ts";
 
 const site = Astro.site ?? new URL("https://manussa.example");
@@ -135,29 +135,54 @@ const event = {
   </section>
 
   <!-- ============================ manifesto =========================== -->
+  <!--
+    Two photographs stacked in the right column, not one centred in it.
+
+    This went wrong twice. First the single landscape frame sat centred in a
+    column twice its height, leaving 389px of empty ink above and below it.
+    Then it ran full-bleed, which was worse — taller than the viewport and
+    cropping faces.
+
+    Toteme and Lemaire, measured directly, never let an editorial photograph
+    exceed about half the viewport width, and compose in twos and threes
+    rather than one large frame. So: the wide group shot that states the
+    thesis, and beneath it the drip in close-up — which is literally what the
+    paragraph beside it describes. Together they fill the column instead of
+    floating in it.
+  -->
   <section class="manifesto" aria-labelledby="manifesto-h">
     <div class="shell manifesto-grid">
-      <div class="manifesto-copy stagger">
-        <p class="label">From painting to clothes</p>
-        <h2 id="manifesto-h">{MANIFESTO.heading}</h2>
-        <p class="lead">{MANIFESTO.lead}</p>
-        <p class="prose">{MANIFESTO.body}</p>
+      <div class="manifesto-copy">
+        <div class="stagger">
+          <p class="label">From painting to clothes</p>
+          <h2 id="manifesto-h">{MANIFESTO.heading}</h2>
+          <p class="lead">{MANIFESTO.lead}</p>
+          <p class="prose">{MANIFESTO.body}</p>
+        </div>
+        <ul class="techniques" aria-label="Techniques">
+          {TECHNIQUES.map((t) => <li>{t}</li>)}
+        </ul>
       </div>
 
-      <figure class="manifesto-plate rise">
-        <div class="plate-frame">
-          <div class="parallax-mid">
-            <Photo src={MANIFESTO.image} alt={MANIFESTO.imageAlt}
-                   sizes="(max-width: 980px) 92vw, 540px" />
+      <div class="manifesto-plates">
+        <figure class="plate-a rise">
+          <div class="plate-frame">
+            <div class="parallax-mid">
+              <Photo src={MANIFESTO.image} alt={MANIFESTO.imageAlt}
+                     sizes="(max-width: 980px) 92vw, 46vw" />
+            </div>
           </div>
-        </div>
-      </figure>
-    </div>
-
-    <div class="shell">
-      <ul class="techniques stagger" aria-label="Techniques">
-        {TECHNIQUES.map((t) => <li>{t}</li>)}
-      </ul>
+        </figure>
+        <figure class="plate-b rise">
+          <div class="plate-frame">
+            <div class="parallax-counter">
+              <Photo src="hope-capelet-detail"
+                     alt="Detail of the hand-painted drip motif, worked across the shoulder by hand"
+                     sizes="(max-width: 980px) 56vw, 26vw" />
+            </div>
+          </div>
+        </figure>
+      </div>
     </div>
   </section>
 
@@ -205,6 +230,48 @@ const event = {
         </div>
       </article>
     ))}
+  </section>
+
+  <!-- ============================ lookbook ============================ -->
+  <!--
+    Every frame from the shoot. The sections above show twelve of the
+    twenty-seven; a buyer standing at the stand wants to see the range, and
+    the rest were sitting in the repository unused.
+
+    `grid-auto-flow: dense` lets the wide frames span two columns without
+    leaving holes where a portrait would not fit. It reorders visually but
+    not in the DOM, which is fine here — the reading order is the collection
+    order either way, and nothing in a gallery depends on sequence.
+  -->
+  <section class="look" id="lookbook" aria-labelledby="look-h">
+    <div class="shell look-head">
+      <p class="label">The lookbook</p>
+      <h2 id="look-h">Every frame</h2>
+      <span class="rule draw" aria-hidden="true"></span>
+      <p class="look-intro">
+        The 2026 collections as photographed &mdash; on the body, on the stand,
+        and together.
+      </p>
+    </div>
+
+    <ul class="look-grid">
+      {LOOKBOOK.map((plate) => (
+        <li class={plate.wide ? "look-cell look-wide" : "look-cell"}>
+          <figure>
+            <div class="look-frame">
+              <Photo
+                src={plate.src}
+                alt={plate.alt}
+                sizes={plate.wide
+                  ? "(max-width: 700px) 94vw, (max-width: 1200px) 62vw, 700px"
+                  : "(max-width: 700px) 94vw, (max-width: 1200px) 31vw, 350px"}
+              />
+            </div>
+            <figcaption>{plate.collection}</figcaption>
+          </figure>
+        </li>
+      ))}
+    </ul>
   </section>
 
   <!-- ============================== art =============================== -->
@@ -482,42 +549,72 @@ const event = {
 
   /* ============================== manifesto ============================= */
   .manifesto { padding-block: var(--sp-9) var(--sp-8); background: var(--ink); }
+  /*
+    `align-items: start`, never center.
+
+    Centring was the original fault: with a text column twice the height of
+    the picture, the leftover space split evenly above and below it and the
+    photograph appeared to float. Aligned to the top, both columns begin on
+    the same line and any surplus falls at the bottom, where it reads as a
+    margin rather than a hole.
+  */
   .manifesto-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
-    gap: var(--sp-9);
-    align-items: center;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--sp-8);
+    align-items: start;
   }
-  .manifesto-copy { display: flex; flex-direction: column; gap: var(--sp-4); }
-  .manifesto h2 { font-size: var(--step-5); max-width: 13ch; color: var(--cream); }
+  .manifesto-copy {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--sp-6);
+    /* Hold the text column to the height of the plates beside it, so the
+       techniques line lands level with the bottom of the second frame. */
+    min-height: 100%;
+  }
+  .manifesto-copy .stagger { display: flex; flex-direction: column; gap: var(--sp-4); }
+  .manifesto h2 { font-size: var(--step-5); max-width: 15ch; color: var(--cream); }
   .lead {
     font-family: var(--display);
     font-style: italic;
     font-size: var(--step-3);
     line-height: 1.38;
     color: var(--cream);
-    max-width: 30ch;
+    max-width: 32ch;
+    padding-bottom: var(--sp-2);
   }
-  .prose { font-size: var(--step-0); color: var(--ash); max-width: var(--measure); }
-  .manifesto-plate { margin: 0; }
 
-  /* A photograph mounted like a plate: a hairline, and a ground a shade off
-     the page so the edge shows without a border announcing it. */
-  .plate-frame {
-    overflow: hidden;
-    background: var(--ink-lift);
-    outline: 1px solid var(--hair);
-    outline-offset: -1px;
+  /*
+    The second frame is inset and offset, so the pair reads as a composition
+    rather than a column of two pictures. Measured against Toteme and
+    Lemaire: both compose in twos and threes at roughly half the viewport
+    width, and neither ever runs an editorial photograph edge to edge.
+  */
+  .manifesto-plates { display: flex; flex-direction: column; }
+  .manifesto-plates figure { margin: 0; }
+  .plate-b {
+    width: 62%;
+    margin-left: auto;
+    margin-top: calc(-1 * var(--sp-7));
+    position: relative;
+    z-index: 2;
+    padding: 8px;
+    background: var(--ink);
   }
-  .plate-frame > div { margin-block: -8%; }
+
+  .prose { font-size: var(--step-0); color: var(--ash); max-width: var(--measure); }
+
+  /* Frames themselves are defined once in base.css so the oversize and the
+     drift stay in step. Only the ratios are per-section. */
+  .plate-frame { aspect-ratio: 3 / 2; }
+  .plate-b .plate-frame { aspect-ratio: 2 / 3; }
 
   .techniques {
     display: flex;
     flex-wrap: wrap;
+    align-content: flex-start;
     gap: var(--sp-3) var(--sp-6);
-    margin-top: var(--sp-8);
-    padding-top: var(--sp-5);
-    border-top: 1px solid var(--hair);
   }
   .techniques li {
     font-size: var(--step--2);
@@ -549,8 +646,10 @@ const event = {
 
     .manifesto { padding-block: var(--sp-8) var(--sp-7); }
     .manifesto-grid { grid-template-columns: minmax(0, 1fr); gap: var(--sp-6); }
-    .manifesto h2 { font-size: var(--step-4); max-width: 16ch; }
-    .techniques { margin-top: var(--sp-6); }
+    .manifesto-copy { min-height: 0; }
+    .manifesto h2 { font-size: var(--step-4); max-width: 17ch; }
+    .lead { padding-bottom: 0; }
+    .plate-b { width: 68%; margin-top: calc(-1 * var(--sp-6)); }
   }
 
   /* ============================= collections ============================ */
@@ -583,13 +682,7 @@ const event = {
     long as it takes to read about it.
   */
   .coll-sticky { position: sticky; top: 100px; }
-  .coll-frame {
-    overflow: hidden;
-    background: var(--ink-lift);
-    outline: 1px solid var(--hair);
-    outline-offset: -1px;
-  }
-  .coll-frame > div { margin-block: -6%; }
+  .coll-frame { aspect-ratio: 4 / 5; }
 
   .coll-inset {
     width: 46%;
@@ -655,6 +748,62 @@ const event = {
     .coll[data-side="right"] .coll-text { order: initial; }
     .coll-inset { width: 54%; margin-top: calc(-1 * var(--sp-6)); }
     .coll-text { padding-top: 0; }
+  }
+
+  /* =============================== lookbook ============================= */
+  .look { background: var(--ink); padding-block: var(--sp-8) var(--sp-9); }
+  .look-head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-4);
+    align-items: flex-start;
+    padding-bottom: var(--sp-7);
+  }
+  .look-head h2 { font-size: var(--step-5); color: var(--cream); }
+  .look-intro { font-size: var(--step-1); color: var(--ash); max-width: 46ch; }
+
+  .look-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-flow: dense;
+    gap: var(--sp-4);
+    width: min(1600px, 94vw);
+    margin-inline: auto;
+  }
+  .look-cell { min-width: 0; }
+  /* A landscape frame earns two columns; a portrait would leave a hole. */
+  .look-wide { grid-column: span 2; }
+
+  .look-cell figure { margin: 0; display: flex; flex-direction: column; gap: var(--sp-2); }
+
+  /*
+    A fixed ratio per cell, so the grid holds its rhythm whatever each file's
+    own proportions are. Portrait cells are 4:5, wide cells 3:2 — which is
+    what the landscape frames were shot at, so they crop almost not at all.
+  */
+  .look-frame :global(img) { aspect-ratio: 4 / 5; object-fit: cover; }
+  .look-wide .look-frame :global(img) { aspect-ratio: 3 / 2; }
+
+  .look-cell figcaption {
+    font-size: var(--step--2);
+    text-transform: uppercase;
+    letter-spacing: var(--track-label);
+    /* --ash, not --ash-dim. The token file says --ash-dim is for hairlines
+       and never for type, and it is right: 4.28:1 on ink, under the 4.5 that
+       small text needs. This is the same colour at 6.7:1. */
+    color: var(--ash);
+  }
+
+  @media (max-width: 1200px) {
+    .look-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 700px) {
+    .look { padding-block: var(--sp-7) var(--sp-8); }
+    .look-head { padding-bottom: var(--sp-6); }
+    .look-head h2 { font-size: var(--step-4); }
+    .look-grid { grid-template-columns: minmax(0, 1fr); gap: var(--sp-5); }
+    /* One column: spanning two would be a no-op that breaks the flow. */
+    .look-wide { grid-column: auto; }
   }
 
   /* ================================= art ================================ */

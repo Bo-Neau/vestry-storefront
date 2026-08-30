@@ -256,6 +256,67 @@ export const HOUSE = {
   ],
 } as const;
 
+/* ---------------------------------------------------------------
+   The lookbook.
+
+   Every photograph from the shoot, in the order the collections run.
+   The page proper shows twelve; a buyer at a stand wants to see the
+   whole range, and the other fifteen were sitting unused.
+
+   `wide` marks a landscape frame that should span two columns. It is
+   set here rather than derived from the file, because the decision is
+   about composition — a group shot earns the width, a single figure
+   photographed wide does not always.
+   --------------------------------------------------------------- */
+
+export interface Plate {
+  readonly src: string;
+  readonly alt: string;
+  readonly collection: string;
+  readonly wide?: boolean;
+}
+
+export const LOOKBOOK: readonly Plate[] = [
+  // The Hope Collection — painted cloth, on the stand and on the body.
+  { src: "hope-capelet-column", alt: "The painted capelet worn over a black column gown", collection: "The Hope Collection" },
+  { src: "hope-capelet-detail", alt: "Detail of the hand-painted drip motif and beading across the shoulder", collection: "The Hope Collection" },
+  { src: "hope-corset-worn", alt: "The painted corset bodice, worn", collection: "The Hope Collection" },
+  { src: "hope-corset-mannequin", alt: "The painted corset bodice on the stand, showing the petal peplum", collection: "The Hope Collection" },
+  { src: "hope-column-gown", alt: "The column gown on the stand, hand-finished at the hem", collection: "The Hope Collection" },
+  { src: "manifesto-paintings", alt: "Three looks from The Hope Collection in front of the paintings they came from", collection: "The Hope Collection", wide: true },
+
+  // New Traditional — patchwork, shot around the globe.
+  { src: "traditional-three", alt: "Three patchwork looks from New Traditional", collection: "New Traditional", wide: true },
+  { src: "traditional-three-alt", alt: "New Traditional, photographed from the front", collection: "New Traditional", wide: true },
+  { src: "traditional-jacket", alt: "A blue patchwork jacket from New Traditional, worn open", collection: "New Traditional" },
+  { src: "traditional-seated", alt: "A patchwork coat and scarf from New Traditional, seated", collection: "New Traditional", wide: true },
+
+  // Crimson Drive — black and red.
+  { src: "crimson-painting", alt: "Crimson Drive photographed against the red-line painting", collection: "Crimson Drive" },
+  { src: "crimson-three", alt: "Three looks from Crimson Drive in black with crimson detailing", collection: "Crimson Drive" },
+  { src: "crimson-mens", alt: "The men's look from Crimson Drive, with a crimson panel", collection: "Crimson Drive" },
+
+  // Myanmar's Essence — denim, at the car and the pool table.
+  { src: "hero-denim-car", alt: "White denim from Myanmar's Essence, beside a vintage car", collection: "Myanmar's Essence", wide: true },
+  { src: "essence-pair-car", alt: "Two white denim looks from Myanmar's Essence at the car", collection: "Myanmar's Essence", wide: true },
+  { src: "essence-jacket-car", alt: "The white denim jacket, showing the melting paintwork at the shoulder", collection: "Myanmar's Essence", wide: true },
+  { src: "essence-coat-open", alt: "The white denim coat, worn open", collection: "Myanmar's Essence", wide: true },
+  { src: "essence-coat-car", alt: "The white denim coat in full, beside the car", collection: "Myanmar's Essence" },
+  { src: "essence-pool-table", alt: "Two indigo denim looks from Myanmar's Essence at a pool table", collection: "Myanmar's Essence" },
+  { src: "essence-peplum-steps", alt: "The printed peplum with white trousers, on the steps", collection: "Myanmar's Essence" },
+  { src: "essence-peplum-room", alt: "The printed peplum, photographed indoors", collection: "Myanmar's Essence" },
+
+  // Inner Faces — the limited edition, front, side and back.
+  { src: "inner-faces-front", alt: "The Inner Faces jacket, front, with stitched face line art at the chest", collection: "Inner Faces" },
+  { src: "inner-faces-angle", alt: "The Inner Faces jacket from the side, showing the layered sleeve", collection: "Inner Faces" },
+  { src: "inner-faces-back", alt: "The Inner Faces jacket from behind", collection: "Inner Faces" },
+
+  // The house together.
+  { src: "lace-gown", alt: "A lace gown embroidered in coral thread", collection: "The house" },
+  { src: "lineup", alt: "The 2026 collections shown together on the stand", collection: "The house", wide: true },
+  { src: "lineup-alt", alt: "The 2026 collections, a second view", collection: "The house", wide: true },
+];
+
 export const VISIT = {
   eyebrow: "Find Us",
   heading: "Meet Manussa at Texworld Paris",

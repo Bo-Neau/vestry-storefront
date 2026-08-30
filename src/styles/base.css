@@ -141,10 +141,10 @@ a:hover { text-decoration: underline; text-underline-offset: 0.3em; text-decorat
       travel, so no edge is ever exposed.
     */
     @keyframes drift-slow    { from { transform: translate3d(0, -10%, 0); } to { transform: translate3d(0, 10%, 0);  } }
-    @keyframes drift-mid     { from { transform: translate3d(0, -18%, 0); } to { transform: translate3d(0, 18%, 0);  } }
+    @keyframes drift-mid     { from { transform: translate3d(0, -10%, 0); } to { transform: translate3d(0, 10%, 0);  } }
     /* Against the grain. Put this on something in front of a drifting layer
        and the two separate — the cheapest real depth cue there is. */
-    @keyframes drift-counter { from { transform: translate3d(0, 14%, 0);  } to { transform: translate3d(0, -14%, 0); } }
+    @keyframes drift-counter { from { transform: translate3d(0, 10%, 0);  } to { transform: translate3d(0, -10%, 0); } }
     /* The drip falls further and faster than anything else, which is the
        whole point of it. */
     @keyframes drift-fall    { from { transform: translate3d(0, -38%, 0); } to { transform: translate3d(0, 30%, 0);  } }
@@ -233,10 +233,12 @@ a:hover { text-decoration: underline; text-underline-offset: 0.3em; text-decorat
 
 @media (hover: hover) and (pointer: fine) {
   /* Photographs inside a mounted plate. */
-  .plate-frame :global(img),
-  .coll-frame :global(img),
+  /* No `:global()` here either — same trap, same silent failure: the
+     invalid selector took the valid ones down with it, so this
+     transition never applied at all. */
   .plate-frame img,
-  .coll-frame img {
+  .coll-frame img,
+  .look-frame img {
     /* Transform only. `filter: brightness()` was in here too and it is the
        one property on this page the compositor cannot handle — repainting a
        2400px photograph on every hover frame, while the scroll animation is
@@ -270,4 +272,70 @@ a:hover { text-decoration: underline; text-underline-offset: 0.3em; text-decorat
 @media (prefers-reduced-motion: reduce) {
   /* Keep the affordance, drop the movement. */
   .link-draw::after { transition: none; }
+}
+
+/* ---------------------------------------------------------------
+   Framed plates
+
+   A photograph inside a clipping frame, with the layer oversized so
+   the parallax never exposes an edge.
+
+   This is set with `inset`, not negative margins, and the reason is a
+   trap worth naming: percentage margins resolve against the
+   containing block's WIDTH, while a percentage translate resolves
+   against the element's own HEIGHT. On a landscape frame those are
+   very different numbers — a -8% margin gave 43px of overhang while
+   an 18% drift travelled 65px, so 22px of empty ink appeared at the
+   end of the travel.
+
+   `inset: -15% 0` is measured against height, the same axis the
+   transform moves on, so the two are directly comparable: 15% of
+   overhang against 10% of travel, on either side.
+   --------------------------------------------------------------- */
+
+.plate-frame,
+.coll-frame,
+.look-frame {
+  position: relative;
+  overflow: hidden;
+  background: var(--ink-lift);
+  outline: 1px solid var(--hair);
+  outline-offset: -1px;
+}
+
+/*
+  -18% each side against a 10% drift.
+
+  The two are not directly comparable without care: the inset is a share of
+  the FRAME height, the translate a share of the LAYER height, and the layer
+  is 136% of the frame. So the real numbers are 18% of overhang against
+  13.6% of travel — a third of a margin, which survives a browser rounding
+  a subpixel the wrong way. At -15% against a 12% drift the travel exceeded
+  the overhang by two pixels and a sliver of empty ink showed at the end of
+  the range.
+*/
+.plate-frame > div,
+.coll-frame > div {
+  position: absolute;
+  inset: -18% 0;
+}
+
+/*
+  Plain descendant selectors, no `:global()`.
+
+  `:global()` is an Astro construct for scoped component styles. In a plain
+  stylesheet it is not valid CSS — and because one invalid selector in a
+  comma-separated list invalidates the WHOLE list, including it here silently
+  discarded the valid selectors alongside it. The result: object-fit never
+  applied, the image kept its own 3:2 height inside a taller layer, and a
+  129px band of empty ink sat under every framed photograph.
+*/
+.plate-frame > div picture,
+.plate-frame > div img,
+.coll-frame > div picture,
+.coll-frame > div img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
