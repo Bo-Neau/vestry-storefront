@@ -279,7 +279,7 @@ const event = {
           {ART.names.map((n) => <li>{n}</li>)}
         </ul>
         <div class="art-team-block">
-          <p class="label">{ART.team.label}</p>
+          <p class="label art-team-label">{ART.team.label}</p>
           <p class="art-team">
             {ART.team.members.map((m) => <span>{m}</span>)}
           </p>
@@ -904,6 +904,27 @@ const event = {
     margin-top: var(--sp-5);
   }
 
+  /*
+    One typeface for the whole section.
+
+    The label and the six names were set in Jost, borrowing the credit
+    vocabulary used under each collection. Directly beneath two names in
+    Cormorant that read as a mismatch rather than as a hierarchy — the same
+    kind of information in two different voices, a few pixels apart. These
+    are all people's names in a section about the people; they belong in the
+    same face, separated by size and colour instead.
+
+    Cormorant is a display cut and runs thin at 300. The label is small
+    uppercase, which is where thin strokes fail first, so it takes 500 —
+    both faces here are variable (300–700), so that is a real weight and not
+    a synthesised one.
+  */
+  .art-team-label {
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: var(--step--1);
+  }
+
   .art-team {
     /*
       A wrapping flex row, not a joined string. As one string it broke
@@ -914,21 +935,25 @@ const event = {
     */
     display: flex;
     flex-wrap: wrap;
-    column-gap: 0.55em;
-    row-gap: 0.45em;
+    column-gap: 0.5em;
+    row-gap: 0.3em;
     margin: 0;
-    font-family: var(--body);
-    font-size: var(--step--2);
-    line-height: 1.6;
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    color: var(--ash);
-    max-width: 38ch;
+    font-family: var(--display);
+    font-weight: var(--display-weight);
+    font-size: var(--step-1);
+    line-height: 1.5;
+    letter-spacing: 0.01em;
+    color: var(--cream);
+    max-width: 34ch;
   }
   .art-team span { white-space: nowrap; }
-  /* --ash, the same as the names. --ash-dim is 4.28:1 and the token file
-     says it is for hairlines and never for a glyph. */
-  .art-team span:not(:last-child)::after { content: "·"; padding-left: 0.55em; }
+  /* --ash, not --ash-dim: the token file says --ash-dim is for hairlines and
+     never for a glyph, and a separator is still a glyph. */
+  .art-team span:not(:last-child)::after {
+    content: "·";
+    padding-left: 0.5em;
+    color: var(--ash);
+  }
 
   /*
     Stacked, not side by side.
