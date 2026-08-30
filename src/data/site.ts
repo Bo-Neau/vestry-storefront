@@ -248,7 +248,7 @@ export const ART = {
   */
   names: ["Zaw Win Pe", "Win Min Than"],
   team: {
-    label: "and the Manussa design team",
+    label: "Manussa Design Team",
     members: [
       "Katherine Paing",
       "Pan Ywal Oo",

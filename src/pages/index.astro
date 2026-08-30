@@ -277,13 +277,13 @@ const event = {
         <p class="art-body">{ART.body}</p>
         <ul class="art-names">
           {ART.names.map((n) => <li>{n}</li>)}
-          <li>
-            {ART.team.label}
-            <span class="art-team">
-              {ART.team.members.map((m) => <span>{m}</span>)}
-            </span>
-          </li>
         </ul>
+        <div class="art-team-block">
+          <p class="label">{ART.team.label}</p>
+          <p class="art-team">
+            {ART.team.members.map((m) => <span>{m}</span>)}
+          </p>
+        </div>
       </div>
       <div class="art-plates">
         {ART.images.map((img, n) => (
@@ -889,6 +889,21 @@ const event = {
     tracked, --ash. Middots rather than a list, so it wraps as a line of
     type instead of stacking.
   */
+  /*
+    The design team is labelled, not introduced.
+
+    It read "and the Manussa design team" as a third entry in the list of
+    artists, at display size — a sentence fragment in 2rem Cormorant sitting
+    beside two proper names. The names are the list; this is a heading over a
+    credit, so it uses the gold label the rest of the page puts over a group.
+  */
+  .art-team-block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    margin-top: var(--sp-5);
+  }
+
   .art-team {
     /*
       A wrapping flex row, not a joined string. As one string it broke
@@ -901,7 +916,7 @@ const event = {
     flex-wrap: wrap;
     column-gap: 0.55em;
     row-gap: 0.45em;
-    margin-top: var(--sp-3);
+    margin: 0;
     font-family: var(--body);
     font-size: var(--step--2);
     line-height: 1.6;
