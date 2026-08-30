@@ -1,75 +1,104 @@
-MANUSSA — how to put this site on GoDaddy
-=========================================
+MANUSSA — putting the site on GoDaddy
+=====================================
 
-Everything in this zip is the finished website. There is no build step, no
-database and nothing to install: it is HTML, CSS, images and one small
-JavaScript file. Any host that serves files will serve it.
+Everything here is the finished website: HTML, images, two fonts and one
+small JavaScript file. No build step, no database, nothing to install.
 
-WHAT TO DO
-----------
+STEP 0 — CHECK YOU HAVE THE RIGHT PRODUCT
+-----------------------------------------
 
-1. Log in to GoDaddy → My Products → your hosting plan → Manage → cPanel.
+On the GoDaddy Products page, look at the section headings:
 
-2. Open File Manager and go into  public_html
+  "Web Hosting"  with a cPanel Admin button   -> correct, continue below
+  "Websites + Marketing" / "Website Builder"  -> STOP. This product cannot
+                                                 host uploaded HTML at all.
+                                                 It only runs GoDaddy's own
+                                                 drag-and-drop pages.
+  only "Domains"                              -> you own the name but have
+                                                 no hosting to upload to.
 
-3. If there is a default GoDaddy placeholder page in there — usually
-   index.html, default.html or a "coming soon" folder — delete it first.
-   Otherwise the old page keeps winning over this one.
+If it is Website Builder or domain-only, you need to add a Web Hosting
+(Linux/cPanel) plan before any of this works.
 
-4. Upload manussa-site.zip into public_html, then right-click it →
-   Extract. Delete the zip afterwards.
+STEP 1 — UPLOAD
+---------------
 
-5. IMPORTANT — turn on hidden files so you can confirm .htaccess arrived:
-   File Manager → Settings (top right) → tick "Show Hidden Files (dotfiles)".
-   You should see a .htaccess sitting next to index.html.
+1. Products -> Web Hosting -> Manage -> cPanel Admin
+2. File Manager -> open  public_html
+3. DELETE GoDaddy's placeholder first. It is usually index.html or a
+   "coming soon" folder. If you leave it, it keeps winning over this site.
+4. Upload manussa-site.zip, then right-click it -> Extract.
+5. Delete the zip once it has extracted.
 
-6. Visit the domain. That is it.
+STEP 2 — CONFIRM .htaccess ARRIVED
+-----------------------------------
+
+It is a hidden file and File Manager hides it by default.
+
+   File Manager -> Settings (top right) -> tick "Show Hidden Files (dotfiles)"
+
+You should now see .htaccess next to index.html. Without it the site still
+works; it just loses the security headers, the caching rules, and the AVIF
+image type — which makes every photograph fall back to a much larger JPEG.
 
 WHAT SHOULD BE IN public_html WHEN YOU ARE DONE
 -----------------------------------------------
 
-    index.html          the site
-    404.html            shown for a wrong address
-    robots.txt          for search engines
-    sitemap.xml         for search engines
-    .htaccess           hidden — headers, caching, compression
-    _assets/            every image, the stylesheet, the script
-    fonts/              the two typefaces, self-hosted
+    index.html            the site
+    404.html              shown for a wrong address
+    robots.txt            for search engines
+    sitemap.xml           for search engines
+    .htaccess             hidden - headers, caching, compression
+    _assets/              every image, the stylesheet, the script
+    fonts/                the two typefaces, self-hosted
     favicon.png
     apple-touch-icon.png
 
-If _assets or fonts are missing, the page will load as unstyled text. That
-means the extract did not finish — re-extract rather than re-uploading.
+If _assets or fonts are missing the page loads as unstyled text. That means
+the extract did not finish — re-extract rather than re-uploading.
+
+IF THE UPLOAD STALLS
+--------------------
+
+The zip is about 64MB, which browser uploads sometimes cannot finish. FTP is
+steadier:
+
+  cPanel -> FTP Accounts gives you the server, username and port.
+  FileZilla (free) -> connect -> drag the extracted files into public_html.
+
+THE DOMAIN BAKED INTO THIS BUILD
+--------------------------------
+
+This build is for:   https://manussa.com
+
+Four things in a static site have to be absolute and cannot follow DNS: the
+canonical tag, the Open Graph URL that link previews use, the sitemap, and
+the structured data. The site WORKS on any domain — those four would just
+name the wrong one, which only matters to search engines and link previews.
+
+Only four files carry it. Everything else is identical whatever the domain.
+
+  Going on auracoreofficial.com instead?
+     Extract alt-domain-auracoreofficial.zip and copy its four files over
+     the top of the ones in public_html. Nothing else changes.
+
+  Going somewhere else entirely?
+     Ask, and it is a thirty-second rebuild. Or run it yourself:
+        SITE_URL=https://your-domain.com npm run build
+     then upload the contents of dist/.
 
 HTTPS
 -----
 
-GoDaddy issues the certificate; it can take a few hours after the domain
-points at the hosting. Once https:// works, open .htaccess and uncomment the
-mod_rewrite block at the top to force it. Do that AFTER the certificate is
-live, not before — forcing HTTPS without one makes the site unreachable.
+GoDaddy issues the certificate once the domain points at the hosting; it can
+take a few hours. When https:// works, open .htaccess and uncomment the
+mod_rewrite block at the top to force it.
 
-ABOUT THE ADDRESS BAKED INTO THIS BUILD
----------------------------------------
-
-This build was made for:
-
-    https://auracoreofficial.com
-
-That address is written into the page in four places that have to be
-absolute: the canonical tag, the Open Graph URL used by link previews, the
-sitemap, and the structured data. They do not follow DNS — the site will
-work perfectly on any domain, but those four will point at the wrong one.
-
-If it is going anywhere else, say so and it takes thirty seconds to rebuild.
-Or do it yourself:
-
-    SITE_URL=https://your-domain.com npm run build
-
-and upload the contents of dist/ again.
+Do that AFTER the certificate is live, never before — forcing HTTPS without
+one makes the site unreachable.
 
 UPDATING LATER
 --------------
 
-Replace the files. Keep .htaccess. Nothing else is stateful, so there is
-never anything to migrate.
+Replace the files, keep .htaccess. Nothing is stateful, so there is never
+anything to migrate.
