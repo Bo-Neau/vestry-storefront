@@ -8,7 +8,8 @@
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { EASE, SUBPIXEL, step, arrived, clampTo, trajectory, framesToCover } from "../src/scripts/ease.ts";
+import { EASE, SUBPIXEL, FRAME_MS, step, arrived, clampTo, trajectory,
+         framesToCover, easeForFrame, wheelPixels } from "../src/scripts/ease.ts";
 
 test("approach is monotonic — it never overshoots or reverses", () => {
   const path = trajectory(0, 1000);
@@ -28,7 +29,7 @@ test("it behaves the same scrolling back up", () => {
   assert.equal(path.at(-1), 0);
 });
 
-test("a flick covers most of its distance in about half a second", () => {
+test("a flick covers most of its distance in about a third of a second", () => {
   /*
     The perceived length of the gesture is how long it takes to get MOST of
     the way there, not the frame at which motion formally stops. Exponential
@@ -36,21 +37,64 @@ test("a flick covers most of its distance in about half a second", () => {
     a pixel a frame — invisible, and the reason the first version of this
     test asserted the wrong thing and failed.
 
-    ~500ms to 90% is the slow, weighted feel this page wants. Past about
-    700ms it stops reading as weight and starts reading as lag.
+    Around 350ms to 90% is weighted but obedient. Past about 600ms it stops
+    reading as weight and starts reading as lag — which is what the first
+    version of this shipped at, and it is what "not smooth at all" felt like.
   */
   const frames = framesToCover(0.9);
-  const ms = Math.round(frames * 16.7);
-  assert.ok(ms >= 300, `too abrupt to read as eased: ${ms}ms to 90%`);
-  assert.ok(ms <= 700, `too slow to feel responsive: ${ms}ms to 90%`);
+  const ms = Math.round(frames * FRAME_MS);
+  assert.ok(ms >= 220, `too abrupt to read as eased: ${ms}ms to 90%`);
+  assert.ok(ms <= 600, `too slow to feel responsive: ${ms}ms to 90%`);
 });
 
 test("it stops as soon as a frame could not move a visible pixel", () => {
   // Guards the fix for the long tail: chasing a fixed 0.5px gap took ~100
   // frames, most of them drawing nothing anyone could see.
   const frames = trajectory(0, 1200).length;
-  assert.ok(frames <= 75, `still animating a tail nobody can see: ${frames} frames`);
-  assert.ok(frames >= 30, `stopping before the motion is actually finished: ${frames}`);
+  assert.ok(frames <= 60, `still animating a tail nobody can see: ${frames} frames`);
+  assert.ok(frames >= 20, `stopping before the motion is actually finished: ${frames}`);
+});
+
+test("the curve is the same on a 60Hz and a 120Hz display", () => {
+  /*
+    A fixed per-frame ease runs at whatever rate the display does, so the
+    same flick settled twice as fast on a ProMotion laptop as on an external
+    monitor. Compounding by elapsed time makes it a function of seconds.
+
+    Simulate both refresh rates over the same 300ms and compare where they
+    got to.
+  */
+  const distance = 1000;
+  const run = (frameMs) => {
+    let current = 0;
+    for (let t = 0; t < 300; t += frameMs) {
+      current = step(current, distance, easeForFrame(frameMs));
+    }
+    return current;
+  };
+  const at60 = run(1000 / 60);
+  const at120 = run(1000 / 120);
+  const drift = Math.abs(at60 - at120) / distance;
+  assert.ok(drift < 0.02,
+    `refresh rate changes the curve by ${(drift * 100).toFixed(1)}% — ` +
+    `60Hz reached ${Math.round(at60)}, 120Hz reached ${Math.round(at120)}`);
+});
+
+test("a stalled frame cannot resolve as an instant jump", () => {
+  // A backgrounded tab can hand back a delta of seconds. Uncapped, that
+  // compounds to ~1 and the page teleports the moment you return to it.
+  const huge = easeForFrame(5000);
+  assert.ok(huge < 0.6, `a 5s frame gap collapses the easing: factor ${huge.toFixed(3)}`);
+});
+
+test("wheel deltas are converted to pixels whatever the device reports", () => {
+  // deltaY is only pixels when deltaMode is 0. Firefox reports lines, and
+  // taking the raw number moved the page three pixels instead of a hundred.
+  assert.equal(wheelPixels(100, 0), 100, "pixel mode passes through");
+  assert.ok(wheelPixels(3, 1) > 90, `line mode under-scrolls: ${wheelPixels(3, 1)}`);
+  assert.equal(wheelPixels(1, 2, 900), 900, "page mode is a viewport");
+  // Direction must survive the conversion.
+  assert.ok(wheelPixels(-3, 1) < 0, "scrolling up must stay negative");
 });
 
 test("the first frame moves a visible but small part of the way", () => {

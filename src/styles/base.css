@@ -27,7 +27,15 @@ body {
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;   /* parallax layers translate; never let that scroll */
+  /*
+    `clip`, not `hidden`.
+
+    Both stop the parallax layers from producing a sideways scrollbar, but
+    `overflow: hidden` makes this element a scroll container — which changes
+    what `position: sticky` sticks to and what the scroll timelines measure
+    against. `clip` cuts the overflow without creating one.
+  */
+  overflow-x: clip;
 }
 
 h1, h2, h3, h4 {
@@ -149,7 +157,15 @@ a:hover { text-decoration: underline; text-underline-offset: 0.3em; text-decorat
       animation-range: cover 0% cover 100%;
       animation-fill-mode: both;
       animation-timing-function: linear;
-      will-change: transform;
+      /*
+        No `will-change` here.
+
+        It was on every drifting layer, which promoted sixteen large
+        photographs to their own GPU layers permanently — enough memory
+        pressure on a laptop to cost the frames it was meant to save. A
+        scroll-driven transform is composited anyway; the hint bought
+        nothing and had a real price.
+      */
     }
     .parallax-slow    { animation-name: drift-slow; }
     .parallax-mid     { animation-name: drift-mid; }
@@ -221,8 +237,11 @@ a:hover { text-decoration: underline; text-underline-offset: 0.3em; text-decorat
   .coll-frame :global(img),
   .plate-frame img,
   .coll-frame img {
-    transition: transform 900ms cubic-bezier(0.22, 0.61, 0.36, 1),
-                filter 900ms ease;
+    /* Transform only. `filter: brightness()` was in here too and it is the
+       one property on this page the compositor cannot handle — repainting a
+       2400px photograph on every hover frame, while the scroll animation is
+       already running. The lift alone reads the same. */
+    transition: transform 900ms cubic-bezier(0.22, 0.61, 0.36, 1);
   }
 
   /* The gold underline that draws under a text link. */
