@@ -1,182 +1,146 @@
 /* ---------------------------------------------------------------
-   Typefaces, self-hosted.
+   Manussa design system.
 
-   Taken from the brand booklet: Lora for running text, and a
-   high-contrast Didone for display in place of The Seasons, which the
-   booklet uses but is licensed for personal use only and cannot legally
-   be served on a public site. Bodoni Moda carries the same sharp
-   thick/thin contrast; swap it here if The Seasons is ever licensed.
+   Palette and typefaces are specified in the client's content brief:
+   ink #141210, cream #f7f4ee, gold #a9843f, with Cormorant Garamond
+   for display and Jost for body.
 
-   Served from our own domain rather than a font CDN: it keeps the
-   content security policy closed to third parties, removes a DNS lookup
-   and a connection from the critical path, and means no request for a
-   font leaks a visitor's address to another company.
-
-   font-display: swap so text is readable immediately in the fallback
-   and reflows once the face arrives — never invisible while waiting.
+   The fonts are self-hosted rather than linked from Google. The brief
+   named Google Fonts, and the visual result is identical, but this
+   site's first audience is buyers at a trade stand on venue wifi —
+   a third-party request on the critical path is a failure point worth
+   removing, and it takes the site out of scope for cookie-consent
+   questions about Google at the same time.
    --------------------------------------------------------------- */
 
 @font-face {
-  font-family: "Bodoni Moda";
-  font-style: normal;
-  font-weight: 400 700;
-  font-display: swap;
-  src: url("/fonts/BodoniModa-normal-400_700-latin.woff2") format("woff2");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
-                 U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC,
-                 U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-@font-face {
-  font-family: "Bodoni Moda";
-  font-style: normal;
-  font-weight: 400 700;
-  font-display: swap;
-  src: url("/fonts/BodoniModa-normal-400_700-latin-ext.woff2") format("woff2");
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
-                 U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF,
-                 U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0,
-                 U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-@font-face {
-  font-family: "Lora";
-  font-style: normal;
-  font-weight: 400 600;
-  font-display: swap;
-  src: url("/fonts/Lora-normal-400_600-latin.woff2") format("woff2");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
-                 U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC,
-                 U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-@font-face {
-  font-family: "Lora";
-  font-style: normal;
-  font-weight: 400 600;
-  font-display: swap;
-  src: url("/fonts/Lora-normal-400_600-latin-ext.woff2") format("woff2");
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
-                 U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF,
-                 U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0,
-                 U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-@font-face {
-  font-family: "Lora";
+  font-family: "Cormorant Garamond";
   font-style: italic;
-  font-weight: 400 500;
+  font-weight: 300 700;
   font-display: swap;
-  src: url("/fonts/Lora-italic-400_500-latin.woff2") format("woff2");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
-                 U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC,
-                 U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  src: url("/fonts/CormorantGaramond-italic-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
+
 @font-face {
-  font-family: "Lora";
+  font-family: "Cormorant Garamond";
   font-style: italic;
-  font-weight: 400 500;
+  font-weight: 300 700;
   font-display: swap;
-  src: url("/fonts/Lora-italic-400_500-latin-ext.woff2") format("woff2");
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
-                 U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF,
-                 U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0,
-                 U+2113, U+2C60-2C7F, U+A720-A7FF;
+  src: url("/fonts/CormorantGaramond-italic-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
-/* ---------------------------------------------------------------
-   Design tokens — the only file that defines colour and type.
+@font-face {
+  font-family: "Cormorant Garamond";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("/fonts/CormorantGaramond-normal-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
 
-   Palette drawn from the collection itself: unbleached canvas and raw
-   silk grounds, a deep warm-black, and the smoke-grey marbling that
-   bleeds down from the shoulders of the painted pieces. The neutrals
-   carry a faint olive cast taken from the concrete the work is shown
-   against, so they read as chosen rather than as default grey.
+@font-face {
+  font-family: "Cormorant Garamond";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("/fonts/CormorantGaramond-normal-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
 
-   There is deliberately no colour "pop". The collection is monochrome
-   and painterly; an accent hue would fight it. What functions as the
-   accent is a cool smoke tone lifted from the artwork.
-   --------------------------------------------------------------- */
+@font-face {
+  font-family: "Jost";
+  font-style: normal;
+  font-weight: 300 600;
+  font-display: swap;
+  src: url("/fonts/Jost-normal-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Jost";
+  font-style: normal;
+  font-weight: 300 600;
+  font-display: swap;
+  src: url("/fonts/Jost-normal-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 :root {
-  /* grounds — unbleached canvas, raw silk, concrete */
-  --paper:        #EFEEE8;
-  --paper-2:      #F7F6F2;
-  --paper-3:      #E2E0D7;
+  /* --- brand palette, from the brief ------------------------------ */
+  --ink:        #141210;
+  --cream:      #F7F4EE;
+  --gold:       #A9843F;
 
-  /* ink — the black column gown, warm rather than blue-black */
-  --ink:          #14130F;
-  --ink-2:        #45433B;
-  --ink-3:        #656359;
+  /* Derived neutrals. Each is the brand ink or cream shifted, never a
+     generic grey, so nothing on the page reads as unconsidered. */
+  --ink-2:      #423C34;
+  --ink-3:      #6A6157;
+  --cream-2:    #FFFDF9;
+  --cream-3:    #EDE8DE;
+  --rule:       #DED8CC;
+  --rule-2:     #C6BEAE;
 
-  --rule:         #D9D6CB;
-  --rule-2:       #BFBCAF;
+  /* Gold at the weights text can actually use.
 
-  /* accent — cool smoke from the painted marbling */
-  --accent:       #3B4448;
-  --accent-ink:   #F7F6F2;
+     The brand gold is 3.6:1 on cream — enough for a rule, and enough for
+     large text on plain cream, but it drops to 2.84:1 on the slightly
+     darker cream-3 the collections sit on, which is under the 3:1 that
+     large text needs. So there are three:
 
-  /* semantic states, kept clearly distinct from the accent */
-  --in-stock:     #40613F;
-  --low-stock:    #7A5410;
-  --out-stock:    #666357;
-  --sale:         #7A2A22;
+       --gold        the brand value. Rules, and text on ink (5.4:1).
+       --gold-large  large text on either cream. Measured, not guessed.
+       --gold-ink    small text on cream. The eyebrows and labels.
+  */
+  --gold-large: #A47F3A;
+  --gold-ink:   #7A5E28;
 
-  /* type — display for headings, body for reading, mono for labels and data */
-  --display: "Bodoni Moda", "Didot", "Bodoni MT", Georgia, serif;
-  --body:    "Lora", Georgia, "Times New Roman", serif;
-  --mono:    ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
-  /* Kept so any stray reference still resolves to the body face. */
-  --sans:    var(--body);
+  /* Separators inside the ink announcement bar. --ink-3 is tuned for cream
+     and lands at 3.08:1 the other way round. */
+  --sep-on-ink: #857C72;
 
-  /* scale */
-  --step--1: 0.8125rem;
-  --step-0:  0.9375rem;
-  --step-1:  1.0625rem;
-  --step-2:  1.375rem;
-  --step-3:  1.875rem;
-  --step-4:  clamp(2.25rem, 5vw, 3.25rem);
+  /* --- type ------------------------------------------------------- */
+  --display: "Cormorant Garamond", "Cormorant", Georgia, "Times New Roman", serif;
+  --body:    "Jost", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
 
-  /* space */
-  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
-  --sp-5: 24px; --sp-6: 32px; --sp-7: 48px; --sp-8: 72px;
+  /* A fifth-based scale. Cormorant runs small for its point size, so
+     display steps are set larger than a sans would need. */
+  --step--2: 0.72rem;
+  --step--1: 0.84rem;
+  --step-0:  1rem;
+  --step-1:  1.2rem;
+  --step-2:  1.5rem;
+  --step-3:  2rem;
+  --step-4:  2.75rem;
+  --step-5:  clamp(2.6rem, 6vw, 4.5rem);
+  --step-6:  clamp(3.4rem, 11vw, 8rem);
 
-  --maxw: 1320px;
-  --radius: 2px;
+  /* --- space ------------------------------------------------------ */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.5rem;
+  --sp-6: 2.25rem;
+  --sp-7: 3.5rem;
+  --sp-8: 5.5rem;
+  --sp-9: 8rem;
+
+  --shell: 1240px;
+  --measure: 62ch;
 }
 
-/* ---------------------------------------------------------------
-   Dark: the gallery the collection was photographed in — warm
-   near-black concrete, raw silk catching a single light source.
-   Not an inversion; the warmth is kept and the smoke accent lifts
-   to a pale pewter so it still reads as part of the artwork.
-   --------------------------------------------------------------- */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --paper:      #131210;
-    --paper-2:    #1B1A17;
-    --paper-3:    #26241F;
-    --ink:        #EDEAE0;
-    --ink-2:      #ACA89B;
-    --ink-3:      #8E8B7D;
-    --rule:       #2C2A25;
-    --rule-2:     #3D3A33;
-    --accent:     #A3B0B4;
-    --accent-ink: #131210;
-    --in-stock:   #7FA37A;
-    --low-stock:  #C99C4A;
-    --out-stock:  #8E8B82;
-    --sale:       #D98A7E;
-  }
-}
-:root[data-theme="dark"] {
-  --paper:      #131210;
-  --paper-2:    #1B1A17;
-  --paper-3:    #26241F;
-  --ink:        #EDEAE0;
-  --ink-2:      #ACA89B;
-  --ink-3:      #8E8B7D;
-  --rule:       #2C2A25;
-  --rule-2:     #3D3A33;
-  --accent:     #A3B0B4;
-  --accent-ink: #131210;
-  --in-stock:   #7FA37A;
-  --low-stock:  #C99C4A;
-  --out-stock:  #8E8B82;
-  --sale:       #D98A7E;
-}
+/*
+  Single theme, deliberately.
+
+  A gallery does not repaint itself when the sun goes down. The brief
+  specifies one palette — near-black ink on warm cream with a muted
+  gold — and the photography was lit and retouched for exactly that
+  ground. Inverting it would misrepresent the garments, which is the
+  one thing this site exists to show accurately.
+
+  So there is no dark-mode block. Every colour below is stated
+  explicitly, including on <body>, so the page holds its own ground
+  whatever the viewer's system is set to.
+*/

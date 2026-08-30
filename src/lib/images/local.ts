@@ -1,41 +1,41 @@
 import type { ImageMetadata } from "astro";
 
 /**
- * Resolves a stored photograph path to a build-time-optimised image.
+ * Resolves a photograph name to a build-time-optimised image.
  *
- * The photographs used to sit in `public/`, which meant Astro shipped them
- * untouched: a 2000px original served to a 375px phone, 4.6MB on the front
- * page. Files under `src/` are processed at build instead, so the same
- * photograph can be emitted at several widths in AVIF and WebP.
+ * The content layer stores a plain stem — "hero-denim-car" — rather than an
+ * import or a path. That keeps src/data/site.ts readable as content: someone
+ * swapping a photograph edits one word, and never has to know where the file
+ * sits or what extension it carries.
  *
- * The data layer still stores a plain string (`/photography/name.jpg`) rather
- * than an import, because the catalogue is generated and a generated file full
- * of ESM imports is far harder to hand-edit than one full of paths.
+ * Files live under src/ rather than public/ because that is what lets Astro
+ * resize them. A photograph in public/ is shipped untouched at full size.
  */
 const FILES = import.meta.glob<{ default: ImageMetadata }>(
-  "../../assets/photography/*.{jpg,jpeg,png}",
+  "../../assets/photography/*.{jpg,jpeg,png,JPG,JPEG,PNG}",
   { eager: true },
 );
 
-/** `../../assets/photography/painted-capelet-cutout.jpg` -> `painted-capelet-cutout.jpg` */
-const basename = (path: string): string => path.split("/").pop() ?? path;
+/** "../../assets/photography/hero-denim-car.jpg" -> "hero-denim-car" */
+const stemOf = (path: string): string => {
+  const file = path.split("/").pop() ?? path;
+  const dot = file.lastIndexOf(".");
+  return dot === -1 ? file : file.slice(0, dot);
+};
 
-const BY_NAME = new Map<string, ImageMetadata>(
-  Object.entries(FILES).map(([path, mod]) => [basename(path), mod.default]),
+const BY_STEM = new Map<string, ImageMetadata>(
+  Object.entries(FILES).map(([path, mod]) => [stemOf(path), mod.default]),
 );
 
 /**
- * Looks up a photograph by the path stored in the data layer.
- *
- * Returns undefined rather than throwing so a mistyped filename degrades to a
- * missing picture instead of a blank page — but `assertAllResolve` below turns
- * that into a build-time failure, which is where it belongs.
+ * Looks up a photograph by name. Accepts a bare stem, a filename, or a path,
+ * so a value copied from anywhere still resolves.
  */
-export function resolvePhoto(src: string): ImageMetadata | undefined {
-  return BY_NAME.get(basename(src));
+export function resolvePhoto(name: string): ImageMetadata | undefined {
+  return BY_STEM.get(stemOf(name)) ?? BY_STEM.get(name);
 }
 
-/** Every filename the bundler found. Used by the test that guards the set. */
+/** Every photograph the bundler found, for diagnostics and tests. */
 export function knownPhotographs(): string[] {
-  return [...BY_NAME.keys()].sort();
+  return [...BY_STEM.keys()].sort();
 }

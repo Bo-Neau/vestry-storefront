@@ -1,20 +1,27 @@
 // @ts-check
 import { defineConfig } from "astro/config";
-import node from "@astrojs/node";
-import vercel from "@astrojs/vercel";
 
 /**
- * Vercel sets VERCEL=1 in its build environment, so the right adapter is
- * chosen automatically: serverless on Vercel, a standalone Node server
- * everywhere else (local `npm run build`, Docker, Railway, Render, Fly).
+ * Static output.
  *
- * Keeping both means the project is not locked to one host — swapping is a
- * one-line change, not a migration.
+ * The site is one page of fixed content with anchor navigation — nothing is
+ * personalised, nothing is fetched at request time. Building it to plain files
+ * means it can be served by GitHub Pages, Netlify, Vercel, or an S3 bucket
+ * without an adapter, and every photograph is resized once at build rather
+ * than on demand.
+ *
+ * The trade is that middleware no longer runs, so the security headers this
+ * project used to set per-response are gone. GitHub Pages cannot set headers
+ * at all; the layout therefore carries the policy it can express as a meta
+ * tag, and docs/deploy.md records what a header-capable host should add.
  */
-const onVercel = Boolean(process.env.VERCEL);
 
 /**
- * Trimmed value, or undefined when unset/blank.
+ * Trimmed value, or undefined when unset or blank.
+ *
+ * A blank env var is the failure this guards: `process.env.X ?? fallback`
+ * happily returns "" and hands an empty string to `new URL()`, which throws
+ * during the build with no indication of which variable caused it.
  * @param {string} key
  * @returns {string | undefined}
  */
@@ -26,84 +33,54 @@ function envValue(key) {
 }
 
 /**
- * Parses a candidate into an absolute origin, or undefined if unusable.
+ * Absolute origin, or undefined if the candidate is unusable.
  * @param {string | undefined} candidate
- * @param {string} source
  * @returns {string | undefined}
  */
-function toUrl(candidate, source) {
+function toUrl(candidate) {
   if (!candidate) return undefined;
-  // Host-only values (Vercel supplies these without a scheme) get https.
-  const withScheme = /^https?:\/\//i.test(candidate)
-    ? candidate
-    : `https://${candidate}`;
+  const withScheme = /^https?:\/\//i.test(candidate) ? candidate : `https://${candidate}`;
   try {
-    return new URL(withScheme).href.replace(/\/$/, "");
+    return new URL(withScheme).origin;
   } catch {
-    console.warn(
-      `[config] ${source} is not a usable URL: ${JSON.stringify(candidate)} — ignoring it.`,
-    );
     return undefined;
   }
 }
 
-function resolveSite() {
-  const resolved =
-    toUrl(envValue("SITE_URL"), "SITE_URL") ??
-    toUrl(envValue("VERCEL_PROJECT_PRODUCTION_URL"), "VERCEL_PROJECT_PRODUCTION_URL") ??
-    toUrl(envValue("VERCEL_URL"), "VERCEL_URL");
+/*
+  Canonical URLs are absolute and baked in at build time, so the deployed host
+  has to be known when the build runs. SITE_URL wins; Vercel's own variables
+  are read as a fallback so a preview deploy still self-references correctly.
+*/
+const site =
+  toUrl(envValue("SITE_URL"))
+  ?? toUrl(envValue("VERCEL_PROJECT_PRODUCTION_URL"))
+  ?? toUrl(envValue("VERCEL_URL"))
+  ?? "https://manussa.example";
 
-  if (!resolved) {
-    // Placeholder. Canonical tags and the sitemap will point at it, so set
-    // SITE_URL before a real launch — but the build succeeds either way.
-    return "https://example.com";
-  }
-  return resolved;
-}
+/*
+  GitHub Pages serves a project site from /<repo>/ rather than the domain
+  root, which breaks every absolute path on the page. Set BASE_PATH to the
+  repo name for that case and leave it unset for a custom domain or any
+  other host.
+*/
+const base = envValue("BASE_PATH");
 
 export default defineConfig({
-  /**
-   * Absolute base URL, used for canonical tags, Open Graph and the sitemap.
-   *
-   * Resolved defensively on purpose. A blank or malformed value here fails the
-   * BUILD with "Invalid URL" and no indication of which variable is at fault —
-   * which is exactly what happened when an empty SITE_URL was added in the
-   * host dashboard. `??` does not catch an empty string, so `site: ""` reached
-   * Astro and the deploy died.
-   *
-   * Now: empty and whitespace values are ignored, a missing protocol is added,
-   * anything unparseable is discarded with a warning, and there is always a
-   * valid fallback. A misconfigured variable degrades to wrong-but-working
-   * URLs rather than a failed deploy.
-   */
-  site: resolveSite(),
-
-  /**
-   * On-demand rendering.
-   *
-   * A clothing storefront shows live stock — sizes sell out, and a statically
-   * built page will happily advertise inventory that is gone. Server rendering
-   * also lets filters live in the URL as plain query params, so faceting needs
-   * no client JavaScript.
-   *
-   * This is also why GitHub Pages cannot host this project: Pages serves
-   * static files only, and cart, filters and stock would all break.
-   */
-  output: "server",
-  /*
-    On Vercel, hand image resizing to Vercel's own image optimisation rather
-    than transforming in a serverless function on every request. Astro emits
-    the originals and Vercel serves AVIF/WebP variants from its CDN, cached
-    between visitors. Locally the node adapter uses Astro's built-in sharp
-    endpoint, which is fine for one developer.
-  */
-  adapter: onVercel
-    ? vercel({ imageService: true })
-    : node({ mode: "standalone" }),
-
-  // No UI framework, no client runtime. Fashion sits at the worst Core Web
-  // Vitals pass rate in retail; the cheapest way to win is to ship no JS.
-  integrations: [],
-
-  build: { inlineStylesheets: "auto" },
+  site,
+  ...(base ? { base } : {}),
+  output: "static",
+  trailingSlash: "ignore",
+  build: {
+    // One stylesheet rather than a file per component. The page is a single
+    // document, so splitting the CSS only adds requests.
+    inlineStylesheets: "auto",
+    assets: "_assets",
+  },
+  image: {
+    // Resize at build time with sharp. No image service, no runtime
+    // transforms, nothing to configure on the host.
+    service: { entrypoint: "astro/assets/services/sharp" },
+  },
+  devToolbar: { enabled: false },
 });

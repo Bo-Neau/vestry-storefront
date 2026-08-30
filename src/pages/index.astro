@@ -1,377 +1,812 @@
 ---
 /**
- * The front of the journal.
+ * The Manussa page.
  *
- * Not a shop window and not a feed. The order is: what the house is, the
- * collections as issues, the pieces, the people who made them. Nothing on
- * this page carries a date, so nothing on it can go stale — which is the
- * whole reason for building it as a publication rather than a blog.
+ * One scrolling document with anchor navigation, as specified in the content
+ * brief. Every string comes from src/data/site.ts, which is a transcription of
+ * that brief — nothing on this page is written here.
+ *
+ * No JavaScript. The mobile menu is a <details> element, the section links are
+ * anchors, and the smooth scroll is CSS. That is not minimalism for its own
+ * sake: the first audience is buyers on trade-stand wifi, and a page that
+ * needs nothing to execute cannot fail halfway.
  */
 import Base from "../layouts/Base.astro";
 import Photo from "../components/Photo.astro";
 import JsonLd from "../components/JsonLd.astro";
-import { COLLECTIONS, designsIn } from "../data/collections.ts";
-import { DESIGNS, designByHandle } from "../data/designs.ts";
-import { CREDITED, workBy } from "../data/people.ts";
-import { leadImage } from "../data/journal.ts";
-import { BRAND, pageTitle } from "../config/brand.ts";
-import { organisationSchema, websiteSchema } from "../lib/seo/structured-data.ts";
+import lockupLight from "../assets/brand/lockup-light.png";
+import monogramDark from "../assets/brand/monogram-dark.png";
+import { Image } from "astro:assets";
+import {
+  BRAND, TEXWORLD, NAV, HERO, MANIFESTO, COLLECTIONS,
+  ART, TECHNIQUES, HOUSE, VISIT, SOCIAL, FOOTER,
+} from "../data/site.ts";
 
-const site = Astro.site ?? new URL("https://example.com");
+const site = Astro.site ?? new URL("https://manussa.example");
 
-const hero = {
-  src: "/photography/collection-lineup.jpg",
-  alt: "Pieces from the Hope Collection shown together in the atelier",
-  width: 2000,
-  height: 1333,
-  view: "front" as const,
+const organisation = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: BRAND.name,
+  description: BRAND.description,
+  url: site.href,
+  parentOrganization: { "@type": "Organization", name: BRAND.parent },
+  address: { "@type": "PostalAddress", addressLocality: "Yangon", addressCountry: "MM" },
+  email: BRAND.email,
+  slogan: BRAND.tagline,
 };
 
-const issues = COLLECTIONS.map((collection) => {
-  const lead = designByHandle(collection.lead);
-  return { collection, photo: lead ? leadImage(lead) : undefined, count: designsIn(collection).length };
-});
-
-// The pieces that carry more than one photograph — they have the most to
-// look at, which is the only thing worth optimising for on an editorial front.
-const featured = DESIGNS.filter((d) => d.images.length > 1).slice(0, 4);
+/* The show is the reason the site exists this week, so it is described to
+   search engines as an event rather than buried in prose. */
+const event = {
+  "@context": "https://schema.org",
+  "@type": "ExhibitionEvent",
+  name: `${BRAND.name} at ${TEXWORLD.event}`,
+  startDate: TEXWORLD.start,
+  endDate: TEXWORLD.end,
+  eventStatus: "https://schema.org/EventScheduled",
+  eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+  location: {
+    "@type": "Place",
+    name: `${TEXWORLD.event} — ${TEXWORLD.hall}, ${TEXWORLD.booth}`,
+    address: { "@type": "PostalAddress", addressLocality: "Paris", addressCountry: "FR" },
+  },
+  organizer: { "@type": "Organization", name: BRAND.name, url: site.href },
+};
 ---
 
 <Base
-  title={pageTitle(BRAND.tagline)}
-  description={BRAND.intro}
-  ogImage={hero.src}
+  title={`${BRAND.name} — ${BRAND.tagline}`}
+  description={BRAND.description}
+  ogImage={HERO.image}
 >
-  <JsonLd data={organisationSchema(site.href, BRAND.name)} />
-  <JsonLd data={websiteSchema(site.href, BRAND.name)} />
+  <JsonLd data={organisation} slot="head" />
+  <JsonLd data={event} slot="head" />
 
-  <section class="hero" aria-labelledby="hero-title">
+  <!-- ============================ header ============================ -->
+  <header class="site-head" slot="header">
+    <div class="shell head-inner">
+      <a href="#top" class="brand" aria-label={`${BRAND.name} — home`}>
+        <Image src={monogramDark} alt="" width={30} height={29} class="brand-mark" densities={[1, 2]} />
+        <span class="brand-word">{BRAND.name}</span>
+      </a>
+
+      <nav class="nav-wide" aria-label="Sections">
+        <ul>
+          {NAV.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+        </ul>
+      </nav>
+
+      <a class="head-cta" href="#visit">Contact</a>
+
+      <!-- Mobile menu. <details> gives a disclosure with no script; the
+           summary is the button and the panel is its content. -->
+      <details class="menu">
+        <summary aria-label="Open menu">
+          <span class="menu-bars" aria-hidden="true"></span>
+          <span class="menu-word">Menu</span>
+        </summary>
+        <ul class="menu-panel">
+          {NAV.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+          <li><a href={`mailto:${BRAND.email}`}>Contact</a></li>
+        </ul>
+      </details>
+    </div>
+  </header>
+
+  <!-- ============================= hero ============================= -->
+  <section class="hero" id="top" aria-labelledby="hero-h">
     <div class="hero-media">
-      <Photo photo={hero} sizes="100vw" priority alt="" />
+      <Photo src={HERO.image} alt="" sizes="100vw" priority />
     </div>
-    <div class="hero-scrim" aria-hidden="true"></div>
-    <div class="hero-copy shell">
-      <p class="hero-eyebrow">{BRAND.legalName} <span aria-hidden="true">·</span> Yangon</p>
-      <h1 id="hero-title">{BRAND.tagline}</h1>
-      <p class="hero-lede">{BRAND.intro}</p>
-      <a href="/collections" class="hero-cta">Read the collections</a>
+    <div class="hero-veil" aria-hidden="true"></div>
+
+    <div class="shell hero-inner">
+      <p class="hero-eyebrow">{HERO.eyebrow}</p>
+      <h1 id="hero-h" class="hero-mark">
+        <Image src={lockupLight} alt={BRAND.name} widths={[420, 640, 840]}
+               sizes="(max-width: 700px) 78vw, 520px" loading="eager" />
+      </h1>
+      <p class="hero-tagline">{HERO.tagline}</p>
+      <div class="hero-actions">
+        <a class="btn btn-solid" href={HERO.primary.href}>{HERO.primary.label}</a>
+        <a class="btn btn-ghost" href={HERO.secondary.href}>{HERO.secondary.label}</a>
+      </div>
     </div>
   </section>
 
-  <section class="shell statement" aria-labelledby="statement-h">
-    <h2 id="statement-h">
-      Every piece is credited to the person who made it.
-    </h2>
-    <p>
-      Manussa is a collective, not a single hand. Seven people are named across
-      six collections &mdash; the designers who cut the cloth, and the painter
-      who works on it afterwards. The credits are the point, so they are on
-      every page rather than buried in an about section.
-    </p>
-    <a href="/designers" class="statement-link">Meet the designers</a>
+  <!-- =========================== manifesto ========================== -->
+  <section class="manifesto" aria-labelledby="manifesto-h">
+    <div class="shell manifesto-inner">
+      <div class="manifesto-copy">
+        <p class="eyebrow">From Painting to Clothes</p>
+        <h2 id="manifesto-h">{MANIFESTO.heading}</h2>
+        <p class="lead">{MANIFESTO.lead}</p>
+        <p class="body">{MANIFESTO.body}</p>
+        <ul class="techniques" aria-label="Techniques">
+          {TECHNIQUES.map((t) => <li>{t}</li>)}
+        </ul>
+      </div>
+      <figure class="manifesto-figure">
+        <Photo src={MANIFESTO.image} alt={MANIFESTO.imageAlt}
+               sizes="(max-width: 900px) 92vw, 560px" />
+      </figure>
+    </div>
   </section>
 
-  <section class="issues-sec" aria-labelledby="issues-h">
-    <div class="shell sec-head">
-      <p class="label">The collections</p>
-      <h2 id="issues-h">Six bodies of work</h2>
+  <!-- ========================== collections ========================= -->
+  <section class="collections" id="collections" aria-labelledby="collections-h">
+    <div class="shell collections-head">
+      <p class="eyebrow">2026 · {BRAND.concept}</p>
+      <h2 id="collections-h">The Collections</h2>
+      <p class="collections-intro">
+        Five collections, each born from a painting — limited-edition art pieces
+        and everyday ready-to-wear, all made to be worn.
+      </p>
     </div>
-    <ul class="issues">
-      {issues.map(({ collection, photo, count }) => (
-        <li>
-          <a href={`/collections/${collection.handle}`}>
-            {photo && (
-              <div class="issue-media">
-                <Photo photo={photo} sizes="(max-width: 620px) 92vw, (max-width: 1100px) 45vw, 220px" alt="" />
+
+    {COLLECTIONS.map((c, i) => (
+      <article class="row" id={c.handle} data-flip={i % 2 === 1 ? "true" : "false"}>
+        <div class="shell row-inner">
+          <div class="row-media">
+            <Photo src={c.image} alt={c.imageAlt}
+                   sizes="(max-width: 900px) 92vw, 620px" />
+            {c.detail && (
+              <div class="row-detail">
+                <Photo src={c.detail} alt={c.detailAlt ?? ""}
+                       sizes="(max-width: 900px) 44vw, 260px" />
               </div>
             )}
-            <span class="issue-no">{collection.eyebrow}</span>
-            <span class="issue-title">{collection.title}</span>
-            <span class="issue-stand">{collection.standfirst}</span>
-            <span class="issue-count">{count} {count === 1 ? "piece" : "pieces"}</span>
-          </a>
-        </li>
-      ))}
-    </ul>
+          </div>
+
+          <div class="row-copy">
+            <p class="row-no">{c.no}</p>
+            <h3 class="row-name">{c.name}</h3>
+            <p class="row-tagline">{c.tagline}</p>
+            <ul class="row-credit">
+              {c.credit.map((line) => <li>{line}</li>)}
+            </ul>
+            <p class="row-body">{c.body}</p>
+          </div>
+        </div>
+      </article>
+    ))}
   </section>
 
-  <section class="featured-sec" aria-labelledby="featured-h">
-    <div class="shell sec-head">
-      <p class="label">Selected</p>
-      <h2 id="featured-h">Pieces photographed from more than one side</h2>
+  <!-- ============================= art ============================== -->
+  <section class="art" id="artists" aria-labelledby="art-h">
+    <div class="shell art-inner">
+      <div class="art-copy">
+        <p class="eyebrow art-eyebrow">{ART.eyebrow}</p>
+        <h2 id="art-h">{ART.heading}</h2>
+        <p class="art-body">{ART.body}</p>
+        <ul class="art-names">
+          {ART.names.map((n) => <li>{n}</li>)}
+        </ul>
+      </div>
+      <div class="art-plates">
+        {ART.images.map((img) => (
+          <figure>
+            <Photo src={img.src} alt={img.alt} sizes="(max-width: 900px) 92vw, 380px" />
+          </figure>
+        ))}
+      </div>
     </div>
-    <ul class="featured">
-      {featured.map((design) => {
-        const photo = leadImage(design);
-        return (
-          <li>
-            <a href={`/pieces/${design.handle}`}>
-              {photo && (
-                <div class="feat-media">
-                  <Photo photo={photo} sizes="(max-width: 700px) 260px, 380px" alt="" />
-                </div>
-              )}
-              <span class="feat-title">{design.title}</span>
-              <span class="feat-meta">{design.designer}</span>
-            </a>
-          </li>
-        );
-      })}
-    </ul>
   </section>
 
-  <section class="shell people-sec" aria-labelledby="people-h">
-    <p class="label">The house</p>
-    <h2 id="people-h">Seven names</h2>
-    <ul class="names">
-      {CREDITED.map((p) => (
-        <li>
-          <a href={`/designers/${p.slug}`}>
-            <span class="n">{p.name}</span>
-            <span class="c">{workBy(p).length} {workBy(p).length === 1 ? "piece" : "pieces"}</span>
-          </a>
-        </li>
-      ))}
-    </ul>
+  <!-- ============================ house ============================= -->
+  <section class="house" id="house" aria-labelledby="house-h">
+    <div class="shell house-inner">
+      <div class="house-head">
+        <p class="eyebrow">The House</p>
+        <h2 id="house-h">{HOUSE.heading}</h2>
+        <p class="house-intro">{HOUSE.intro}</p>
+      </div>
+      <ul class="founders">
+        {HOUSE.founders.map((f) => (
+          <li class="founder">
+            <h3 class="founder-name">{f.name}</h3>
+            <p class="founder-role">{f.role}</p>
+            <p class="founder-body">{f.body}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
   </section>
+
+  <!-- ============================ visit ============================= -->
+  <section class="visit" id="visit" aria-labelledby="visit-h">
+    <div class="visit-media">
+      <Photo src={VISIT.image} alt="" sizes="100vw" />
+    </div>
+    <div class="visit-veil" aria-hidden="true"></div>
+
+    <div class="shell visit-inner">
+      <p class="eyebrow visit-eyebrow">{VISIT.eyebrow}</p>
+      <h2 id="visit-h">{VISIT.heading}</h2>
+      <p class="visit-body">{VISIT.body}</p>
+
+      <dl class="visit-facts">
+        <div><dt>Hall</dt><dd>{TEXWORLD.hall.replace("Hall ", "")}</dd></div>
+        <div><dt>Booth</dt><dd>{TEXWORLD.booth.replace("Booth ", "")}</dd></div>
+        <div><dt>Dates</dt><dd><time datetime={TEXWORLD.start}>{TEXWORLD.datesLong}</time></dd></div>
+      </dl>
+
+      <a class="btn btn-solid" href={VISIT.cta.href}>{VISIT.cta.label}</a>
+    </div>
+  </section>
+
+  <!-- ============================ footer ============================ -->
+  <footer class="site-foot" slot="footer">
+    <div class="shell foot-inner">
+      <div class="foot-brand">
+        <span class="foot-word">{BRAND.name}</span>
+        <p class="foot-blurb">{BRAND.blurb}</p>
+        {SOCIAL.length > 0 && (
+          <ul class="foot-social">
+            {SOCIAL.map((s) => <li><a href={s.href}>{s.label}</a></li>)}
+          </ul>
+        )}
+      </div>
+
+      <nav class="foot-col" aria-label="Explore">
+        <p class="foot-label">Explore</p>
+        <ul>
+          {FOOTER.explore.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+        </ul>
+      </nav>
+
+      <div class="foot-col">
+        <p class="foot-label">Contact</p>
+        <ul>
+          <li><a href={`mailto:${BRAND.email}`}>{BRAND.email}</a></li>
+          <li><a href={BRAND.websiteUrl} rel="noopener">{BRAND.website}</a></li>
+          <li><span class="foot-static">{BRAND.city}</span></li>
+          <li>
+            <span class="foot-static">
+              {TEXWORLD.event}, {TEXWORLD.hall}, {TEXWORLD.booth}, {TEXWORLD.dates}
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      <p class="foot-legal">{FOOTER.legal}</p>
+    </div>
+  </footer>
 </Base>
 
 <style>
-  /* ---------------- hero ---------------- */
+  /* =============================== header =============================== */
+  .site-head {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    background: color-mix(in srgb, var(--cream) 92%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--rule);
+  }
+  .head-inner {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-6);
+    min-height: 68px;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-3);
+    margin-right: auto;
+  }
+  .brand:hover { text-decoration: none; }
+  .brand-mark { width: 26px; height: auto; }
+  .brand-word {
+    font-family: var(--display);
+    font-size: var(--step-1);
+    text-transform: uppercase;
+    letter-spacing: 0.34em;
+    /* Uppercase letter-spacing adds a trailing gap; pull it back so the
+       wordmark sits optically centred against the mark. */
+    margin-right: -0.34em;
+  }
+
+  .nav-wide ul { display: flex; gap: var(--sp-6); }
+  .nav-wide a {
+    font-size: var(--step--2);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--ink-2);
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  .nav-wide a:hover { color: var(--ink); }
+
+  .head-cta {
+    font-size: var(--step--2);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    border: 1px solid var(--ink);
+    padding-inline: var(--sp-5);
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .head-cta:hover { background: var(--ink); color: var(--cream); text-decoration: none; }
+
+  /* Mobile disclosure menu — no script. */
+  .menu { display: none; position: relative; }
+  .menu summary {
+    list-style: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    min-height: 44px;
+    padding-inline: var(--sp-2);
+    font-size: var(--step--2);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+  }
+  .menu summary::-webkit-details-marker { display: none; }
+  .menu-bars {
+    width: 18px; height: 10px;
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+  }
+  .menu[open] .menu-bars { border-bottom-color: transparent; }
+  .menu-panel {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 10px);
+    min-width: 220px;
+    background: var(--cream-2);
+    border: 1px solid var(--rule);
+    padding: var(--sp-2);
+    box-shadow: 0 18px 40px rgb(20 18 16 / 0.10);
+  }
+  .menu-panel a {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    padding-inline: var(--sp-4);
+    font-size: var(--step--1);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+  .menu-panel a:hover { background: var(--cream-3); text-decoration: none; }
+
+  @media (max-width: 900px) {
+    .nav-wide, .head-cta { display: none; }
+    .menu { display: block; }
+    .head-inner { min-height: 60px; }
+    .brand-word { font-size: var(--step-0); letter-spacing: 0.28em; margin-right: -0.28em; }
+  }
+
+  /* ================================ hero ================================ */
   .hero {
     position: relative;
-    min-height: min(84vh, 780px);
+    min-height: min(92vh, 900px);
     display: flex;
     align-items: flex-end;
     overflow: hidden;
-    /*
-      The colour the photograph lies on, and what shows if it fails to load.
-      A fixed literal, not var(--ink) — the copy over it is always white, and
-      --ink inverts to near-white in dark mode.
-    */
-    background: #14130F;
+    /* Fixed literal: the copy above is always cream, so this ground must stay
+       dark whatever else changes. */
+    background: #141210;
   }
-  /*
-    A wrapper, not a class on the image.
-
-    Astro's <Picture> forwards `class` to the inner <img>, not to the <picture>
-    element — so positioning the class absolutely put `inset: 0` on an image
-    that still had `height: auto`, and the hero photograph rendered 250px tall
-    inside a 633px hero. Styling through a wrapper works wherever the class
-    happens to land.
-  */
   .hero-media { position: absolute; inset: 0; }
   .hero-media :global(picture) { display: block; width: 100%; height: 100%; }
-  .hero-media :global(img) { width: 100%; height: 100%; object-fit: cover; }
+  .hero-media :global(img) { width: 100%; height: 100%; object-fit: cover; object-position: 50% 42%; }
 
   /*
-    Two layers. The vertical gradient alone had to be crushingly dark to beat
-    the pale garments the headline crosses; a left-side wash lets the copy
-    column go dark while the right of the frame keeps its depth.
+    Two gradients. The vertical one alone had to be very heavy to hold text
+    over the bright car and white denim; a left-side wash lets the copy column
+    darken while the right of the frame keeps its depth.
   */
-  .hero-scrim {
+  .hero-veil {
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(to right, rgb(10 9 7 / 0.80) 0%, rgb(10 9 7 / 0.40) 46%, rgb(10 9 7 / 0) 78%),
-      linear-gradient(to top, rgb(10 9 7 / 0.94) 0%, rgb(10 9 7 / 0.82) 36%, rgb(10 9 7 / 0.46) 66%, rgb(10 9 7 / 0.14) 100%);
+      linear-gradient(to right, rgb(12 10 9 / 0.78) 0%, rgb(12 10 9 / 0.42) 44%, rgb(12 10 9 / 0) 76%),
+      linear-gradient(to top, rgb(12 10 9 / 0.90) 0%, rgb(12 10 9 / 0.62) 34%, rgb(12 10 9 / 0.22) 68%, rgb(12 10 9 / 0.10) 100%);
   }
-  .hero-copy {
+  .hero-inner {
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: var(--sp-4);
-    padding-block: var(--sp-7);
-    max-width: 720px;
+    align-items: flex-start;
+    gap: var(--sp-5);
+    padding-block: var(--sp-9) var(--sp-8);
   }
-  /* Opaque, not translucent. White at 72% cannot reach contrast over a
-     photograph however dark the scrim gets. */
+  /* Opaque cream, never translucent white — text over a photograph cannot
+     reach contrast through an alpha channel however dark the veil is. */
   .hero-eyebrow {
-    font-family: var(--mono);
-    font-size: 0.6875rem;
+    font-size: var(--step--2);
+    text-transform: uppercase;
+    letter-spacing: 0.24em;
+    color: var(--cream);
+  }
+  .hero-mark { margin: 0; line-height: 0; }
+  .hero-mark :global(img) { width: min(520px, 78vw); height: auto; }
+  .hero-tagline {
+    font-family: var(--display);
+    font-style: italic;
+    font-size: var(--step-3);
+    line-height: 1.2;
+    color: var(--cream);
+  }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: var(--sp-4); margin-top: var(--sp-3); }
+
+  /* ============================== buttons =============================== */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    padding-inline: var(--sp-6);
+    font-size: var(--step--2);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    border: 1px solid transparent;
+    transition: background 200ms ease, color 200ms ease, border-color 200ms ease;
+  }
+  .btn:hover { text-decoration: none; }
+  .btn-solid { background: var(--cream); color: #141210; }
+  .btn-solid:hover { background: var(--gold); color: #141210; }
+  .btn-ghost { color: var(--cream); border-color: rgb(247 244 238 / 0.55); }
+  .btn-ghost:hover { border-color: var(--cream); background: rgb(247 244 238 / 0.10); }
+
+  /* ============================= manifesto ============================== */
+  .manifesto { padding-block: var(--sp-9); }
+  .manifesto-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
+    gap: var(--sp-8);
+    align-items: center;
+  }
+  .manifesto-copy { display: flex; flex-direction: column; gap: var(--sp-4); }
+  .manifesto h2 {
+    font-size: var(--step-5);
+    max-width: 15ch;
+  }
+  .lead {
+    font-family: var(--display);
+    font-size: var(--step-2);
+    line-height: 1.42;
+    color: var(--ink-2);
+    max-width: 34ch;
+  }
+  .body { font-size: var(--step-0); color: var(--ink-2); max-width: var(--measure); }
+
+  .techniques {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2) var(--sp-4);
+    margin-top: var(--sp-3);
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--rule);
+  }
+  .techniques li {
+    font-size: var(--step--2);
     text-transform: uppercase;
     letter-spacing: 0.16em;
-    color: #FFFFFF;
+    color: var(--gold-ink);
   }
-  .hero h1 {
-    font-family: var(--display);
-    font-weight: 400;
-    font-size: clamp(2.6rem, 9vw, 5rem);
-    line-height: 0.98;
-    letter-spacing: -0.03em;
-    color: #FFFFFF;
-  }
-  .hero-lede {
-    font-size: var(--step-1);
-    line-height: 1.5;
-    color: #FFFFFF;
-    max-width: 48ch;
-  }
-  .hero-cta {
-    align-self: flex-start;
-    font-family: var(--mono);
-    font-size: 0.6875rem;
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    color: #FFFFFF;
-    border: 1px solid rgb(255 255 255 / 0.55);
-    padding: 0 var(--sp-5);
-    min-height: 48px;
-    display: inline-flex;
-    align-items: center;
-    text-decoration: none;
-  }
-  .hero-cta:hover { border-color: #FFFFFF; background: rgb(255 255 255 / 0.08); }
 
-  /* ---------------- statement ---------------- */
-  .statement {
-    padding-block: var(--sp-7);
+  .manifesto-figure { margin: 0; }
+
+  @media (max-width: 900px) {
+    /*
+      One deeper vertical gradient on a phone.
+
+      The desktop veil leans on a left-side wash that fades out by 76% of the
+      width. On a 375px screen the copy runs nearly edge to edge, so the right
+      half of the eyebrow sat over the bright white denim at 3.5:1. Measured
+      against the actual pixels: this is the lightest set that clears AA, and
+      the eyebrow lands at 5.0:1.
+    */
+    .hero-veil {
+      background: linear-gradient(
+        to top,
+        rgb(12 10 9 / 0.92) 0%,
+        rgb(12 10 9 / 0.78) 40%,
+        rgb(12 10 9 / 0.52) 72%,
+        rgb(12 10 9 / 0.34) 100%
+      );
+    }
+
+    .manifesto { padding-block: var(--sp-8); }
+    .manifesto-inner { grid-template-columns: minmax(0, 1fr); gap: var(--sp-6); }
+    .manifesto h2 { font-size: var(--step-4); max-width: 18ch; }
+  }
+
+  /* ============================ collections ============================= */
+  .collections { padding-block: var(--sp-8) var(--sp-9); background: var(--cream-3); }
+  .collections-head {
     display: flex;
     flex-direction: column;
-    gap: var(--sp-4);
-    max-width: 720px;
-  }
-  .statement h2 {
-    font-family: var(--display);
-    font-weight: 400;
-    font-size: clamp(1.8rem, 4.6vw, 2.8rem);
-    line-height: 1.12;
-    letter-spacing: -0.02em;
-    text-wrap: balance;
-  }
-  .statement p { font-size: var(--step-1); line-height: 1.6; color: var(--ink-2); max-width: 60ch; }
-  .statement-link, .sec-head + * { /* keeps the cascade explicit */ }
-  .statement-link {
-    align-self: flex-start;
-    font-family: var(--mono);
-    font-size: 0.6875rem;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    min-height: 44px;
-    display: inline-flex;
+    gap: var(--sp-3);
+    padding-bottom: var(--sp-8);
+    text-align: center;
     align-items: center;
   }
+  .collections-head h2 { font-size: var(--step-5); }
+  .collections-intro {
+    font-size: var(--step-1);
+    color: var(--ink-2);
+    max-width: 52ch;
+  }
 
-  /* ---------------- shared section heads ---------------- */
-  .sec-head { display: flex; flex-direction: column; gap: var(--sp-2); padding-bottom: var(--sp-5); }
-  .sec-head h2 {
+  .row { padding-block: var(--sp-7); }
+  .row + .row { border-top: 1px solid var(--rule); }
+  .row-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    gap: var(--sp-8);
+    align-items: center;
+  }
+  /*
+    Alternate the side the photograph sits on, so five rows read as a sequence
+    rather than a list. Order, not flex-direction — reversing visually would
+    also reverse the reading order for a screen reader.
+
+    The column widths swap with it. Without that the photograph would be 546px
+    on odd rows and 494px on even ones, and the run of five would look like a
+    mistake rather than a rhythm.
+  */
+  .row[data-flip="true"] .row-inner { grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr); }
+  .row[data-flip="true"] .row-media { order: 2; }
+  .row[data-flip="true"] .row-copy  { order: 1; }
+
+  .row-media { position: relative; }
+  .row-detail {
+    position: absolute;
+    right: -6%;
+    bottom: -10%;
+    width: 42%;
+    border: 6px solid var(--cream-3);
+    background: var(--cream-3);
+  }
+  .row[data-flip="true"] .row-detail { right: auto; left: -6%; }
+
+  .row-copy { display: flex; flex-direction: column; gap: var(--sp-3); }
+  .row-no {
     font-family: var(--display);
-    font-weight: 400;
-    font-size: clamp(1.6rem, 4vw, 2.3rem);
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-    text-wrap: balance;
+    font-size: var(--step-3);
+    line-height: 1;
+    /* Not --gold: the collections sit on cream-3, where the brand value is
+       2.84:1 and large text needs 3.0. */
+    color: var(--gold-large);
+    font-variant-numeric: tabular-nums;
+  }
+  .row-name { font-size: var(--step-4); }
+  .row-tagline {
+    font-family: var(--display);
+    font-style: italic;
+    font-size: var(--step-2);
+    line-height: 1.35;
+    color: var(--ink-2);
+    max-width: 26ch;
+  }
+  .row-credit {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-block: var(--sp-3);
+    border-top: 1px solid var(--rule-2);
+    border-bottom: 1px solid var(--rule-2);
+  }
+  .row-credit li {
+    font-size: var(--step--2);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-3);
+  }
+  .row-body { font-size: var(--step-0); color: var(--ink-2); max-width: 46ch; }
+
+  @media (max-width: 900px) {
+    .collections { padding-block: var(--sp-7) var(--sp-8); }
+    .collections-head { padding-bottom: var(--sp-6); }
+    .collections-head h2 { font-size: var(--step-4); }
+    .row-inner { grid-template-columns: minmax(0, 1fr); gap: var(--sp-5); }
+    /* On one column the flip would put the photograph after the copy for some
+       rows and before it for others. Keep it consistent instead. */
+    .row[data-flip="true"] .row-inner { grid-template-columns: minmax(0, 1fr); }
+    .row[data-flip="true"] .row-media,
+    .row[data-flip="true"] .row-copy { order: initial; }
+    .row-detail {
+      position: static;
+      width: 58%;
+      margin: calc(-1 * var(--sp-6)) 0 0 auto;
+      border-width: 5px;
+      position: relative;
+    }
+    .row[data-flip="true"] .row-detail { margin-inline: auto 0; }
+    .row-name { font-size: var(--step-3); }
   }
 
-  /* ---------------- issues ---------------- */
-  .issues-sec { padding-block: var(--sp-6) var(--sp-7); border-top: 1px solid var(--rule); }
-  .issues {
-    list-style: none;
-    margin: 0 auto;
-    padding: 0 var(--sp-4);
-    max-width: 1200px;
+  /* ================================ art ================================= */
+  .art { background: var(--ink); color: var(--cream); padding-block: var(--sp-9); }
+  .art-inner {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: var(--sp-6) var(--sp-4);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--sp-8);
+    align-items: center;
   }
-  .issues a { display: flex; flex-direction: column; gap: var(--sp-2); text-decoration: none; }
-  .issue-media { overflow: hidden; margin-bottom: var(--sp-1); }
-  .issue-media :global(img) { aspect-ratio: 4 / 5; object-fit: cover; }
-  .issue-no {
-    font-family: var(--mono);
-    font-size: 0.625rem;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--ink-3);
+  .art-eyebrow { color: var(--gold); }
+  .art-copy { display: flex; flex-direction: column; gap: var(--sp-4); }
+  .art h2 { font-size: var(--step-5); max-width: 16ch; }
+  .art-body {
+    font-size: var(--step-0);
+    /* Cream at full strength on ink; the muted variants are for the light
+       sections and would sit near 3:1 here. */
+    color: #E4DED2;
+    max-width: var(--measure);
   }
-  .issue-title { font-family: var(--display); font-size: var(--step-1); line-height: 1.15; }
-  .issues a:hover .issue-title { text-decoration: underline; text-underline-offset: 3px; }
-  .issue-stand { font-size: var(--step--1); color: var(--ink-2); }
-  .issue-count {
-    font-family: var(--mono);
-    font-size: 0.625rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--ink-3);
+  .art-names {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2) var(--sp-5);
+    padding-top: var(--sp-4);
+    border-top: 1px solid rgb(247 244 238 / 0.22);
+  }
+  .art-names li {
+    font-family: var(--display);
+    font-size: var(--step-1);
+    color: var(--cream);
+  }
+  .art-plates { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); }
+  .art-plates figure { margin: 0; }
+
+  @media (max-width: 900px) {
+    .art { padding-block: var(--sp-8); }
+    .art-inner { grid-template-columns: minmax(0, 1fr); gap: var(--sp-6); }
+    .art h2 { font-size: var(--step-4); }
   }
 
-  /* ---------------- featured ---------------- */
-  .featured-sec { padding-block: var(--sp-6) var(--sp-7); border-top: 1px solid var(--rule); }
-  .featured {
-    list-style: none;
-    margin: 0;
-    padding: 0 var(--sp-4);
+  /* =============================== house ================================ */
+  .house { padding-block: var(--sp-9); }
+  .house-inner { display: flex; flex-direction: column; gap: var(--sp-8); }
+  .house-head { display: flex; flex-direction: column; gap: var(--sp-3); max-width: 62ch; }
+  .house h2 { font-size: var(--step-5); max-width: 18ch; }
+  .house-intro { font-size: var(--step-1); color: var(--ink-2); max-width: var(--measure); }
+
+  .founders {
     display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(260px, 380px);
-    gap: var(--sp-4);
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--sp-6);
   }
-  .featured::-webkit-scrollbar { display: none; }
-  .featured li { scroll-snap-align: start; }
-  .featured a { display: flex; flex-direction: column; gap: var(--sp-2); text-decoration: none; }
-  .feat-media { overflow: hidden; }
-  .feat-media :global(img) { aspect-ratio: 4 / 5; object-fit: cover; }
-  .feat-title { font-family: var(--display); font-size: var(--step-1); }
-  .featured a:hover .feat-title { text-decoration: underline; text-underline-offset: 3px; }
-  .feat-meta {
-    font-family: var(--mono);
-    font-size: 0.625rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--ink-3);
-  }
-
-  /* ---------------- people ---------------- */
-  .people-sec {
-    padding-block: var(--sp-6) var(--sp-7);
-    border-top: 1px solid var(--rule);
+  .founder {
     display: flex;
     flex-direction: column;
     gap: var(--sp-2);
+    padding-top: var(--sp-5);
+    border-top: 2px solid var(--ink);
   }
-  .people-sec h2 {
-    font-family: var(--display);
-    font-weight: 400;
-    font-size: clamp(1.6rem, 4vw, 2.3rem);
-    letter-spacing: -0.02em;
-    padding-bottom: var(--sp-4);
-  }
-  .names { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
-  .names li { border-top: 1px solid var(--rule); }
-  .names li:last-child { border-bottom: 1px solid var(--rule); }
-  .names a {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: var(--sp-4);
-    padding-block: var(--sp-3);
-    min-height: 48px;
-    text-decoration: none;
-  }
-  .names .n { font-family: var(--display); font-size: var(--step-2); }
-  .names a:hover .n { text-decoration: underline; text-underline-offset: 4px; }
-  .names .c {
-    font-family: var(--mono);
-    font-size: 0.625rem;
+  .founder-name { font-size: var(--step-2); }
+  .founder-role {
+    font-size: var(--step--2);
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--ink-3);
+    letter-spacing: 0.16em;
+    color: var(--gold-ink);
+  }
+  .founder-body { font-size: var(--step--1); color: var(--ink-2); }
+
+  @media (max-width: 900px) {
+    .house { padding-block: var(--sp-8); }
+    .house h2 { font-size: var(--step-4); }
+    .house-inner { gap: var(--sp-6); }
+  }
+
+  /* =============================== visit ================================ */
+  .visit {
+    position: relative;
+    overflow: hidden;
+    background: #141210;
+    color: var(--cream);
+  }
+  .visit-media { position: absolute; inset: 0; }
+  .visit-media :global(picture) { display: block; width: 100%; height: 100%; }
+  .visit-media :global(img) { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
+  .visit-veil {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, rgb(12 10 9 / 0.92) 0%, rgb(12 10 9 / 0.72) 52%, rgb(12 10 9 / 0.48) 100%);
+  }
+  .visit-inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-4);
+    padding-block: var(--sp-9);
+  }
+  .visit-eyebrow { color: var(--gold); }
+  .visit h2 { font-size: var(--step-5); max-width: 16ch; color: var(--cream); }
+  .visit-body { font-size: var(--step-1); color: #E4DED2; }
+
+  .visit-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-6);
+    padding-block: var(--sp-5);
+    margin-block: var(--sp-2);
+    border-top: 1px solid rgb(247 244 238 / 0.24);
+    border-bottom: 1px solid rgb(247 244 238 / 0.24);
+  }
+  .visit-facts div { display: flex; flex-direction: column; gap: 4px; }
+  .visit-facts dt {
+    font-size: var(--step--2);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--gold);
+  }
+  .visit-facts dd {
+    font-family: var(--display);
+    font-size: var(--step-2);
+    color: var(--cream);
     white-space: nowrap;
   }
 
-  @media (max-width: 700px) {
-    .hero { min-height: min(78vh, 640px); }
-    .hero-scrim {
-      background: linear-gradient(
-        to top,
-        rgb(10 9 7 / 0.93) 0%,
-        rgb(10 9 7 / 0.84) 46%,
-        rgb(10 9 7 / 0.52) 74%,
-        rgb(10 9 7 / 0.16) 100%
-      );
+  @media (max-width: 900px) {
+    .visit-inner { padding-block: var(--sp-8); }
+    .visit h2 { font-size: var(--step-4); }
+    .visit-veil {
+      background: linear-gradient(to top, rgb(12 10 9 / 0.94) 0%, rgb(12 10 9 / 0.86) 50%, rgb(12 10 9 / 0.72) 100%);
     }
+    .visit-facts { gap: var(--sp-5); }
+  }
+
+  /* =============================== footer =============================== */
+  .site-foot { background: var(--ink); color: var(--cream); padding-block: var(--sp-8) var(--sp-6); }
+  .foot-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: var(--sp-7);
+    align-items: start;
+  }
+  .foot-brand { display: flex; flex-direction: column; gap: var(--sp-3); }
+  .foot-word {
+    font-family: var(--display);
+    font-size: var(--step-2);
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+  }
+  .foot-blurb { font-size: var(--step--1); color: #C9C1B3; max-width: 44ch; }
+  .foot-social { display: flex; gap: var(--sp-4); }
+  .foot-social a, .foot-col a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    font-size: var(--step--1);
+    color: #E4DED2;
+  }
+  .foot-col a:hover { color: var(--cream); }
+  .foot-label {
+    font-size: var(--step--2);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    margin-bottom: var(--sp-2);
+  }
+  .foot-col ul { display: flex; flex-direction: column; }
+  .foot-static {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    font-size: var(--step--1);
+    color: #C9C1B3;
+  }
+  .foot-legal {
+    grid-column: 1 / -1;
+    margin-top: var(--sp-5);
+    padding-top: var(--sp-5);
+    border-top: 1px solid rgb(247 244 238 / 0.16);
+    font-size: var(--step--2);
+    color: #ABA294;
+    letter-spacing: 0.04em;
+  }
+
+  @media (max-width: 800px) {
+    .foot-inner { grid-template-columns: minmax(0, 1fr); gap: var(--sp-6); }
   }
 </style>

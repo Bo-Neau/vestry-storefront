@@ -1,105 +1,64 @@
 ---
 /**
- * A photograph.
+ * A photograph, resized at build time.
  *
- * Uses Astro's build-time image pipeline rather than a CDN. The previous
- * version asked a CDN provider whether it could transform the URL, got "no"
- * for every local file, and correctly fell back to a bare <img> — which meant
- * the front page shipped 4.6MB of full-size originals to a phone.
+ * Sources are the retouched originals supplied by the client, reduced to a
+ * 2400px long edge before they entered the repo. Astro emits AVIF and WebP
+ * variants from those at build, so nothing is transformed at request time and
+ * the site can be served from a plain file host.
  *
- * Now the source is an imported asset, so the same photograph is emitted at
- * several widths in AVIF and WebP, and the browser picks.
- *
- *  - `width`/`height` come from the file itself, so space is always reserved
- *    and the page cannot reflow as images arrive.
- *  - `sizes` describes the SLOT, not the file. Without it browsers assume
- *    100vw and fetch the widest variant for a thumbnail.
+ *  - `width`/`height` come from the file, so space is reserved before the
+ *    image arrives and the page never reflows as it loads.
+ *  - `sizes` describes the SLOT, not the file. Get it wrong and the browser
+ *    either fetches far too much or renders a soft image — both were real
+ *    bugs on the previous build, so each value here was measured.
  *  - `priority` marks the LCP candidate. At most one per page.
  */
 import { Picture } from "astro:assets";
-import type { Photograph } from "../data/journal.ts";
 import { resolvePhoto } from "../lib/images/local.ts";
 
 interface Props {
-  photo: Photograph;
-  /** CSS sizes attribute. Describe the slot the image occupies. */
+  /** Filename stem under src/assets/photography, e.g. "hero-denim-car". */
+  src: string;
+  alt: string;
   sizes: string;
-  /** True only for the LCP candidate — at most one per page. */
   priority?: boolean;
-  /** Overrides the photograph's own alt, for decorative or repeated use. */
-  alt?: string;
   class?: string;
+  /** Applied to the <picture>; the class prop lands on the <img>. */
+  ratio?: string;
 }
 
-const { photo, sizes, priority = false, alt, class: className } = Astro.props;
+const { src, alt, sizes, priority = false, class: className } = Astro.props;
 
-const asset = resolvePhoto(photo.src);
-const text = alt ?? photo.alt;
+const asset = resolvePhoto(src);
+if (!asset) {
+  throw new Error(
+    `Photo: no file for "${src}". Expected src/assets/photography/${src}.jpg — ` +
+      `add the file or correct the name in src/data/site.ts.`,
+  );
+}
 
-/*
-  Widths that match Vercel's own size steps.
-
-  These used to be a round-numbered guess — 400, 900, 1600 — and none of them
-  exist in Vercel's allowed list, so every request was rounded UP to the next
-  one that does. A 375px phone at 2x needs 750; it asked for 900 and was
-  served 1200, which is 2.5x the pixels it can show.
-
-  Vercel's steps are 640 / 750 / 828 / 1080 / 1200 / 1920 / 2048 / 3840.
-  Anything above 1920 is larger than these source files, so it is omitted.
-*/
-const WIDTHS = [640, 750, 828, 1080, 1200, 1920];
+// Vercel's step sizes, which are also sensible breakpoints anywhere else.
+const WIDTHS = [640, 750, 828, 1080, 1200, 1600, 1920];
 
 /*
-  Quality, stated explicitly.
-
-  The default emitted q=100, which asks the optimiser to preserve every
-  artefact of the source JPEG and hands back a file the same size as the
-  original — 464KB for a hero that had already been resized to 1200px. At 78
-  the same frame is a fraction of that and the difference is not visible on a
-  photograph of cloth. Worth revisiting only if the client objects to how a
-  specific painted piece reproduces.
+  Quality 78. The default is 100, which preserves every artefact of the source
+  JPEG and returns a file the same size as the original — the resize buys
+  nothing. On photographs of cloth the difference at 78 is not visible.
 */
 const QUALITY = 78;
-
-// The fallback branch below renders a plain <img> when a filename does not
-// resolve. It stays renderable so a bad path shows one broken picture rather
-// than failing the page; tests/photographs.test.mjs turns that case into a
-// build failure, which is where it belongs.
 ---
 
-{asset ? (
-  <Picture
-    src={asset}
-    widths={WIDTHS}
-    sizes={sizes}
-    quality={QUALITY}
-    formats={["avif", "webp"]}
-    fallbackFormat="jpg"
-    alt={text}
-    class={className}
-    loading={priority ? "eager" : "lazy"}
-    fetchpriority={priority ? "high" : "auto"}
-    decoding={priority ? "sync" : "async"}
-  />
-) : (
-  <img
-    class={className}
-    src={photo.src}
-    width={photo.width}
-    height={photo.height}
-    alt={text}
-    loading={priority ? "eager" : "lazy"}
-  />
-)}
-
-<style>
-  /*
-    These reach the fallback <img> only.
-
-    Astro's <Picture> renders its own elements, which do not carry this
-    component's scope attribute, so a scoped rule here cannot touch them. Any
-    page that needs to size a photograph puts it in a wrapper div and styles
-    `:global(img)` through that — see .hero-media, .issue-media, .plate-media.
-  */
-  img { display: block; width: 100%; height: auto; }
-</style>
+<Picture
+  src={asset}
+  widths={WIDTHS}
+  sizes={sizes}
+  quality={QUALITY}
+  formats={["avif", "webp"]}
+  fallbackFormat="jpg"
+  alt={alt}
+  class={className}
+  loading={priority ? "eager" : "lazy"}
+  fetchpriority={priority ? "high" : "auto"}
+  decoding={priority ? "sync" : "async"}
+/>

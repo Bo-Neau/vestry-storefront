@@ -1,130 +1,65 @@
 # Deploying
 
-## GitHub Pages will not work
+The site builds to static files. `npm run build` writes `dist/`, and that
+directory is the whole site — any file host will serve it.
 
-This is a **server-rendered** app. GitHub Pages serves static files only, so
-on Pages the cart, the filters, stock accuracy and the 404 handling would all
-break.
+## Two things to set
 
-GitHub hosts the *code*. Something that runs Node hosts the *site*.
+**`SITE_URL`** — the address the site will live at. Canonical tags, the
+sitemap and the social preview are absolute URLs baked in at build, so this has
+to be right *when the build runs*. Changing DNS afterwards does not update
+them; you have to rebuild.
 
-## Vercel (configured)
+**`BASE_PATH`** — only for a GitHub Pages project site, which is served from
+`https://user.github.io/repo/` rather than a domain root. Set it to `/repo`.
+Leave it unset for a custom domain or any other host.
 
-The repo is set up for it. `astro.config.mjs` picks the Vercel adapter when
-`VERCEL=1` is present in the build environment and a standalone Node server
-otherwise, so local builds are unaffected.
+## GitHub Pages
 
-1. [vercel.com](https://vercel.com) → **Add New → Project** → import the repo
-2. Framework preset: **Astro** (auto-detected)
-3. Add environment variables — see below
-4. **Deploy**
+A workflow is ready at `.github/workflows/pages.yml`. It is **manual only** —
+it will not publish anything until you either run it from the Actions tab or
+uncomment the `push:` trigger.
 
-Preview deployments are created per branch automatically, which is a
-convenient way to show a client a change before it goes live.
+To go live:
 
-### Environment variables
+1. Repository → Settings → Pages → Source: **GitHub Actions**
+2. Actions tab → *Deploy to GitHub Pages* → **Run workflow**
+3. Once you are happy, uncomment the `push:` block so every push publishes
 
-None are required. With nothing set, the site runs on the sample catalogue —
-which is exactly what you want for a demo.
-
-**`SITE_URL` is not needed on Vercel.** The config reads
-`VERCEL_PROJECT_PRODUCTION_URL`, which Vercel injects automatically, so
-canonical tags, Open Graph URLs and the sitemap all resolve to the real
-deployment. Set `SITE_URL` only when moving to a custom domain.
-
-`site` is resolved at BUILD time, not per request — so after adding a custom
-domain you must redeploy, not just change the DNS.
-
-### Preview deployments
-
-Vercel gives every branch its own URL. Those are real and reachable, so
-anything not `VERCEL_ENV=production` is marked `noindex` and its robots.txt
-disallows everything. A client-review branch cannot end up in search results
-competing with the live site.
-
-Add them as you connect each service:
-
-| Variable | Needed for | Secret |
-|---|---|---|
-| `SITE_URL` | Correct canonical/OG/sitemap URLs | No |
-| `SHOPIFY_STORE_DOMAIN` | Live catalogue and cart | No |
-| `SHOPIFY_STOREFRONT_TOKEN` | Live catalogue and cart | No |
-| `SHOPIFY_ADMIN_TOKEN` | Setup scripts only — **do not add to the host** | **Yes** |
-| `OKENDO_USER_ID` | Reviews | No |
-| `TYPESENSE_URL` + `TYPESENSE_SEARCH_KEY` | Search index | No |
-| `TYPESENSE_ADMIN_KEY` | Indexing scripts only — **do not add to the host** | **Yes** |
-
-The two admin tokens belong on your machine or in CI, never in the runtime
-environment. Nothing the site serves needs them, and putting them there only
-widens what a compromise reaches.
-
-## Other Node hosts
-
-Railway, Render, Fly, or any container platform work unchanged — the default
-build produces a standalone Node server:
-
-```bash
-npm ci && npm run build
-node ./dist/server/entry.mjs      # honours PORT and HOST
-```
-
-## Add compression
-
-The standalone Node server does **not** gzip or brotli. Put it behind a CDN
-or reverse proxy that does. Vercel handles this automatically; a bare Node
-host does not.
+For a custom domain, add it under Settings → Pages, then delete the
+`BASE_PATH` and `SITE_URL` lines from the workflow and set `SITE_URL` to the
+domain instead.
 
 ## Security headers
 
-`src/middleware.ts` sets CSP, HSTS, `X-Content-Type-Options`,
-`X-Frame-Options`, `Referrer-Policy` and `Permissions-Policy` on every
-response.
+The page carries a Content-Security-Policy as a `<meta>` tag, which is the
+only mechanism a static host guarantees. GitHub Pages cannot set headers at
+all.
 
-The CSP includes **`script-src 'none'`** in production. The storefront ships
-no JavaScript, so nothing legitimate needs to execute — which means an
-injected script from a product description or review cannot run. Adding
-analytics or a chat widget requires relaxing that line, and it is worth
-doing consciously.
+On a host that can — Vercel, Netlify, Cloudflare — add these, because two of
+them have no meta equivalent:
 
-## If a push does not deploy
-
-Vercel refuses to build a commit whose **author email** it cannot map to a
-Vercel account with access to the project. The build never starts, so there is
-no build log to read — the only signal is a failed commit status on GitHub
-linking to Vercel's "project collaboration" troubleshooting page.
-
-The usual cause is an unset git identity, which makes git fall back to
-`user@machine.local`:
-
-```bash
-git config user.email
+```
+X-Frame-Options: DENY
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+Strict-Transport-Security: max-age=63072000; includeSubDomains
+Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
 ```
 
-If that prints nothing, or anything other than the address on your Vercel
-account, set it before committing:
+`frame-ancestors` is the important one: it is what stops the page being
+embedded in someone else's site, and it can only be set as a header.
 
-```bash
-git config user.email "you@example.com"
-```
+## What the site ships
 
-Vercel builds the **tip** of the branch, so a correctly authored commit on top
-deploys everything below it. There is no need to rewrite history.
+No JavaScript. The mobile menu is a `<details>` element and the smooth
+scrolling is CSS, so there is nothing to execute and nothing to break on a
+slow connection. `script-src 'none'` in the policy is not aspirational.
 
-To check whether Vercel accepted a specific commit:
+Fonts are self-hosted — Cormorant Garamond and Jost, latin and latin-ext only,
+184KB total. Nothing is requested from a third party, which also keeps the
+site out of scope for consent banners about Google Fonts.
 
-```bash
-gh api repos/OWNER/REPO/commits/SHA/status --jq '.statuses[] | "\(.state) \(.target_url)"'
-```
-
-## Before a real launch
-
-- [ ] On a custom domain, set `SITE_URL` and **redeploy** — `site` is
-      build-time, so a DNS change alone will not update canonical tags
-- [ ] Connect Shopify, then run `npm run shopify:doctor`
-- [ ] Confirm compression is on
-- [ ] Submit `/sitemap.xml` in Google Search Console
-- [ ] Analytics — not built; adding it means relaxing the CSP
-- [ ] Cookie consent — not built; required in the EU/UK once analytics exists
-- [ ] Privacy policy, terms, returns policy pages — not built
-- [ ] Screen-reader pass. The build follows WCAG 2.2 AA but has not been
-      audited with an actual screen reader
+Photographs are resized at build into AVIF, WebP and JPEG at seven widths.
+Sources live in `src/assets/photography/` at a 2400px long edge; the retouched
+originals they came from are 45MP and should stay out of the repository.
