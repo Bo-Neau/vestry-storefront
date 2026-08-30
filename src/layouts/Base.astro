@@ -65,7 +65,8 @@ const CSP = [
 
     <link rel="icon" href="/favicon.png" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <meta name="theme-color" content="#141210" />
+    <meta name="theme-color" content="#0B0A09" />
+    <meta name="color-scheme" content="dark" />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={BRAND.name} />
@@ -101,13 +102,11 @@ const CSP = [
       <div class="shell announce-inner">
         <p class="announce-now">
           <span class="announce-label">Now showing</span>
-          <span class="announce-sep" aria-hidden="true">·</span>
-          <span class="announce-event">
-            {TEXWORLD.event}<span class="announce-context"> {TEXWORLD.context}</span>
-          </span>
-          <span class="announce-sep" aria-hidden="true">·</span>
-          <span class="announce-where">{TEXWORLD.hall} · {TEXWORLD.booth}</span>
-          <span class="announce-sep" aria-hidden="true">·</span>
+          <span class="announce-sep" aria-hidden="true">/</span>
+          <span class="announce-event">{TEXWORLD.event}<span class="announce-context"> {TEXWORLD.context}</span></span>
+          <span class="announce-sep" aria-hidden="true">/</span>
+          <span class="announce-where">{TEXWORLD.hall}, {TEXWORLD.booth}</span>
+          <span class="announce-sep" aria-hidden="true">/</span>
           <time datetime={TEXWORLD.start}>{TEXWORLD.dates}</time>
         </p>
         <a class="announce-mail" href={`mailto:${BRAND.email}`}>{BRAND.email}</a>
@@ -126,53 +125,55 @@ const CSP = [
 
 <style>
   .announce {
-    background: var(--ink);
-    color: var(--cream);
+    position: relative;
+    z-index: 40;
+    background: var(--ink-deep);
+    color: var(--ash);
+    font-family: var(--body);
     font-size: var(--step--2);
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
+    border-bottom: 1px solid var(--hair);
   }
   .announce-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: var(--sp-4);
-    min-height: 40px;
+    min-height: 42px;
     padding-block: var(--sp-2);
   }
   .announce-now {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 0 0.5em;
+    gap: 0 0.6em;
     text-transform: uppercase;
   }
   .announce-label { color: var(--gold); }
-  .announce-sep { color: var(--sep-on-ink); }
+  /* A slash, not a middot. It is the only diagonal on the page, and it stops
+     the bar reading as a list of equal things. */
+  .announce-sep { color: var(--ash-dim); }
+  .announce-event { color: var(--cream); }
   .announce-mail {
     text-transform: none;
     letter-spacing: 0.04em;
     white-space: nowrap;
-    color: var(--cream);
-    /* 24px minimum target, without changing the bar's height. */
+    color: var(--ash);
     display: inline-flex;
     align-items: center;
     min-height: 24px;
   }
+  .announce-mail:hover { color: var(--cream); }
 
-  @media (max-width: 800px) {
-    /*
-      The bar was running to three lines before a visitor saw anything, with a
-      separator orphaned at the end of the first. On a phone it keeps only what
-      a buyer needs to find the stand — the email is in the footer and in the
-      Visit section, and "Apparel Sourcing" is context they already have if
-      they are at the show.
-    */
+  @media (max-width: 860px) {
+    /* The bar ran to three lines before a visitor saw anything. On a phone it
+       keeps only what someone needs to find the stand; the address is in the
+       Visit section and the footer. */
     .announce-mail,
     .announce-context,
     .announce-label,
     .announce-label + .announce-sep { display: none; }
     .announce-inner { justify-content: center; text-align: center; }
     .announce-now { justify-content: center; }
-    .announce-event { color: var(--gold); }
   }
 </style>

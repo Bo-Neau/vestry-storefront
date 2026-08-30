@@ -1,16 +1,19 @@
 /* ---------------------------------------------------------------
    Manussa design system.
 
-   Palette and typefaces are specified in the client's content brief:
-   ink #141210, cream #f7f4ee, gold #a9843f, with Cormorant Garamond
-   for display and Jost for body.
+   The brief fixes the palette and the typefaces: ink #141210, cream
+   #f7f4ee, gold #a9843f, Cormorant Garamond and Jost. Those are kept
+   exactly.
 
-   The fonts are self-hosted rather than linked from Google. The brief
-   named Google Fonts, and the visual result is identical, but this
-   site's first audience is buyers at a trade stand on venue wifi —
-   a third-party request on the critical path is a failure point worth
-   removing, and it takes the site out of scope for cookie-consent
-   questions about Google at the same time.
+   What is deliberately NOT taken from the obvious reading of that
+   brief is the balance. Cream-dominant with a serif headline is where
+   this palette usually lands, and it fights the material — almost
+   every photograph in this collection was shot on a dark ground, at
+   night, against unlit walls. So the page is ink-dominant and the
+   cream is rationed: it is the type, and it is one panel early on that
+   reads like paper mounted on a dark wall. The garments are lit and
+   the room is not, which is how the clothes were photographed and how
+   they are shown at the stand.
    --------------------------------------------------------------- */
 
 @font-face {
@@ -68,53 +71,53 @@
 }
 
 :root {
-  /* --- brand palette, from the brief ------------------------------ */
-  --ink:        #141210;
-  --cream:      #F7F4EE;
-  --gold:       #A9843F;
+  /* --- ground ----------------------------------------------------- */
+  --ink:       #141210;   /* the page */
+  --ink-deep:  #0B0A09;   /* wells: hero, visit, the spaces between */
+  --ink-lift:  #1C1916;   /* a surface raised off the page */
 
-  /* Derived neutrals. Each is the brand ink or cream shifted, never a
-     generic grey, so nothing on the page reads as unconsidered. */
-  --ink-2:      #423C34;
-  --ink-3:      #6A6157;
-  --cream-2:    #FFFDF9;
-  --cream-3:    #EDE8DE;
-  --rule:       #DED8CC;
-  --rule-2:     #C6BEAE;
+  /* --- marks ------------------------------------------------------ */
+  --cream:     #F7F4EE;   /* 17.0:1 on ink */
+  --ash:       #A19990;   /* muted type, 6.7:1 on ink */
+  --ash-dim:   #7E7870;   /* hairlines and dividers — never type */
+  --gold:      #A9843F;   /* 5.4:1 on ink. Text-safe here, unlike on cream */
 
-  /* Gold at the weights text can actually use.
+  /* The one bright surface. Gold on it is 3.2:1, so gold is large-only
+     inside a cream panel and --gold-ink carries the small print. */
+  --paper:     #F7F4EE;
+  --paper-ink: #141210;
+  --gold-ink:  #7A5E28;
 
-     The brand gold is 3.6:1 on cream — enough for a rule, and enough for
-     large text on plain cream, but it drops to 2.84:1 on the slightly
-     darker cream-3 the collections sit on, which is under the 3:1 that
-     large text needs. So there are three:
-
-       --gold        the brand value. Rules, and text on ink (5.4:1).
-       --gold-large  large text on either cream. Measured, not guessed.
-       --gold-ink    small text on cream. The eyebrows and labels.
-  */
-  --gold-large: #A47F3A;
-  --gold-ink:   #7A5E28;
-
-  /* Separators inside the ink announcement bar. --ink-3 is tuned for cream
-     and lands at 3.08:1 the other way round. */
-  --sep-on-ink: #857C72;
+  /* --- rules ------------------------------------------------------ */
+  --hair:      rgb(247 244 238 / 0.14);
+  --hair-firm: rgb(247 244 238 / 0.28);
 
   /* --- type ------------------------------------------------------- */
-  --display: "Cormorant Garamond", "Cormorant", Georgia, "Times New Roman", serif;
+  --display: "Cormorant Garamond", Cormorant, Georgia, "Times New Roman", serif;
   --body:    "Jost", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
 
-  /* A fifth-based scale. Cormorant runs small for its point size, so
-     display steps are set larger than a sans would need. */
-  --step--2: 0.72rem;
-  --step--1: 0.84rem;
+  /*
+    Cormorant is a high-contrast face that gets finer as it grows. Set at
+    300 rather than 400 and given room, it reads as engraved instead of
+    bold — which is the difference between this and every other serif
+    headline. Weight is set once here so nothing overrides it by accident.
+  */
+  --display-weight: 300;
+
+  --step--2: 0.6875rem;
+  --step--1: 0.8125rem;
   --step-0:  1rem;
-  --step-1:  1.2rem;
-  --step-2:  1.5rem;
-  --step-3:  2rem;
-  --step-4:  2.75rem;
-  --step-5:  clamp(2.6rem, 6vw, 4.5rem);
-  --step-6:  clamp(3.4rem, 11vw, 8rem);
+  --step-1:  1.125rem;
+  --step-2:  1.375rem;
+  --step-3:  clamp(1.75rem, 2.4vw, 2.25rem);
+  --step-4:  clamp(2.25rem, 4vw, 3.5rem);
+  --step-5:  clamp(3rem, 6.5vw, 5.5rem);
+  --step-6:  clamp(4rem, 13vw, 11rem);
+
+  /* Tracking. Jost is geometric and needs air when it goes uppercase;
+     Cormorant needs the opposite as it scales. */
+  --track-label: 0.24em;
+  --track-nav:   0.18em;
 
   /* --- space ------------------------------------------------------ */
   --sp-1: 0.25rem;
@@ -125,22 +128,16 @@
   --sp-6: 2.25rem;
   --sp-7: 3.5rem;
   --sp-8: 5.5rem;
-  --sp-9: 8rem;
+  --sp-9: 8.5rem;
+  --sp-10: 13rem;
 
-  --shell: 1240px;
-  --measure: 62ch;
+  --shell: 1280px;
+  --measure: 58ch;
 }
 
 /*
-  Single theme, deliberately.
-
-  A gallery does not repaint itself when the sun goes down. The brief
-  specifies one palette — near-black ink on warm cream with a muted
-  gold — and the photography was lit and retouched for exactly that
-  ground. Inverting it would misrepresent the garments, which is the
-  one thing this site exists to show accurately.
-
-  So there is no dark-mode block. Every colour below is stated
-  explicitly, including on <body>, so the page holds its own ground
-  whatever the viewer's system is set to.
+  One palette, no theme switch. A gallery does not repaint itself when the
+  sun goes down, and the photography was lit and retouched for this exact
+  ground. Every colour is stated explicitly, including on <body>, so the
+  page holds whatever the viewer's system is set to.
 */

@@ -1,0 +1,95 @@
+---
+/**
+ * The drip.
+ *
+ * This is the house's own mark, not an ornament. The Hope Collection is
+ * painted so the motif "melts the darkness down and lets it flow"; Myanmar's
+ * Essence finishes with "the signature melting paintwork spilling from bold,
+ * open black stitching". Paint descending under gravity is the one idea every
+ * collection shares.
+ *
+ * Drawn from hope-capelet-detail.jpg: irregular strokes falling from a painted
+ * edge, varying in length and weight, several thickening into the beaded nodes
+ * that are worked along them by hand. Nothing here is evenly spaced, because
+ * nothing on the garment is.
+ *
+ * It is also why this page uses parallax. A drip that falls more slowly than
+ * the page is the motif behaving the way it behaves on the cloth.
+ */
+interface Props {
+  /** Strokes are drawn across 1000 units; the element scales to its box. */
+  height?: number;
+  class?: string;
+  /** Flip so the drip hangs from the top of a section rather than the bottom. */
+  invert?: boolean;
+}
+
+const { height = 120, class: className, invert = false } = Astro.props;
+
+/*
+  Hand-placed rather than generated. A random walk gives even irregularity,
+  which reads as noise; a painter leaves clusters and gaps. Each entry is
+  [x, length, width, nodeAt] with nodeAt as a fraction of the length, or 0
+  for none.
+*/
+const STROKES: readonly [number, number, number, number][] = [
+  [18, 46, 2.2, 0],     [34, 88, 2.8, 0.62],  [47, 30, 1.6, 0],
+  [79, 104, 3.4, 0.44], [92, 58, 2.0, 0],     [104, 22, 1.4, 0],
+  [138, 74, 2.6, 0.7],  [151, 120, 3.0, 0.3], [163, 40, 1.8, 0],
+  [196, 62, 2.4, 0],    [210, 96, 3.2, 0.55], [222, 34, 1.5, 0],
+  [248, 52, 2.0, 0.66], [262, 140, 3.6, 0.38],[276, 44, 1.9, 0],
+  [301, 80, 2.7, 0],    [314, 28, 1.5, 0],    [338, 108, 3.1, 0.5],
+  [352, 56, 2.2, 0],    [366, 36, 1.7, 0.72], [391, 92, 2.9, 0.42],
+  [404, 24, 1.4, 0],    [428, 66, 2.5, 0],    [441, 126, 3.3, 0.34],
+  [455, 42, 1.8, 0],    [479, 70, 2.6, 0.6],  [493, 32, 1.6, 0],
+  [517, 100, 3.0, 0.46],[530, 50, 2.1, 0],    [544, 26, 1.4, 0],
+  [569, 86, 2.8, 0.52], [582, 38, 1.7, 0],    [606, 114, 3.2, 0.4],
+  [620, 60, 2.3, 0],    [633, 30, 1.5, 0.68], [658, 78, 2.7, 0],
+  [671, 48, 2.0, 0],    [695, 132, 3.5, 0.36],[709, 40, 1.8, 0],
+  [722, 22, 1.3, 0],    [747, 94, 2.9, 0.48], [760, 54, 2.2, 0],
+  [784, 68, 2.5, 0.64], [798, 36, 1.7, 0],    [822, 110, 3.1, 0.42],
+  [836, 44, 1.9, 0],    [860, 72, 2.6, 0],    [873, 28, 1.5, 0],
+  [897, 98, 3.0, 0.5],  [911, 52, 2.1, 0],    [935, 34, 1.6, 0.7],
+  [959, 84, 2.8, 0.44], [972, 26, 1.4, 0],    [986, 58, 2.3, 0],
+];
+
+const MAX = 140;
+---
+
+<svg
+  class={className}
+  viewBox={`0 0 1000 ${MAX}`}
+  width="100%"
+  height={height}
+  preserveAspectRatio="none"
+  aria-hidden="true"
+  focusable="false"
+  style={invert ? "transform: scaleY(-1)" : undefined}
+>
+  {STROKES.map(([x, len, w, node]) => (
+    <>
+      <path
+        d={`M ${x} 0 L ${x} ${len}`}
+        stroke="currentColor"
+        stroke-width={w}
+        stroke-linecap="round"
+        fill="none"
+        opacity={0.55 + (w / 3.6) * 0.45}
+      />
+      {node > 0 && (
+        <circle
+          cx={x}
+          cy={len * node}
+          r={w * 0.95}
+          fill="currentColor"
+          opacity="0.9"
+        />
+      )}
+      <circle cx={x} cy={len} r={w * 0.55} fill="currentColor" opacity="0.7" />
+    </>
+  ))}
+</svg>
+
+<style>
+  svg { display: block; overflow: visible; }
+</style>
