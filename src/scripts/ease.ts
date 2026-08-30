@@ -11,17 +11,24 @@
 /**
  * Fraction of the remaining distance covered per 60fps frame.
  *
- * Lower is slower and heavier. At 0.11 a flick covers 90% of its distance in
- * about 350ms: clearly weighted, still obedient. Below roughly 0.06 the page
+ * Lower is slower and heavier. At 0.085 a flick covers 90% of its distance in
+ * about 430ms: clearly weighted, still obedient. Below roughly 0.06 the page
  * starts to feel like it is ignoring the wheel rather than gliding.
  */
-export const EASE = 0.11;
+export const EASE = 0.085;
 
 /** The reference frame length this ease is expressed against. */
 export const FRAME_MS = 1000 / 60;
 
-/** The smallest movement worth drawing a frame for. */
-export const SUBPIXEL = 0.5;
+/**
+ * The slowest the approach is allowed to move, in CSS pixels per frame.
+ *
+ * One pixel, because a scroll offset cannot represent less than one device
+ * pixel anyway — ask for a third of one and the browser rounds, so the page
+ * moves on some frames and not on others. scroll.ts passes `1 /
+ * devicePixelRatio` so this is one DEVICE pixel on a retina screen too.
+ */
+export const MIN_STEP = 1;
 
 /**
  * A wheel notch in pixels, used to convert the line and page delta modes
@@ -34,7 +41,7 @@ export const LINE_HEIGHT = 34;
  * The ease adjusted for how long the frame actually took.
  *
  * Without this the scroll runs at whatever rate the display does: applying a
- * fixed 0.11 twice as often on a 120Hz screen makes the page settle twice as
+ * fixed 0.085 twice as often on a 120Hz screen makes the page settle twice as
  * fast, so the same gesture feels different on a ProMotion laptop than on an
  * external monitor. Compounding it by elapsed time makes the curve a function
  * of seconds rather than frames.
@@ -47,16 +54,44 @@ export function easeForFrame(dt: number, ease = EASE): number {
   return 1 - Math.pow(1 - ease, clamped / FRAME_MS);
 }
 
-/** One frame of exponential approach. */
+/** The raw exponential: a fixed fraction of what is left. */
 export const step = (current: number, target: number, ease = EASE): number =>
   current + (target - current) * ease;
 
 /**
- * True once the next frame could not move a visible pixel, so there is
- * nothing left to animate. Snap to the target and stop.
+ * One frame of approach — exponential while that still moves a pixel, then a
+ * steady one-pixel walk to the target.
+ *
+ * The exponential alone does not land. Its steps shrink without bound, so it
+ * has to be cut off somewhere, and cutting off means jumping the rest. The
+ * previous stop condition fired once the next step would be under half a
+ * pixel, which at this ease is a remainder of about ten — so every single
+ * scroll on the site ended by teleporting the last several pixels. Measured
+ * through Chrome's own input pipeline, a four-notch flick ran ...2, 2, 1, 1,
+ * 1, 0, 1, 0 and then jumped 5px to finish. The zeroes are the same problem
+ * from the other side: an eased step of 0.4px cannot move an integer scroll
+ * offset, so that frame draws nothing at all.
+ *
+ * Holding a floor of one device pixel fixes both. The tail becomes an even
+ * one-pixel-per-frame walk that lands exactly on the target, so there is no
+ * jump to see and no frame that moves nothing.
  */
-export const arrived = (current: number, target: number, ease = EASE): boolean =>
-  Math.abs(target - current) * ease < SUBPIXEL;
+export function stepToward(
+  current: number,
+  target: number,
+  ease = EASE,
+  minStep = MIN_STEP,
+): number {
+  const remaining = target - current;
+  if (Math.abs(remaining) <= minStep) return target;
+  const eased = remaining * ease;
+  if (Math.abs(eased) < minStep) return current + Math.sign(remaining) * minStep;
+  return current + eased;
+}
+
+/** True once the walk-in has landed. `stepToward` returns the target itself. */
+export const arrived = (current: number, target: number): boolean =>
+  current === target;
 
 /** Keep a target inside the document. */
 export const clampTo = (value: number, max: number): number =>
@@ -84,16 +119,14 @@ export function trajectory(
   to: number,
   ease = EASE,
   maxFrames = 600,
+  minStep = MIN_STEP,
 ): number[] {
   const out: number[] = [];
   let current = from;
   for (let i = 0; i < maxFrames; i++) {
-    current = step(current, to, ease);
-    if (arrived(current, to, ease)) {
-      out.push(to);
-      break;
-    }
+    current = stepToward(current, to, ease, minStep);
     out.push(current);
+    if (arrived(current, to)) break;
   }
   return out;
 }

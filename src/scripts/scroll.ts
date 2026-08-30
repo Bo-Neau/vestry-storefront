@@ -19,7 +19,7 @@
      - keyboard, scrollbar drag, anchor links: resync rather than fight
    --------------------------------------------------------------- */
 
-import { EASE, easeForFrame, step, arrived, clampTo, wheelPixels } from "./ease.ts";
+import { EASE, FRAME_MS, easeForFrame, stepToward, arrived, clampTo, wheelPixels } from "./ease.ts";
 
 const reduced = matchMedia("(prefers-reduced-motion: reduce)");
 const coarse = matchMedia("(pointer: coarse)");
@@ -37,14 +37,29 @@ const maxScroll = () =>
 
 const clamp = (v: number) => clampTo(v, maxScroll());
 
+/**
+ * The floor on how slowly the approach may move, for this display and this
+ * frame.
+ *
+ * One device pixel: `1 / devicePixelRatio` in CSS pixels, so a retina screen
+ * gets a finer walk-in rather than a coarser one. Scaled by how long the
+ * frame took, for the same reason the ease is — the tail should be a speed in
+ * pixels per second, not a distance per frame, or it runs twice as fast on a
+ * 120Hz display.
+ */
+const devicePixel = (): number => 1 / (window.devicePixelRatio || 1);
+
+function walkIn(dt: number): number {
+  return devicePixel() * (Math.min(Math.max(dt, 1), 100) / FRAME_MS);
+}
+
 function frame(now: number): void {
-  const dt = lastTime ? now - lastTime : 16.7;
+  const dt = lastTime ? now - lastTime : FRAME_MS;
   lastTime = now;
 
-  current = step(current, target, easeForFrame(dt, EASE));
+  current = stepToward(current, target, easeForFrame(dt, EASE), walkIn(dt));
 
-  if (arrived(current, target, EASE)) {
-    current = target;
+  if (arrived(current, target)) {
     running = false;
     lastTime = 0;
   }
@@ -60,7 +75,22 @@ function frame(now: number): void {
     made the scrolling feel like it was fighting back instead of easing.
     This opts one caller out without touching the anchors.
   */
-  window.scrollTo({ top: current, behavior: "instant" });
+  /*
+    Asked for on the device-pixel grid, not as the raw float.
+
+    A scroll offset is quantised whatever we hand it, and handing it a
+    fractional position leaves the rounding to floating-point noise. During
+    the one-pixel walk-in that showed up as 1, 0, 2, 0, 1, 2 rather than 1,
+    1, 1, 1, 1, 1 — the same total distance delivered in a stutter, with the
+    parallax freezing on the zero frames because the page really had not
+    moved. Rounding here makes each frame ask for a position exactly one
+    pixel on from the last, so the walk is even.
+
+    `current` itself stays a float. Rounding it would drift the arithmetic
+    away from the target and the walk-in would never land on it.
+  */
+  const px = devicePixel();
+  window.scrollTo({ top: Math.round(current / px) * px, behavior: "instant" });
   driving = false;
 
   if (running) requestAnimationFrame(frame);

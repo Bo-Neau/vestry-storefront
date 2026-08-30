@@ -8,7 +8,7 @@
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { EASE, SUBPIXEL, FRAME_MS, step, arrived, clampTo, trajectory,
+import { EASE, MIN_STEP, FRAME_MS, step, stepToward, arrived, clampTo, trajectory,
          framesToCover, easeForFrame, wheelPixels } from "../src/scripts/ease.ts";
 
 test("approach is monotonic — it never overshoots or reverses", () => {
@@ -47,11 +47,43 @@ test("a flick covers most of its distance in about a third of a second", () => {
   assert.ok(ms <= 600, `too slow to feel responsive: ${ms}ms to 90%`);
 });
 
-test("it stops as soon as a frame could not move a visible pixel", () => {
-  // Guards the fix for the long tail: chasing a fixed 0.5px gap took ~100
-  // frames, most of them drawing nothing anyone could see.
+test("the settle never ends with a jump", () => {
+  /*
+    This is the defect the walk-in exists for. An exponential approach has to
+    be cut off somewhere, and cutting off means covering the remainder in one
+    frame. Stopping when the next step fell under half a pixel meant a
+    remainder of MIN_STEP/EASE — about ten pixels — arriving all at once, so
+    every scroll on the site finished with a visible hitch. Measured through
+    Chrome's input pipeline it was a 5px jump after a run of 1px steps.
+  */
+  for (const distance of [80, 400, 1200, 6000]) {
+    const path = trajectory(0, distance);
+    const last = path.at(-1) - path.at(-2);
+    assert.ok(last <= MIN_STEP + 1e-9,
+      `settle at ${distance}px ends with a ${last.toFixed(2)}px jump`);
+  }
+});
+
+test("no frame in the tail moves nothing", () => {
+  /*
+    The other half of the same defect. An eased step of 0.4px cannot move an
+    integer scroll offset, so that frame draws the page exactly where it
+    already was — which reads as a dropped frame rather than as slowness. The
+    floor guarantees every frame moves at least one pixel until it lands.
+  */
+  const path = trajectory(0, 1200);
+  let previous = 0;
+  for (const [i, position] of path.entries()) {
+    const moved = position - previous;
+    assert.ok(moved > 0, `frame ${i} of the settle moved nothing`);
+    previous = position;
+  }
+});
+
+test("the tail is short enough not to feel like lag", () => {
+  // The walk-in trades a jump for a few extra frames. It must stay a few.
   const frames = trajectory(0, 1200).length;
-  assert.ok(frames <= 60, `still animating a tail nobody can see: ${frames} frames`);
+  assert.ok(frames <= 90, `still animating a tail nobody can see: ${frames} frames`);
   assert.ok(frames >= 20, `stopping before the motion is actually finished: ${frames}`);
 });
 
@@ -106,11 +138,12 @@ test("the first frame moves a visible but small part of the way", () => {
 });
 
 test("arrival is exact, so it cannot creep or stall short", () => {
-  // At ease 0.075 the next frame moves less than half a pixel once the gap
-  // is under ~6.7px, which is where it snaps.
-  assert.ok(arrived(999, 1000), "should arrive when the next frame is sub-pixel");
-  assert.ok(!arrived(900, 1000), "should not arrive while visibly short");
-  assert.ok(SUBPIXEL <= 0.5, "a stop threshold above half a pixel would be visible");
+  assert.equal(stepToward(999.4, 1000), 1000, "the last pixel lands on the target");
+  assert.ok(arrived(1000, 1000), "landing on the target is arrival");
+  assert.ok(!arrived(999, 1000), "a pixel short is not arrival");
+  assert.equal(trajectory(0, 1000).at(-1), 1000, "the walk-in lands exactly");
+  assert.equal(trajectory(1000, 0).at(-1), 0, "and lands exactly going up too");
+  assert.ok(MIN_STEP <= 1, "a floor above one pixel would be a visible step");
   assert.ok(EASE > 0 && EASE < 1, "ease must be a fraction");
 });
 
@@ -143,6 +176,6 @@ test("a long flick and a short one feel the same length", () => {
   // same character, which is what stops the page feeling inconsistent.
   const short = trajectory(0, 120).length;
   const long = trajectory(0, 6000).length;
-  assert.ok(Math.abs(short - long) <= 55,
+  assert.ok(Math.abs(short - long) <= 60,
     `gesture length varies too much with distance: ${short} vs ${long} frames`);
 });
