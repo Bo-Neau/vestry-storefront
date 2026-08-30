@@ -14,21 +14,35 @@ them; you have to rebuild.
 `https://user.github.io/repo/` rather than a domain root. Set it to `/repo`.
 Leave it unset for a custom domain or any other host.
 
-## GitHub Pages
+## GitHub Pages — this is where the site lives
 
-A workflow is ready at `.github/workflows/pages.yml`. It is **manual only** —
-it will not publish anything until you either run it from the Actions tab or
-uncomment the `push:` trigger.
+<https://bo-neau.github.io/vestry-storefront/>
 
-To go live:
+`.github/workflows/pages.yml` runs on every push to `main`. Pages is set to
+build from **GitHub Actions** rather than from a branch, so nothing is
+committed to a `gh-pages` branch and `dist/` stays out of the repository.
 
-1. Repository → Settings → Pages → Source: **GitHub Actions**
-2. Actions tab → *Deploy to GitHub Pages* → **Run workflow**
-3. Once you are happy, uncomment the `push:` block so every push publishes
+The repository is public because Pages on a private repository requires a
+paid GitHub plan. That is the only reason.
 
-For a custom domain, add it under Settings → Pages, then delete the
-`BASE_PATH` and `SITE_URL` lines from the workflow and set `SITE_URL` to the
-domain instead.
+`BASE_PATH` is set in the workflow from the repository name, because a
+project site is served from `/<repo>/` rather than the domain root. Every
+absolute path in the built HTML carries that prefix.
+
+### Moving to a custom domain
+
+1. Settings → Pages → Custom domain, and add the DNS records it asks for
+2. Delete the `BASE_PATH` and `SITE_URL` lines from the workflow's `env:`
+   block and set `SITE_URL` to the domain
+3. Push, which rebuilds — the absolute URLs in the canonical tags, the
+   sitemap and the social preview are baked in at build, so they do not
+   follow a DNS change on their own
+
+### Renaming the repository
+
+The repository name is the URL path. Renaming it changes both the site
+address and `BASE_PATH`, which the workflow derives automatically — so a
+rename plus any push is all it takes. Update the git remote afterwards.
 
 ## Security headers
 

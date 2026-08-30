@@ -1,13 +1,13 @@
 # Deploy to GitHub Pages.
 #
-# Manual only, on purpose. Change `on:` to the commented block below when the
-# site is ready to go live and every push to main will publish it.
+# Live. Every push to main publishes; workflow_dispatch is kept so a deploy
+# can be re-run without an empty commit.
 name: Deploy to GitHub Pages
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
-  # push:
-  #   branches: [main]
 
 permissions:
   contents: read
