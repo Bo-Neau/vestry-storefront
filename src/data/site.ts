@@ -340,6 +340,19 @@ export const VISIT = {
 */
 export const SOCIAL: readonly { readonly label: string; readonly href: string }[] = [];
 
+/*
+  The studio credit.
+
+  Unlinked, because Raijin has no live domain yet — nothing in the project
+  carries one and DNS has nothing registered. Add `href` here and the footer
+  will link it.
+*/
+export const STUDIO = {
+  prefix: "Site by",
+  name: "Raijin Studio",
+  markAlt: "Raijin Studio",
+} as const;
+
 export const FOOTER = {
   explore: [
     { label: "Collections", href: "#collections" },

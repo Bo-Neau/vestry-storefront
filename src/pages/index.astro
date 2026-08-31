@@ -30,7 +30,7 @@ import lockupLight from "../assets/brand/lockup-light.png";
 import monogramLight from "../assets/brand/monogram-light.png";
 import {
   BRAND, TEXWORLD, NAV, HERO, MANIFESTO, COLLECTIONS,
-  ART, TECHNIQUES, HOUSE, VISIT, SOCIAL, FOOTER,
+  ART, TECHNIQUES, HOUSE, VISIT, SOCIAL, FOOTER, STUDIO,
 } from "../data/site.ts";
 
 /* The home page's public address, base path included — Astro.site is the
@@ -385,7 +385,12 @@ const event = {
         </ul>
       </div>
 
-      <p class="foot-legal">{FOOTER.legal}</p>
+      <div class="foot-base">
+        <p class="foot-legal">{FOOTER.legal}</p>
+        <p class="foot-studio">
+          {STUDIO.prefix} <span class="foot-studio-name">{STUDIO.name}</span>
+        </p>
+      </div>
     </div>
   </footer>
 </Base>
@@ -1111,15 +1116,59 @@ const event = {
   }
   .foot-col ul { display: flex; flex-direction: column; }
   .foot-static { display: inline-flex; align-items: center; min-height: 32px; font-size: var(--step--1); color: var(--ash); }
-  .foot-legal {
+  /*
+    The bottom rule: the client's legal line on the left, the studio credit on
+    the right. That is the convention, and it is the only place a studio
+    signature belongs on someone else's site.
+  */
+  .foot-base {
     grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--sp-4) var(--sp-6);
     margin-top: var(--sp-6);
     padding-top: var(--sp-5);
     border-top: 1px solid var(--hair);
+  }
+  .foot-legal {
+    margin: 0;
     font-size: var(--step--2);
     color: var(--ash-dim);
     letter-spacing: 0.06em;
   }
+
+  .foot-studio {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-3);
+    margin: 0;
+    font-size: var(--step--2);
+    text-transform: uppercase;
+    letter-spacing: var(--track-nav);
+    color: var(--ash);
+    white-space: nowrap;
+  }
+  /*
+    The wordmark, not the brush mark — and that was measured rather than
+    assumed.
+
+    Raijin's logo is 雷神 in heavy calligraphy, 2048px of brush and spatter.
+    Recoloured to cream and cropped to the strokes it was tried at 18, 22,
+    24, 28, 32, 34, 44 and 56px against this exact background: below about
+    44px it does not read as two characters at all, it reads as a speck of
+    dust on the screen, and it only becomes legible past roughly 120px.
+    Splitting it to the single 雷 of their favicon did not help — a column
+    density profile puts the gutter between the characters at 99 filled
+    pixels, so the two are one continuous gesture and do not separate.
+
+    120px in a client's footer would put the studio's signature at four
+    times the size of Manussa's own monogram thirty pixels away. So the
+    credit uses the other half of the logo: the RAIJIN wordmark, which the
+    artwork itself carries in tracked serif caps.
+  */
+  .foot-studio-name { color: var(--cream); }
 
   @media (max-width: 860px) {
     .foot-inner { grid-template-columns: minmax(0, 1fr); gap: var(--sp-6); }
