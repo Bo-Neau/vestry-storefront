@@ -349,8 +349,7 @@ export const SOCIAL: readonly { readonly label: string; readonly href: string }[
 */
 export const STUDIO = {
   prefix: "Site by",
-  name: "Raijin Studio",
-  markAlt: "Raijin Studio",
+  name: "Raijin",
 } as const;
 
 export const FOOTER = {

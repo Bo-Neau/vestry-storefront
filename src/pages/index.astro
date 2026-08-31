@@ -28,6 +28,7 @@ import { publicRoot } from "../lib/site-url.ts";
 import { Image } from "astro:assets";
 import lockupLight from "../assets/brand/lockup-light.png";
 import monogramLight from "../assets/brand/monogram-light.png";
+import raijinMark from "../assets/brand/raijin-mark.png";
 import {
   BRAND, TEXWORLD, NAV, HERO, MANIFESTO, COLLECTIONS,
   ART, TECHNIQUES, HOUSE, VISIT, SOCIAL, FOOTER, STUDIO,
@@ -388,7 +389,17 @@ const event = {
       <div class="foot-base">
         <p class="foot-legal">{FOOTER.legal}</p>
         <p class="foot-studio">
-          {STUDIO.prefix} <span class="foot-studio-name">{STUDIO.name}</span>
+          {/* The explicit space is load-bearing for a screen reader. The flex
+              gap separates these visually, but with no space in the text the
+              accessible name came out as "Site byRaijin". */}
+          {STUDIO.prefix}{" "}
+          <span class="foot-studio-lockup">
+            {/* alt="" — the mark and the word say the same thing, and the word
+                is right beside it, so announcing both repeats it. */}
+            <Image src={raijinMark} alt="" width={19} height={18}
+                   densities={[1, 2, 3]} class="foot-studio-mark" />
+            <span class="foot-studio-name">{STUDIO.name}</span>
+          </span>
         </p>
       </div>
     </div>
@@ -1151,23 +1162,31 @@ const event = {
     white-space: nowrap;
   }
   /*
-    The wordmark, not the brush mark — and that was measured rather than
-    assumed.
-
-    Raijin's logo is 雷神 in heavy calligraphy, 2048px of brush and spatter.
-    Recoloured to cream and cropped to the strokes it was tried at 18, 22,
-    24, 28, 32, 34, 44 and 56px against this exact background: below about
-    44px it does not read as two characters at all, it reads as a speck of
-    dust on the screen, and it only becomes legible past roughly 120px.
-    Splitting it to the single 雷 of their favicon did not help — a column
-    density profile puts the gutter between the characters at 99 filled
-    pixels, so the two are one continuous gesture and do not separate.
-
-    120px in a client's footer would put the studio's signature at four
-    times the size of Manussa's own monogram thirty pixels away. So the
-    credit uses the other half of the logo: the RAIJIN wordmark, which the
-    artwork itself carries in tracked serif caps.
+    The mark and the word stay together, so the pair never breaks across a
+    line with the word on its own.
   */
+  .foot-studio-lockup {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55em;
+    white-space: nowrap;
+  }
+
+  /*
+    18px, which is small enough that the mark works as a seal rather than as
+    two readable characters — at this size the calligraphy cannot resolve
+    into 雷神 and is not trying to.
+
+    Two things were done to the source to make it hold up. It is near-black
+    ink on transparent, so it would have been invisible against this
+    background; the alpha channel is kept exactly as it is — that is what
+    carries every brush edge — and the colour under it is replaced with
+    white. And the faintest spatter is dropped below an alpha of 70, because
+    at 18px it cannot resolve as detail and only lays a grey fog over the
+    strokes. Compared side by side at 14, 18, 22 and 28px, cleaned is
+    visibly crisper.
+  */
+  .foot-studio-mark { width: 19px; height: auto; }
   .foot-studio-name { color: var(--cream); }
 
   @media (max-width: 860px) {
