@@ -31,12 +31,17 @@ import monogramLight from "../assets/brand/monogram-light.png";
 import raijinMark from "../assets/brand/raijin-mark.png";
 import {
   BRAND, TEXWORLD, NAV, HERO, MANIFESTO, COLLECTIONS,
-  ART, TECHNIQUES, HOUSE, VISIT, SOCIAL, FOOTER, STUDIO,
+  ART, TECHNIQUES, HOUSE, VISIT, SOCIAL, FOOTER, STUDIO, showHasEnded,
 } from "../data/site.ts";
 
 /* The home page's public address, base path included — Astro.site is the
    origin alone, which on a project site is the account root. */
 const home = publicRoot(Astro.site).href;
+
+/* The stand is packed away, or it is not. Everything about the Visit section
+   and the announcement bar follows from this one call. */
+const ended = showHasEnded();
+const visit = ended ? VISIT.past : VISIT.upcoming;
 
 /* The painting, or the material where there is none. Derived from the credits
    rather than authored separately, so the label can never disagree with the
@@ -343,18 +348,28 @@ const event = {
     <div class="visit-veil" aria-hidden="true"></div>
 
     <div class="shell visit-copy">
-      <p class="label">{VISIT.eyebrow}</p>
-      <h2 id="visit-h">{VISIT.heading}</h2>
-      <p class="visit-body">{VISIT.body}</p>
+      <p class="label">{visit.eyebrow}</p>
+      <h2 id="visit-h">{visit.heading}</h2>
+      <p class="visit-body">{visit.body}</p>
 
-      <dl class="stand">
-        <div><dt>Hall</dt><dd>{TEXWORLD.hall.replace("Hall ", "")}</dd></div>
-        <div><dt>Booth</dt><dd>{TEXWORLD.booth.replace("Booth ", "")}</dd></div>
-        <div class="stand-when">
-          <dt>Dates</dt>
-          <dd><time datetime={TEXWORLD.start}>{TEXWORLD.datesLong}</time></dd>
-        </div>
-      </dl>
+      {/* A hall and a booth number are directions while the show is on and
+          clutter afterwards. Once it is over only the show and the dates
+          remain, as a record of where the collections were seen. */}
+      {ended ? (
+        <p class="stand-record">
+          <span>{TEXWORLD.event} &mdash; {TEXWORLD.context}</span>
+          <time datetime={TEXWORLD.start}>{TEXWORLD.datesLong}</time>
+        </p>
+      ) : (
+        <dl class="stand">
+          <div><dt>Hall</dt><dd>{TEXWORLD.hall.replace("Hall ", "")}</dd></div>
+          <div><dt>Booth</dt><dd>{TEXWORLD.booth.replace("Booth ", "")}</dd></div>
+          <div class="stand-when">
+            <dt>Dates</dt>
+            <dd><time datetime={TEXWORLD.start}>{TEXWORLD.datesLong}</time></dd>
+          </div>
+        </dl>
+      )}
 
       <a class="btn btn-fill" href={VISIT.cta.href}>{VISIT.cta.label}</a>
     </div>
@@ -382,7 +397,11 @@ const event = {
           <li><a href={`mailto:${BRAND.email}`}>{BRAND.email}</a></li>
           <li><a href={BRAND.websiteUrl} rel="noopener">{BRAND.website}</a></li>
           <li><span class="foot-static">{BRAND.city}</span></li>
-          <li><span class="foot-static">{TEXWORLD.event}, {TEXWORLD.hall}, {TEXWORLD.booth}</span></li>
+          {/* A booth number under "Contact" is only a contact while the show
+              is running. */}
+          {!ended && (
+            <li><span class="foot-static">{TEXWORLD.event}, {TEXWORLD.hall}, {TEXWORLD.booth}</span></li>
+          )}
         </ul>
       </div>
 
@@ -1085,6 +1104,30 @@ const event = {
     font-variant-numeric: lining-nums tabular-nums;
   }
   .stand-when dd { font-size: var(--step-2); line-height: 1.4; }
+
+  /*
+    The record that replaces the stand once the show is over. Same rules above
+    and below so the section keeps its shape, but one line of type rather than
+    three large numbers — a hall and a booth are directions, and directions to
+    a hall that has been cleared are just noise.
+  */
+  .stand-record {
+    margin-block: var(--sp-4);
+    padding-block: var(--sp-5);
+    border-top: 1px solid var(--hair-firm);
+    border-bottom: 1px solid var(--hair-firm);
+    font-family: var(--display);
+    font-size: var(--step-2);
+    line-height: 1.45;
+    color: var(--cream);
+    font-variant-numeric: lining-nums;
+    max-width: 34ch;
+  }
+  /* Two lines on purpose. As one run separated by a middot it wrapped with the
+     middot starting the second line, where it reads as a bullet rather than as
+     a separator. */
+  .stand-record span, .stand-record time { display: block; }
+  .stand-record time { color: var(--ash); font-size: var(--step-1); margin-top: var(--sp-1); }
 
   @media (max-width: 980px) {
     .visit-copy { padding-block: var(--sp-8); }

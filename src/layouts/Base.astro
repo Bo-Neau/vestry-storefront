@@ -1,6 +1,6 @@
 ---
 import "../styles/base.css";
-import { BRAND, TEXWORLD } from "../data/site.ts";
+import { BRAND, TEXWORLD, showHasEnded } from "../data/site.ts";
 
 interface Props {
   title: string;
@@ -113,15 +113,29 @@ const CSP = [
     -->
     <div class="announce">
       <div class="shell announce-inner">
-        <p class="announce-now">
-          <span class="announce-label">Now showing</span>
-          <span class="announce-sep" aria-hidden="true">/</span>
-          <span class="announce-event">{TEXWORLD.event}<span class="announce-context"> {TEXWORLD.context}</span></span>
-          <span class="announce-sep" aria-hidden="true">/</span>
-          <span class="announce-where">{TEXWORLD.hall}, {TEXWORLD.booth}</span>
-          <span class="announce-sep" aria-hidden="true">/</span>
-          <time datetime={TEXWORLD.start}>{TEXWORLD.dates}</time>
-        </p>
+        {/*
+          While the show runs this is the stand and the dates. Once it is over
+          the bar keeps its shape and its email but stops announcing an event
+          nobody can attend — it becomes the house's own line instead. Decided
+          at build; see showHasEnded in site.ts.
+        */}
+        {showHasEnded() ? (
+          <p class="announce-now">
+            <span class="announce-label">{BRAND.name}</span>
+            <span class="announce-sep" aria-hidden="true">/</span>
+            <span class="announce-event">{BRAND.city}</span>
+          </p>
+        ) : (
+          <p class="announce-now">
+            <span class="announce-label">Now showing</span>
+            <span class="announce-sep" aria-hidden="true">/</span>
+            <span class="announce-event">{TEXWORLD.event}<span class="announce-context"> {TEXWORLD.context}</span></span>
+            <span class="announce-sep" aria-hidden="true">/</span>
+            <span class="announce-where">{TEXWORLD.hall}, {TEXWORLD.booth}</span>
+            <span class="announce-sep" aria-hidden="true">/</span>
+            <time datetime={TEXWORLD.start}>{TEXWORLD.dates}</time>
+          </p>
+        )}
         <a class="announce-mail" href={`mailto:${BRAND.email}`}>{BRAND.email}</a>
       </div>
     </div>

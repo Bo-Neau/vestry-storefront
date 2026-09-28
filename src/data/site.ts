@@ -38,6 +38,24 @@ export const TEXWORLD = {
   end: "2026-09-02",
 } as const;
 
+/**
+ * Whether the show has finished — decided when the site is BUILT, not when it
+ * is viewed, because this is a static site with no code running on a server.
+ *
+ * It exists so the page cannot go on inviting people to a stand that has been
+ * packed away. A trade show is the one piece of copy on a site like this with
+ * an expiry date on it, and the version that said "Now showing" was still
+ * saying it three weeks after the hall closed.
+ *
+ * Every rebuild re-evaluates it, so the site corrects itself on the next
+ * deploy. Put the next edition's dates in TEXWORLD above and it flips back to
+ * the invitation on its own — nothing else has to be edited.
+ *
+ * End of day in Paris, where the show is.
+ */
+export const showHasEnded = (now: Date = new Date()): boolean =>
+  new Date(`${TEXWORLD.end}T23:59:59+02:00`).getTime() < now.getTime();
+
 export const NAV = [
   { label: "Collections", href: "#collections" },
   { label: "Art", href: "#artists" },
@@ -323,10 +341,28 @@ export const HOUSE = {
   ],
 } as const;
 
+/*
+  Two versions of the same section: one that invites people to the stand while
+  the show is running, one that records it as a credential once it is over.
+  `showHasEnded` picks between them at build.
+
+  The past copy claims nothing that is not true. It does not offer viewings,
+  appointments or a next edition — none of which has been confirmed — it says
+  where the collections were shown and where to write.
+*/
 export const VISIT = {
-  eyebrow: "Find Us",
-  heading: "Meet Manussa at Texworld Paris",
-  body: "Come see our collections in person.",
+  upcoming: {
+    eyebrow: "Find Us",
+    heading: "Meet Manussa at Texworld Paris",
+    body: "Come see our collections in person.",
+  },
+  past: {
+    eyebrow: "Enquiries",
+    heading: "The 2026 collections were shown in Paris.",
+    body:
+      "Manussa exhibited at Texworld Paris this September. For stockist and " +
+      "press enquiries, please write to us.",
+  },
   cta: { label: "Get in Touch", href: `mailto:${BRAND.email}` },
   image: "crimson-three",
   imageAlt: "The Crimson Drive group, photographed before the red-line painting",
