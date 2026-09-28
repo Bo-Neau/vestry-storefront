@@ -2,14 +2,15 @@
 <!--
   The client-facing setup guide, rendered to PDF for handover.
 
-  Chrome will not load a font over file:// even with
-  --allow-file-access-from-files, so the render step inlines these two
-  @font-face sources as base64 data URIs first. The paths here are the
-  readable form; do not expect them to work if you just open this file.
+  Written for someone who is not technical and may not have English as a
+  first language: one instruction per sentence, no idioms, the thing to click
+  in bold, and what they should see underneath it in grey.
 
-  The page canvas is white on purpose. A tinted background cannot reach into
-  the @page margin area in Chrome, so a cream sheet printed with a white band
-  around every page.
+  Two notes for re-rendering. Chrome will not load a font over file:// even
+  with --allow-file-access-from-files, so the render inlines both @font-face
+  sources as base64 first; the paths here are the readable form. And the page
+  is white on purpose — a tinted canvas cannot reach into the @page margin
+  area, so cream printed with a white band around every page.
 -->
 
 <html lang="en">
@@ -30,141 +31,141 @@
 
   :root {
     --ink:   #1A1714;
-    --body:  #3A342E;
+    --body:  #35302A;
     --muted: #6B635A;
     --gold:  #8A6A2F;
-    --rule:  #D9D2C6;
-    --paper: #FFFFFF;
-    --panel: #F3EFE7;
+    --rule:  #DCD5C9;
+    --panel: #F5F1E9;
     --code:  #EDE8DE;
+    --good:  #2F6B43;
+    --stop:  #A6442E;
     --display: "Cormorant Garamond", Georgia, serif;
     --sans: "Jost", -apple-system, "Helvetica Neue", Arial, sans-serif;
   }
 
-  @page { size: A4; margin: 17mm 16mm 15mm; }
+  @page { size: A4; margin: 16mm 15mm 14mm; }
 
   * { box-sizing: border-box; }
-  html { font-size: 10.5pt; background: var(--paper); }
+  html { font-size: 11.2pt; background: #FFF; }
   body {
     margin: 0;
     font-family: var(--sans);
     font-weight: 400;
-    line-height: 1.62;
+    line-height: 1.72;
     color: var(--body);
-    background: var(--paper);
     -webkit-font-smoothing: antialiased;
   }
 
   h1, h2, h3 { font-family: var(--display); font-weight: 400; color: var(--ink); margin: 0; line-height: 1.12; }
+  b, strong { font-weight: 500; color: var(--ink); }
 
   .eyebrow {
-    font-size: 7.6pt; text-transform: uppercase; letter-spacing: 0.22em;
+    font-size: 8pt; text-transform: uppercase; letter-spacing: 0.2em;
     color: var(--gold); margin: 0 0 10pt;
   }
 
   /* ---------- cover ---------- */
   .cover {
-    break-after: page; padding-top: 30mm;
-    min-height: 258mm;                       /* A4 less the @page margins */
-    display: flex; flex-direction: column;
+    break-after: page; padding-top: 32mm;
+    min-height: 258mm; display: flex; flex-direction: column;
   }
-  .cover .spacer { flex: 1 1 auto; }
-  .cover h1 { font-size: 40pt; letter-spacing: -0.015em; margin-bottom: 8pt; }
-  .cover .sub {
-    font-family: var(--display); font-size: 16pt; font-style: italic;
-    color: var(--muted); margin: 0 0 30pt;
-  }
-  .cover-rule { height: 1px; background: var(--gold); width: 120pt; margin: 0 0 26pt; }
-  .cover-lede { font-size: 11pt; max-width: 84%; margin: 0 0 26pt; }
+  .cover h1 { font-size: 40pt; letter-spacing: -0.015em; margin-bottom: 10pt; }
+  .cover .sub { font-family: var(--display); font-size: 17pt; font-style: italic; color: var(--muted); margin: 0 0 28pt; }
+  .cover-rule { height: 1px; background: var(--gold); width: 110pt; margin: 0 0 26pt; }
+  .cover p { font-size: 12pt; max-width: 80%; margin: 0 0 10pt; }
+  .spacer { flex: 1 1 auto; }
   .cover-meta {
-    margin-top: 0; padding-top: 12pt; border-top: 1px solid var(--rule);
+    padding-top: 12pt; border-top: 1px solid var(--rule);
     display: flex; justify-content: space-between;
-    font-size: 8pt; text-transform: uppercase; letter-spacing: 0.14em; color: var(--muted);
+    font-size: 8.4pt; text-transform: uppercase; letter-spacing: 0.14em; color: var(--muted);
   }
-  .cover-meta strong { color: var(--ink); font-weight: 500; }
+  .cover-meta strong { color: var(--ink); }
 
   /* ---------- sections ---------- */
-  section { break-inside: auto; }
-  h2 {
-    font-size: 21pt; margin: 0 0 4pt;
-    padding-top: 4pt;
-  }
-  .sec-rule { height: 1px; background: var(--rule); margin: 9pt 0 14pt; }
-  h3 { font-size: 13.5pt; margin: 18pt 0 5pt; }
-  p { margin: 0 0 9pt; }
-  .lede { font-size: 11pt; color: var(--ink); margin-bottom: 13pt; }
-
+  h2 { font-size: 23pt; margin: 0 0 4pt; }
+  .sec-rule { height: 1px; background: var(--rule); margin: 10pt 0 16pt; }
+  h3 { font-size: 14pt; margin: 22pt 0 7pt; }
+  p { margin: 0 0 10pt; }
+  .lede { font-size: 12pt; color: var(--ink); margin-bottom: 15pt; }
   .break { break-before: page; }
 
   /* ---------- steps ---------- */
-  ol.steps { counter-reset: s; list-style: none; padding: 0; margin: 12pt 0; }
+  ol.steps { counter-reset: s; list-style: none; padding: 0; margin: 16pt 0; }
   ol.steps > li {
-    counter-increment: s; position: relative; padding-left: 26pt;
-    margin-bottom: 11pt; break-inside: avoid;
+    counter-increment: s; position: relative; padding-left: 34pt;
+    margin-bottom: 14pt; break-inside: avoid;
   }
+  /* Steps nested inside a callout sit closer together. A callout will not
+     split across pages, so a loose one can be pushed whole onto the next
+     sheet and leave the page before it half empty. */
+  .note ol.steps > li, .warn ol.steps > li, .ok ol.steps > li { margin-bottom: 9pt; }
+  .note ol.steps, .warn ol.steps { margin-top: 9pt; }
   ol.steps > li::before {
     content: counter(s);
-    position: absolute; left: 0; top: 0.5pt;
-    width: 17pt; height: 17pt; border-radius: 50%;
-    background: var(--ink); color: var(--paper);
-    font-size: 8.5pt; font-weight: 500;
+    position: absolute; left: 0; top: -1pt;
+    width: 22pt; height: 22pt; border-radius: 50%;
+    background: var(--ink); color: #FFF;
+    font-size: 10.5pt; font-weight: 500;
     display: flex; align-items: center; justify-content: center;
   }
-  ol.steps > li b { color: var(--ink); font-weight: 500; }
-
-  ul.plain { margin: 6pt 0 10pt; padding-left: 14pt; }
-  ul.plain li { margin-bottom: 4pt; }
+  .said { display: block; margin-top: 3pt; color: var(--muted); font-size: 10.2pt; }
+  .said b { color: var(--body); }
 
   /* ---------- callouts ---------- */
-  .note, .warn {
-    padding: 10pt 12pt; margin: 12pt 0; break-inside: avoid;
-    border-left: 2px solid var(--gold); background: var(--panel);
-    font-size: 9.6pt;
+  .note, .warn, .ok {
+    padding: 11pt 13pt; margin: 14pt 0; break-inside: avoid;
+    border-left: 3px solid var(--gold); background: var(--panel); font-size: 10.6pt;
   }
-  .warn { border-left-color: #A6442E; }
-  .note .t, .warn .t {
-    display: block; font-size: 7.6pt; text-transform: uppercase;
-    letter-spacing: 0.16em; color: var(--gold); margin-bottom: 4pt; font-weight: 500;
+  .warn { border-left-color: var(--stop); }
+  .ok { border-left-color: var(--good); }
+  .note .t, .warn .t, .ok .t {
+    display: block; font-size: 8pt; text-transform: uppercase;
+    letter-spacing: 0.16em; color: var(--gold); margin-bottom: 5pt; font-weight: 500;
   }
-  .warn .t { color: #A6442E; }
-  .note p:last-child, .warn p:last-child { margin-bottom: 0; }
+  .warn .t { color: var(--stop); }
+  .ok .t { color: var(--good); }
+  .note p:last-child, .warn p:last-child, .ok p:last-child { margin-bottom: 0; }
 
-  /* ---------- code / prompts ---------- */
+  /* ---------- code ---------- */
   code {
     font-family: "SF Mono", Menlo, Consolas, monospace;
-    font-size: 8.8pt; background: var(--code); padding: 1pt 3pt; border-radius: 2px;
-    color: var(--ink);
+    font-size: 9.6pt; background: var(--code); padding: 1pt 3.5pt; border-radius: 2px; color: var(--ink);
+  }
+  .block {
+    background: var(--code); border: 1px solid var(--rule);
+    padding: 10pt 12pt; margin: 9pt 0 12pt; break-inside: avoid;
+    font-family: "SF Mono", Menlo, monospace; font-size: 9.4pt; line-height: 1.7; color: var(--ink);
   }
   .prompt {
-    background: var(--code); border: 1px solid var(--rule);
-    padding: 10pt 12pt; margin: 7pt 0 14pt; break-inside: avoid;
-    font-size: 9.4pt; line-height: 1.55; color: var(--ink);
+    background: var(--panel); border: 1px solid var(--rule);
+    padding: 11pt 13pt; margin: 8pt 0 15pt; break-inside: avoid;
+    font-size: 10.4pt; line-height: 1.6; color: var(--ink);
   }
   .prompt .lbl {
-    display: block; font-family: var(--sans); font-size: 7.4pt;
-    text-transform: uppercase; letter-spacing: 0.16em;
-    color: var(--gold); margin-bottom: 6pt; font-weight: 500;
+    display: block; font-size: 8pt; text-transform: uppercase; letter-spacing: 0.16em;
+    color: var(--gold); margin-bottom: 7pt; font-weight: 500;
   }
 
   /* ---------- tables ---------- */
-  table { width: 100%; border-collapse: collapse; margin: 10pt 0 14pt; font-size: 9.4pt; }
-  th, td { text-align: left; padding: 6pt 8pt 6pt 0; vertical-align: top; border-bottom: 1px solid var(--rule); }
+  table { width: 100%; border-collapse: collapse; margin: 12pt 0 16pt; font-size: 10.6pt; }
+  th, td { text-align: left; padding: 8pt 10pt 8pt 0; vertical-align: top; border-bottom: 1px solid var(--rule); }
   th {
-    font-size: 7.6pt; text-transform: uppercase; letter-spacing: 0.14em;
+    font-size: 8pt; text-transform: uppercase; letter-spacing: 0.14em;
     color: var(--gold); font-weight: 500; border-bottom-color: var(--gold);
   }
-  td:first-child { color: var(--ink); width: 38%; }
+  td:first-child { color: var(--ink); width: 40%; }
   tr { break-inside: avoid; }
+  .tick { color: var(--good); font-weight: 500; }
+  .cross { color: var(--stop); font-weight: 500; }
 
-  .files { font-family: "SF Mono", Menlo, monospace; font-size: 9pt; }
-  .files td:first-child { width: 34%; color: var(--ink); }
-
-  /* ---------- footer mark ---------- */
-  .signoff {
-    margin-top: 26pt; padding-top: 12pt; border-top: 1px solid var(--rule);
-    font-size: 8.4pt; color: var(--muted);
+  ul.files { list-style: none; padding: 0; margin: 10pt 0 14pt; columns: 2; column-gap: 24pt; }
+  ul.files li {
+    font-family: "SF Mono", Menlo, monospace; font-size: 10pt;
+    padding: 4pt 0; color: var(--ink); break-inside: avoid;
   }
-  .signoff b { color: var(--ink); font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; font-size: 7.8pt; }
+  ul.files li span { font-family: var(--sans); font-size: 9pt; color: var(--muted); }
+
+  .signoff { margin-top: 24pt; padding-top: 12pt; border-top: 1px solid var(--rule); font-size: 10pt; color: var(--muted); }
 </style>
 </head>
 <body>
@@ -172,19 +173,18 @@
 <!-- ============================ COVER ============================ -->
 <div class="cover">
   <p class="eyebrow">Manussa · Aura Core Company Ltd</p>
-  <h1>Putting the website live</h1>
+  <h1>Putting your website online</h1>
   <p class="sub">A step-by-step guide for GoDaddy</p>
   <div class="cover-rule"></div>
-  <p class="cover-lede">
-    Everything needed is in one zip file. There is nothing to install and nothing
-    to build — the website is finished. This guide covers checking you have the
-    right GoDaddy product, uploading the files, and what to do if something looks
-    wrong afterwards.
-  </p>
-  <p class="cover-lede" style="color:var(--muted); font-size:10pt;">
-    The last section shows how to do the whole thing with Claude in Cowork, with
-    prompts you can copy and paste.
-  </p>
+
+  <p>Your website is finished. Everything is in one file.</p>
+  <p>There is nothing to install. There is nothing to build. You only need to
+     upload the file and unzip it.</p>
+  <p style="color:var(--muted); font-size:11pt; margin-top:16pt;">
+     Follow the sections in order. Each one takes a few minutes.</p>
+  <p style="color:var(--muted); font-size:11pt;">
+     Section 7 shows how Claude can help you with every step.</p>
+
   <div class="spacer"></div>
   <div class="cover-meta">
     <span>Prepared by <strong>Raijin</strong></span>
@@ -192,363 +192,415 @@
   </div>
 </div>
 
-<!-- ======================= WHAT YOU RECEIVED ======================= -->
+<!-- ======================= 1 · WHAT YOU HAVE ======================= -->
 <section>
-  <p class="eyebrow">Section one</p>
-  <h2>What you have received</h2>
+  <p class="eyebrow">Section 1</p>
+  <h2>What you have</h2>
   <div class="sec-rule"></div>
 
-  <p class="lede">One file: <code>manussa-site.zip</code>. Inside it is the complete website.</p>
+  <p class="lede">One file: <code>manussa-site.zip</code></p>
+  <p>Inside it is your whole website. Here is what each part does.</p>
 
-  <table class="files">
-    <tr><th>File or folder</th><th>What it is</th></tr>
-    <tr><td>index.html</td><td>The website itself</td></tr>
-    <tr><td>404.html</td><td>Shown if someone types a wrong address</td></tr>
-    <tr><td>_assets/</td><td>Every photograph, the stylesheet, the one script</td></tr>
-    <tr><td>fonts/</td><td>The two typefaces, so the page never depends on Google</td></tr>
-    <tr><td>robots.txt<br>sitemap.xml</td><td>For search engines</td></tr>
-    <tr><td>.htaccess</td><td>Hidden. Security, caching and image settings</td></tr>
-    <tr><td>favicon.png<br>apple-touch-icon.png</td><td>The small icon in a browser tab</td></tr>
+  <table>
+    <tr><th>Name</th><th>What it does</th></tr>
+    <tr><td><code>index.html</code></td><td>Your website</td></tr>
+    <tr><td><code>404.html</code></td><td>Shown if someone types a wrong address</td></tr>
+    <tr><td><code>_assets</code></td><td>All the photos, colours and text styles</td></tr>
+    <tr><td><code>fonts</code></td><td>The two typefaces</td></tr>
+    <tr><td><code>robots.txt</code><br><code>sitemap.xml</code></td><td>Help Google find your site</td></tr>
+    <tr><td><code>.htaccess</code></td><td>Settings. This one is hidden</td></tr>
+    <tr><td><code>favicon.png</code><br><code>apple-touch-icon.png</code></td><td>The small icon in a browser tab</td></tr>
   </table>
 
   <div class="note">
-    <span class="t">The file you must not lose</span>
+    <span class="t">About the hidden file</span>
     <p>
-      <code>.htaccess</code> begins with a dot, which means most systems hide it
-      by default. Without it the site still works, but it loses its security
-      settings and — more visibly — every photograph falls back to a much larger
-      file, so the site becomes slow. Section four explains how to confirm it
-      arrived.
+      <code>.htaccess</code> starts with a dot. Computers hide files that start
+      with a dot.
+    </p>
+    <p>
+      You still need it. Without it, your photos load slowly. Section 4 shows
+      you how to check that it is there.
     </p>
   </div>
 </section>
 
-<!-- ===================== STEP 0: WHAT YOU HAVE ===================== -->
+<!-- ==================== 2 · CHECK YOUR ACCOUNT ==================== -->
 <section class="break">
-  <p class="eyebrow">Section two</p>
-  <h2>First, check what you have at GoDaddy</h2>
+  <p class="eyebrow">Section 2</p>
+  <h2>Check your GoDaddy account first</h2>
   <div class="sec-rule"></div>
 
-  <p class="lede">
-    This takes two minutes and it is the step most worth doing. One of GoDaddy's
-    products cannot host this website at all, and finding that out after a long
-    upload is a frustrating way to find it out.
+  <p class="lede">Do this before anything else. It takes two minutes.</p>
+
+  <p>
+    GoDaddy sells several products. Only one of them can hold this website.
+    Check which one you have before you upload anything.
   </p>
 
-  <p>Sign in to GoDaddy and open <b>My Products</b>. Look at the section headings:</p>
+  <ol class="steps">
+    <li><b>Sign in to GoDaddy.</b></li>
+    <li><b>Open My Products.</b>
+      <span class="said">Look at the headings on the page.</span></li>
+  </ol>
 
   <table>
-    <tr><th>What you see</th><th>What it means</th></tr>
+    <tr><th>If you see</th><th>Then</th></tr>
     <tr>
-      <td><b>Web Hosting</b><br>with a <i>cPanel Admin</i> button</td>
-      <td>Correct. Go to section three.</td>
+      <td><b>Web Hosting</b><br>with a <b>cPanel Admin</b> button</td>
+      <td><span class="tick">Good.</span> Go to section 3.</td>
     </tr>
     <tr>
-      <td><b>Websites + Marketing</b><br>(Website Builder)</td>
-      <td>This cannot host an uploaded website. It only runs GoDaddy's own
-          drag-and-drop pages. You would need to add hosting.</td>
+      <td><b>Websites + Marketing</b></td>
+      <td><span class="cross">Stop.</span> This product cannot hold your
+          website. You need to buy hosting.</td>
     </tr>
     <tr>
       <td>Only <b>Domains</b></td>
-      <td>You own the web address but have nowhere to put the site yet. You
-          would need to add hosting.</td>
+      <td><span class="cross">Stop.</span> You own the web address. But you
+          have nowhere to put the website. You need to buy hosting.</td>
     </tr>
   </table>
 
   <div class="warn">
     <span class="t">If you need to buy hosting</span>
+    <p><b>Buy this:</b> Web Hosting → Linux. It includes cPanel.</p>
+    <p><b>Do not buy:</b> Managed WordPress. It is for a different kind of website.</p>
     <p>
-      The product to buy is <b>Web Hosting</b> on <b>Linux</b>, which is the one
-      that includes cPanel. Not Managed WordPress — that is a WordPress
-      installation, and putting this site into it means fighting the platform.
-      Once the plan is active, a <i>Web Hosting</i> section with a
-      <i>cPanel Admin</i> button appears on the Products page.
+      After you buy it, a <b>Web Hosting</b> section appears on your Products
+      page. Then come back to this guide.
     </p>
   </div>
 
-  <p>
-    Because the domain is already registered in the same GoDaddy account, the
-    connection between the address and the hosting is made for you. There are no
-    DNS settings to edit.
-  </p>
+  <div class="ok">
+    <span class="t">Good news</span>
+    <p>
+      Your web address is already in the same GoDaddy account. GoDaddy connects
+      it to your hosting for you. There are no settings to change.
+    </p>
+  </div>
 </section>
 
-<!-- ======================== STEP 1: UPLOAD ======================== -->
+<!-- ======================== 3 · UPLOAD ======================== -->
 <section class="break">
-  <p class="eyebrow">Section three</p>
-  <h2>Uploading the website</h2>
+  <p class="eyebrow">Section 3</p>
+  <h2>Upload your website</h2>
   <div class="sec-rule"></div>
 
   <ol class="steps">
-    <li><b>Open cPanel.</b> My Products → Web Hosting → <b>Manage</b> → <b>cPanel Admin</b>.</li>
-    <li><b>Open File Manager</b>, then double-click into the folder called
-        <code>public_html</code>. This folder is the website — whatever is in it
-        is what the world sees.</li>
-    <li><b>Delete GoDaddy's placeholder page first.</b> There is usually an
-        <code>index.html</code>, a <code>default.html</code>, or a "coming soon"
-        folder already sitting there. If you leave it, it keeps winning over the
-        real site and you will think the upload failed.</li>
-    <li><b>Upload</b> <code>manussa-site.zip</code> using the Upload button. Wait
-        for it to reach 100%.</li>
-    <li><b>Extract it.</b> Back in File Manager, right-click the zip →
-        <b>Extract</b>. Then delete the zip itself; it is no longer needed.</li>
-    <li><b>Visit the website address.</b> It should be there.</li>
+    <li>
+      <b>Open cPanel.</b>
+      <span class="said">My Products → Web Hosting → Manage → cPanel Admin</span>
+    </li>
+    <li>
+      <b>Open File Manager.</b>
+      <span class="said">Then double-click the folder called <code>public_html</code>.</span>
+      <span class="said">This folder is your website. Whatever is inside it is what people see.</span>
+    </li>
+    <li>
+      <b>Delete GoDaddy's starter page.</b>
+      <span class="said">Look for <code>index.html</code>, <code>default.html</code>,
+        or a folder called "coming soon". Delete them.</span>
+      <span class="said"><b>This step matters.</b> If you leave them, your website will not appear.</span>
+    </li>
+    <li>
+      <b>Click Upload.</b>
+      <span class="said">Choose <code>manussa-site.zip</code>. Wait until it reaches 100%.</span>
+    </li>
+    <li>
+      <b>Unzip it.</b>
+      <span class="said">Go back to File Manager. Right-click the zip file. Choose <b>Extract</b>.</span>
+      <span class="said">Then delete the zip file. You do not need it any more.</span>
+    </li>
+    <li>
+      <b>Open your website address in a browser.</b>
+      <span class="said">Your website should be there.</span>
+    </li>
   </ol>
 
   <div class="note">
-    <span class="t">If the upload stalls or fails</span>
+    <span class="t">If the upload stops before it finishes</span>
     <p>
-      The file is large — your computer will show it as about 67 MB, cPanel will
-      call the same file 64 MB, and both are right; they count megabytes
-      differently. That is more than a browser upload always manages in one go.
-      If it stops partway, use FTP instead — it is steadier and can
-      resume. In cPanel, open <b>FTP Accounts</b> to get the server address,
-      username and port, then use a free program such as FileZilla and drag the
-      extracted files into <code>public_html</code>.
+      The file is big. Your computer calls it 67 MB. cPanel calls the same file
+      64 MB. Both are correct. They count in different ways.
     </p>
+    <p>
+      Web browsers sometimes cannot finish a file this big. If yours stops, use
+      FTP instead. FTP takes longer to set up, but it does not give up.
+    </p>
+    <ol class="steps" style="margin-top:12pt;margin-bottom:0;">
+      <li>In cPanel, open <b>FTP Accounts</b>.
+        <span class="said">Write down the server name, username and port.</span></li>
+      <li>Download <b>FileZilla</b>. It is free.</li>
+      <li>Connect with those details.
+        <span class="said">Then drag the files into <code>public_html</code>.</span></li>
+    </ol>
   </div>
 </section>
 
-<!-- ==================== STEP 2: CONFIRM HTACCESS ==================== -->
-<section>
-  <p class="eyebrow">Section four</p>
-  <h2>Confirm the hidden file arrived</h2>
+<!-- ==================== 4 · CHECK HIDDEN FILE ==================== -->
+<section class="break">
+  <p class="eyebrow">Section 4</p>
+  <h2>Check the hidden file</h2>
   <div class="sec-rule"></div>
 
-  <p class="lede">File Manager hides <code>.htaccess</code> until you tell it not to.</p>
+  <p class="lede">File Manager hides <code>.htaccess</code> until you ask it not to.</p>
 
   <ol class="steps">
-    <li>In File Manager, click <b>Settings</b> in the top right.</li>
-    <li>Tick <b>Show Hidden Files (dotfiles)</b> and save.</li>
-    <li>Look in <code>public_html</code>. You should now see <code>.htaccess</code>
-        sitting beside <code>index.html</code>.</li>
+    <li><b>Click Settings</b> in the top right of File Manager.</li>
+    <li><b>Tick "Show Hidden Files (dotfiles)".</b>
+      <span class="said">Then click Save.</span></li>
+    <li><b>Look inside <code>public_html</code> again.</b>
+      <span class="said">You should now see <code>.htaccess</code> next to <code>index.html</code>.</span></li>
   </ol>
 
-  <p>When you are finished, <code>public_html</code> should contain exactly this:</p>
+  <div class="ok">
+    <span class="t">You are finished when public_html holds these nine things</span>
+  </div>
 
-  <table class="files">
-    <tr><td>index.html</td><td>404.html</td></tr>
-    <tr><td>robots.txt</td><td>sitemap.xml</td></tr>
-    <tr><td>.htaccess <span style="font-family:var(--sans);font-size:8pt;color:var(--muted)">(hidden)</span></td><td>_assets/</td></tr>
-    <tr><td>fonts/</td><td>favicon.png</td></tr>
-    <tr><td>apple-touch-icon.png</td><td></td></tr>
-  </table>
+  <ul class="files">
+    <li>index.html</li>
+    <li>404.html</li>
+    <li>robots.txt</li>
+    <li>sitemap.xml</li>
+    <li>.htaccess <span>hidden</span></li>
+    <li>_assets <span>folder</span></li>
+    <li>fonts <span>folder</span></li>
+    <li>favicon.png</li>
+    <li>apple-touch-icon.png</li>
+  </ul>
 </section>
 
-<!-- ========================== HTTPS ========================== -->
+<!-- ========================== 5 · HTTPS ========================== -->
 <section class="break">
-  <p class="eyebrow">Section five</p>
-  <h2>The padlock (HTTPS)</h2>
+  <p class="eyebrow">Section 5</p>
+  <h2>The padlock</h2>
   <div class="sec-rule"></div>
 
   <p class="lede">
-    GoDaddy issues the security certificate itself. It can take a few hours after
-    the domain is pointed at the hosting.
+    The padlock in the address bar means the website is secure. GoDaddy gives
+    you this for free.
   </p>
 
   <p>
-    Once <code>https://</code> works when you type it manually, you can make every
-    visitor use it automatically. Open <code>.htaccess</code> in File Manager
-    (right-click → Edit) and find this block near the top:
+    It is not ready straight away. It can take a few hours after your web
+    address points at the hosting.
   </p>
 
-  <div class="prompt">
+  <h3>How to test if it is ready</h3>
+  <p>
+    Type <code>https://</code> in front of your web address. If the page loads,
+    it is ready. If you see a warning, wait and try again later.
+  </p>
+
+  <h3>When it is ready</h3>
+  <p>You can send every visitor to the secure version automatically.</p>
+
+  <!--
+    One list, with the code inside step 2. Split into two lists the numbering
+    restarted at 1: `counter-reset` on .steps wins over the `start` attribute,
+    so the second list began again rather than continuing at 3.
+  -->
+  <ol class="steps">
+    <li><b>Right-click <code>.htaccess</code> in File Manager.</b>
+      <span class="said">Choose <b>Edit</b>.</span></li>
+    <li>
+      <b>Find these five lines near the top.</b>
+      <div class="block">
 # &lt;IfModule mod_rewrite.c&gt;<br>
 #&nbsp;&nbsp;RewriteEngine On<br>
 #&nbsp;&nbsp;RewriteCond %{HTTPS} !=on<br>
 #&nbsp;&nbsp;RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]<br>
 # &lt;/IfModule&gt;
-  </div>
-
-  <p>Remove the <code>#</code> from the start of each of those five lines, and save.</p>
+      </div>
+    </li>
+    <li><b>Delete the <code>#</code> at the start of each of the five lines.</b>
+      <span class="said">Leave everything else exactly as it is.</span></li>
+    <li><b>Click Save.</b></li>
+  </ol>
 
   <div class="warn">
-    <span class="t">Order matters here</span>
+    <span class="t">Important</span>
+    <p>Only do this <b>after</b> the padlock works.</p>
     <p>
-      Do this <b>after</b> the certificate is working, never before. Forcing HTTPS
-      when no certificate exists makes the website unreachable for everyone,
-      including you.
+      If you do it before, your website will stop working for everyone. That
+      includes you.
     </p>
   </div>
 </section>
 
-<!-- ======================= TROUBLESHOOTING ======================= -->
-<section>
-  <p class="eyebrow">Section six</p>
+<!-- ===================== 6 · TROUBLESHOOTING ===================== -->
+<section class="break">
+  <p class="eyebrow">Section 6</p>
   <h2>If something looks wrong</h2>
   <div class="sec-rule"></div>
 
   <table>
-    <tr><th>What you see</th><th>What it means and what to do</th></tr>
+    <tr><th>What you see</th><th>What to do</th></tr>
     <tr>
-      <td>Plain text, no pictures, no styling</td>
-      <td>The <code>_assets</code> or <code>fonts</code> folder did not extract.
-          Re-extract the zip rather than re-uploading it.</td>
+      <td>Plain text. No photos. No colours.</td>
+      <td>The <code>_assets</code> or <code>fonts</code> folder did not unzip.
+          Unzip the file again.</td>
     </tr>
     <tr>
-      <td>GoDaddy's "coming soon" page</td>
-      <td>The placeholder was not deleted. Remove it from
-          <code>public_html</code> and refresh.</td>
+      <td>A GoDaddy "coming soon" page</td>
+      <td>The starter page is still there. Delete it from
+          <code>public_html</code>. Then refresh.</td>
     </tr>
     <tr>
-      <td>The old site, even after uploading</td>
-      <td>Almost always the browser holding a cached copy. Try a private window,
-          or wait ten minutes.</td>
+      <td>The old page, even after uploading</td>
+      <td>Your browser is showing a saved copy. Open a private window. Or wait
+          ten minutes.</td>
     </tr>
     <tr>
-      <td>The site is slow, photographs take a while</td>
-      <td><code>.htaccess</code> is missing. See section four.</td>
+      <td>The website is slow. Photos take a long time.</td>
+      <td><code>.htaccess</code> is missing. Go back to section 4.</td>
     </tr>
     <tr>
-      <td>"Index of /" and a list of files</td>
-      <td><code>index.html</code> is in a sub-folder rather than directly in
-          <code>public_html</code>. Move the files up one level.</td>
+      <td>A list of file names instead of the website</td>
+      <td><code>index.html</code> is one folder too deep. Move all the files up
+          into <code>public_html</code>.</td>
     </tr>
     <tr>
-      <td>Site unreachable right after enabling HTTPS</td>
-      <td>The certificate was not ready. Put the <code>#</code> back on those
-          five lines in <code>.htaccess</code> and wait.</td>
+      <td>The website stopped working after you edited <code>.htaccess</code></td>
+      <td>The padlock was not ready. Put the <code>#</code> back at the start of
+          those five lines.</td>
     </tr>
   </table>
 </section>
 
-<!-- ========================== COWORK ========================== -->
+<!-- ========================== 7 · COWORK ========================== -->
 <section class="break">
-  <p class="eyebrow">Section seven</p>
-  <h2>Doing this with Claude in Cowork</h2>
+  <p class="eyebrow">Section 7</p>
+  <h2>Getting help from Claude</h2>
   <div class="sec-rule"></div>
 
   <p class="lede">
-    Claude can sit alongside you through the whole process — checking the files
-    before you start, reading your screenshots, and telling you what to click
-    next. It works well and you do not need to know anything technical.
+    Claude can guide you through every step in this guide. You do not need to
+    know anything technical.
   </p>
 
-  <h3>What it can and cannot do</h3>
+  <h3>What Claude can and cannot do</h3>
 
   <table>
     <tr><th>Claude can</th><th>Claude cannot</th></tr>
     <tr>
-      <td>Open the zip and confirm nothing is missing</td>
+      <td>Open the zip and check nothing is missing</td>
       <td>Sign in to your GoDaddy account</td>
     </tr>
     <tr>
-      <td>Read a screenshot and tell you what is wrong</td>
+      <td>Look at your screenshot and tell you what is wrong</td>
       <td>Upload the files for you</td>
     </tr>
     <tr>
-      <td>Walk you through cPanel one step at a time</td>
-      <td>Buy hosting or change DNS on your behalf</td>
+      <td>Guide you through cPanel, one step at a time</td>
+      <td>Buy hosting for you</td>
     </tr>
     <tr>
-      <td>Explain and edit the <code>.htaccess</code> file</td>
-      <td>See your screen unless you show it a picture</td>
+      <td>Explain any file and tell you what to change</td>
+      <td>See your screen, unless you send a picture</td>
     </tr>
   </table>
 
-  <p>
-    So you stay in control of the account throughout. Claude is the person
-    sitting next to you, not the person with the password.
-  </p>
+  <p>You stay in control of your account the whole time.</p>
 
-  <h3>Getting started</h3>
+  <h3>How to start</h3>
   <ol class="steps">
-    <li>Open <b>Cowork</b> and start a new chat.</li>
-    <li>Drag <code>manussa-site.zip</code> into the message box.</li>
-    <li>Paste the first prompt below.</li>
+    <li><b>Open Cowork</b> and start a new chat.</li>
+    <li><b>Drag <code>manussa-site.zip</code></b> into the message box.</li>
+    <li><b>Copy the first message below</b> and send it.</li>
   </ol>
 
-  <h3>The prompts</h3>
-  <p>Copy these as they are. Send them one at a time, in order.</p>
+  <h3>Messages you can copy</h3>
+  <p>Send these one at a time, in order. Copy them exactly as they are.</p>
 
   <div class="prompt">
-    <span class="lbl">1 · Check the files before you start</span>
-    I have attached manussa-site.zip, which is a finished website I need to put
-    online. Please unzip it and check nothing is missing. It should contain
-    index.html, 404.html, robots.txt, sitemap.xml, a hidden file called
-    .htaccess, and two folders called _assets and fonts. Tell me plainly whether
-    it is complete, and roughly how large it is.
+    <span class="lbl">1 · Check the files first</span>
+    I have attached manussa-site.zip. It is a finished website and I need to
+    put it online. Please unzip it and check that nothing is missing. It should
+    have index.html, 404.html, robots.txt, sitemap.xml, a hidden file called
+    .htaccess, and two folders called _assets and fonts. Tell me if it is
+    complete.
   </div>
 
   <div class="prompt">
-    <span class="lbl">2 · Work out what you have at GoDaddy</span>
-    I am about to upload this to GoDaddy. I am not sure which products I have.
-    I am attaching a screenshot of my GoDaddy "My Products" page. Please tell me
-    whether I have hosting I can upload a website to, or whether I need to buy
-    something first — and if so, exactly which product.
+    <span class="lbl">2 · Find out what you have at GoDaddy</span>
+    I want to put this website on GoDaddy. I am not sure which products I have.
+    Here is a screenshot of my GoDaddy Products page. Please tell me if I can
+    upload a website, or if I need to buy something first. If I do, tell me
+    exactly what to buy.
   </div>
 
   <div class="prompt">
-    <span class="lbl">3 · Be walked through the upload</span>
-    I have GoDaddy Linux hosting with cPanel. Please walk me through uploading
-    this website to public_html, one step at a time. Wait for me to say "done"
-    before moving to the next step. I am not technical, so tell me exactly what
-    to click and what I should be seeing.
+    <span class="lbl">3 · Be guided through the upload</span>
+    I have GoDaddy Linux hosting with cPanel. Please guide me through uploading
+    this website to public_html. Give me one step at a time. Wait for me to say
+    "done" before the next step. I am not technical, so tell me exactly what to
+    click.
   </div>
 
   <div class="prompt">
-    <span class="lbl">4 · If the page looks broken afterwards</span>
-    I uploaded the site and the address loads, but it looks wrong. Here is a
-    screenshot. Please tell me what has gone wrong and exactly how to fix it.
+    <span class="lbl">4 · If the page looks wrong</span>
+    I uploaded the website. The address opens, but the page looks wrong. Here is
+    a screenshot. Please tell me what happened and how to fix it.
   </div>
 
   <div class="prompt">
-    <span class="lbl">5 · Turning on the padlock</span>
-    My site is live on http but not https. GoDaddy says the certificate is now
-    active. Here is my .htaccess file — please tell me exactly which lines to
-    change to force https, and warn me if anything about this is risky.
+    <span class="lbl">5 · Turn on the padlock</span>
+    My website works on http but not https. GoDaddy says the certificate is
+    ready. Here is my .htaccess file. Please tell me exactly which lines to
+    change. Warn me if anything could go wrong.
   </div>
 
   <div class="prompt">
-    <span class="lbl">6 · If you get stuck at any point</span>
-    I am stuck. Here is a screenshot of where I am and what I have tried so far.
-    Please tell me what to do next in plain language, and ask me questions if you
-    need more detail rather than guessing.
+    <span class="lbl">6 · If you get stuck</span>
+    I am stuck. Here is a screenshot of what I see and what I have tried.
+    Please tell me what to do next in simple words. Ask me questions if you
+    need more information.
   </div>
 
   <div class="note">
-    <span class="t">One habit worth having</span>
+    <span class="t">One tip</span>
     <p>
-      When something does not look right, take a screenshot and attach it rather
-      than describing it. Claude reads screenshots well, and a picture removes
-      most of the back-and-forth.
+      When something looks wrong, send a screenshot instead of describing it.
+      Claude reads screenshots well. It saves a lot of time.
     </p>
   </div>
 </section>
 
-<!-- ========================== LATER ========================== -->
+<!-- ========================== 8 · LATER ========================== -->
 <section class="break">
-  <p class="eyebrow">Section eight</p>
-  <h2>Changing the site later</h2>
+  <p class="eyebrow">Section 8</p>
+  <h2>Changing the website later</h2>
   <div class="sec-rule"></div>
 
   <p class="lede">
-    Nothing about this website stores information — there is no database, no
-    accounts, no orders. That makes updating it simple: new files replace old
-    ones.
+    This website does not store anything. There is no database. There are no
+    accounts and no orders.
   </p>
 
-  <p>
-    When there is a new version, you will receive a new zip. Upload and extract it
-    over the top, keep <code>.htaccess</code>, and that is the whole procedure.
-    There is never anything to migrate and nothing that can be lost.
-  </p>
+  <p>That makes updates simple. New files replace old files. Nothing is lost.</p>
 
-  <h3>If the web address changes</h3>
+  <h3>When you get a new version</h3>
+  <ol class="steps">
+    <li><b>Upload the new zip</b> to <code>public_html</code>.</li>
+    <li><b>Unzip it</b> over the top of the old files.</li>
+    <li><b>Keep <code>.htaccess</code>.</b>
+      <span class="said">Do not delete it.</span></li>
+  </ol>
+
+  <h3>If your web address changes</h3>
   <p>
-    Four files carry the address inside them, which search engines and link
-    previews read: <code>index.html</code>, <code>404.html</code>,
-    <code>robots.txt</code> and <code>sitemap.xml</code>. Everything else is
-    identical whatever the address. Ask for a rebuild rather than editing them by
-    hand — it takes under a minute.
+    Four files have the web address written inside them. Google and social
+    media read them. Ask for a new zip instead of editing the files by hand. It
+    takes less than a minute to make.
   </p>
 
   <div class="signoff">
-    <p><b>Questions</b></p>
     <p>
-      If anything in this guide does not match what you are seeing on screen,
-      send a screenshot rather than working around it. It usually means GoDaddy
-      has moved a button, and it is quicker to confirm than to guess.
+      <b>If anything on your screen does not match this guide,</b> send a
+      screenshot. It usually means GoDaddy has moved a button. It is quicker to
+      check than to guess.
     </p>
   </div>
 </section>
